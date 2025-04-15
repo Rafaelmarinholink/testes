@@ -1,7 +1,7 @@
 
 const baseId = 'appaq7tR3vt9vrN6y';
 const tableName = 'Empresas';
-const apiKey = 'SUA_CHAVE_AQUI'; // Substitua por sua chave real com segurança
+const apiKey = 'patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6'; // Substitua por sua chave real com segurança
 
 const airtableURL = `https://api.airtable.com/v0/${baseId}/${tableName}`;
 const headers = {
