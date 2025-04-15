@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Análise da Empresa | Saber Capital</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1 class="logo">Saber Capital</h1>
+    <h2 class="subtitle">Análise Financeira – Setor de Educação</h2>
+
+    <div id="resultado" class="resultado"></div>
+
+    <button onclick="window.location.href='lista.html'">← Voltar à Lista</button>
+    <button onclick="window.location.href='lista.html'">Comparar com outra empresa</button>
+  </div>
+
+  <script type="module">
+    import { buscarEmpresas } from './airtable.js';
+
+    const resultadoDiv = document.getElementById('resultado');
+    const urlParams = new URLSearchParams(window.location.search);
+    const idEmpresa = urlParams.get('id');
+
+    function avaliar(valor, min, max) {
+      if (valor < min) return '🔻 Abaixo da média';
+      if (valor > max) return '🔺 Acima da média';
+      return '🟢 Dentro da média';
+    }
+
+    buscarEmpresas().then(empresas => {
+      const empresa = empresas.find(e => e.id === idEmpresa);
+
+      if (!empresa) {
+        resultadoDiv.innerHTML = "<p>Empresa não encontrada.</p>";
+        return;
+      }
+
+      const { nome, receita, ebitda, valuation, margem, ev_ebitda } = empresa;
+      const margemCalculada = receita && ebitda ? ((ebitda / receita) * 100).toFixed(2) : margem;
+      const evCalculado = ebitda ? (valuation / ebitda).toFixed(2) : ev_ebitda;
+
+      const BENCHMARK_EBITDA = 17;
+      const BENCHMARK_EV_MIN = 8.8;
+      const BENCHMARK_EV_MAX = 12.0;
+
+      resultadoDiv.innerHTML = `
+        <h3>${nome}</h3>
+        <p><strong>Receita:</strong> $${receita}M</p>
+        <p><strong>EBITDA:</strong> $${ebitda}M</p>
+        <p><strong>Valuation:</strong> $${valuation}M</p>
+        <hr />
+        <p><strong>Margem EBITDA:</strong> ${margemCalculada}% – 
+          ${avaliar(margemCalculada, BENCHMARK_EBITDA, BENCHMARK_EBITDA)}
+        </p>
+        <p><strong>EV/EBITDA:</strong> ${evCalculado}x –
+          ${avaliar(evCalculado, BENCHMARK_EV_MIN, BENCHMARK_EV_MAX)}
+        </p>
+        <p><em>Benchmarks usados: Margem EBITDA = 17%, EV/EBITDA entre 8.8x e 12.0x</em></p>
+      `;
+    });
+  </script>
+</body>
+</html>
