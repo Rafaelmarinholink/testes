@@ -64,9 +64,9 @@
       const coluna = ordenarPor.value;
       const sentido = ordem.value;
 
-      let filtradas = todasEmpresas.filter(e =>
-        e.nome.toLowerCase().includes(texto)
-      );
+     let filtradas = todasEmpresas.filter(e =>
+  e.nome && e.nome.toLowerCase().includes(texto)
+);
 
       filtradas.sort((a, b) => {
         const valA = a[coluna] || 0;
