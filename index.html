@@ -92,9 +92,24 @@
     ordem.addEventListener('change', filtrarEBuscar);
 
     // Carrega dados da API
-    buscarEmpresas().then(empresas => {
-      todasEmpresas = empresas;
-      filtrarEBuscar();
+  buscarEmpresas().then(empresas => {
+  // Filtra registros válidos que possuem "nome" como string
+  todasEmpresas = (empresas || []).filter(e =>
+    e && typeof e.nome === 'string' && e.nome.trim() !== ''
+  );
+
+  // Verifique se vieram dados válidos
+  if (todasEmpresas.length === 0) {
+    console.warn("Nenhuma empresa válida carregada.");
+    document.getElementById('listaEmpresas').innerHTML = "<p style='color: #ccc;'>Nenhuma empresa encontrada.</p>";
+    return;
+  }
+
+  // Roda a busca inicial
+  filtrarEBuscar();
+}).catch(err => {
+  console.error("Erro ao carregar empresas:", err);
+});
     });
   </script>
 </body>
