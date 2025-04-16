@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Comparar Empresas | Saber Capital</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .comparacao-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    .empresa-box {
+      background-color: #1a365d;
+      padding: 1.5rem;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="logo">Saber Capital</h1>
+    <h2 class="subtitle">Comparar Empresas</h2>
+
+    <select id="selecionarEmpresa" style="margin-bottom: 1rem;"></select>
+    <div class="comparacao-grid">
+      <div class="empresa-box" id="empresa1"></div>
+      <div class="empresa-box" id="empresa2"></div>
+    </div>
+
+    <button onclick="window.location.href='index.html'" style="margin-top:2rem;">← Voltar</button>
+  </div>
+
+  <script type="module">
+    import { buscarEmpresas } from './airtable.js';
+
+    const empresa1Div = document.getElementById('empresa1');
+    const empresa2Div = document.getElementById('empresa2');
+    const select = document.getElementById('selecionarEmpresa');
+    const urlParams = new URLSearchParams(window.location.search);
+    const empresa1Id = urlParams.get('id');
+
+    let todasEmpresas = [];
+
+    function formatar(valor) {
+      return Number(valor).toLocaleString('pt-BR') + 'M';
+    }
+
+    function gerarHTML(empresa) {
+      if (!empresa) return '<p>Empresa não encontrada.</p>';
+      const margem = ((empresa.ebitda / empresa.receita) * 100).toFixed(2);
+      const ev = (empresa.valuation / empresa.ebitda).toFixed(2);
+      return `
+        <h3>${empresa.nome}</h3>
+        <p><strong>Receita:</strong> $${formatar(empresa.receita)}</p>
+        <p><strong>EBITDA:</strong> $${formatar(empresa.ebitda)}</p>
+        <p><strong>Valuation:</strong> $${formatar(empresa.valuation)}</p>
+        <hr />
+        <p><strong>Margem EBITDA:</strong> ${margem}%</p>
+        <p><strong>EV/EBITDA:</strong> ${ev}x</p>
+      `;
+    }
+
+    buscarEmpresas().then(empresas => {
+      todasEmpresas = empresas;
+
+      const empresa1 = todasEmpresas.find(e => e.id === empresa1Id);
+      empresa1Div.innerHTML = gerarHTML(empresa1);
+
+      todasEmpresas
+        .filter(e => e.id !== empresa1Id)
+        .forEach(e => {
+          const opt = document.createElement('option');
+          opt.value = e.id;
+          opt.textContent = e.nome;
+          select.appendChild(opt);
+        });
+
+      select.addEventListener('change', () => {
+        const empresa2 = todasEmpresas.find(e => e.id === select.value);
+        empresa2Div.innerHTML = gerarHTML(empresa2);
+      });
+    });
+  </script>
+</body>
+</html>
