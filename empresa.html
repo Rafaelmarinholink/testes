@@ -6,6 +6,13 @@
   <title>Análise da Empresa | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
   <style>
+    .grafico-legenda {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: #ccc;
+      margin: 4px 0;
+    }
     .grafico-barra-dupla {
       display: flex;
       align-items: center;
@@ -89,6 +96,10 @@
       const larguraBenchmark = Math.min(valorBenchmark, 100);
       return `
         <div><strong>${titulo}</strong></div>
+        <div class="grafico-legenda">
+          <span>Empresa</span>
+          <span>Média do Setor</span>
+        </div>
         <div class="grafico-barra-dupla">
           <div class="grafico-barra">
             <div class="barra-empresa" style="width: ${larguraEmpresa}%">${valorEmpresa}%</div>
