@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -6,14 +5,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Saber Capital | Empresas</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    form {
+      margin-bottom: 2rem;
+      background-color: #1e3a5f;
+      padding: 1rem;
+      border-radius: 10px;
+    }
+    form input, form textarea {
+      width: 100%;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      background-color: #102c4c;
+      border: none;
+      color: #fff;
+      border-radius: 5px;
+    }
+    form button {
+      background-color: #fff;
+      color: #0b1f3a;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1 class="logo">Saber Capital</h1>
     <h2 class="subtitle">Empresas do Setor Educacional</h2>
 
-    <input type="text" id="search" placeholder="🔍 Buscar empresa..." />
+    <!-- Formulário de cadastro -->
+    <form id="empresa-form">
+      <input type="text" id="nome" placeholder="Nome da Empresa" required />
+      <input type="text" id="ticker" placeholder="Ticker" required />
+      <input type="number" id="receita" placeholder="Receita Anual (USD)" required />
+      <input type="number" id="ebitda" placeholder="EBITDA (USD)" required />
+      <input type="number" id="valuation" placeholder="Valuation (USD)" required />
+      <textarea id="notas" placeholder="Notas (opcional)"></textarea>
+      <button type="submit">Cadastrar Empresa</button>
+    </form>
 
+    <!-- Barra de busca e ordenação -->
+    <input type="text" id="search" placeholder="🔍 Buscar empresa..." />
     <div class="ordenar">
       <label>Ordenar por:</label>
       <select id="ordenarPor">
@@ -22,7 +58,6 @@
         <option value="ebitda">EBITDA</option>
         <option value="receita">Receita</option>
       </select>
-
       <select id="ordem">
         <option value="asc">Crescente ↑</option>
         <option value="desc">Decrescente ↓</option>
@@ -35,12 +70,11 @@
   <script type="module">
     import { buscarEmpresas } from './airtable.js';
 
-    let todasEmpresas = [];
-
     const lista = document.getElementById('listaEmpresas');
     const searchInput = document.getElementById('search');
     const ordenarPor = document.getElementById('ordenarPor');
     const ordem = document.getElementById('ordem');
+    let todasEmpresas = [];
 
     function renderizar(empresas) {
       lista.innerHTML = '';
@@ -48,14 +82,13 @@
         const li = document.createElement('li');
         li.innerHTML = `
           <strong>${empresa.nome}</strong><br>
-          Valuation: $${Number(empresa.valuation).toLocaleString('pt-BR')}M
-          EBITDA: $${Number(empresa.ebitda).toLocaleString('pt-BR')}M
+          Valuation: $${Number(empresa.valuation).toLocaleString('pt-BR')}M<br>
+          EBITDA: $${Number(empresa.ebitda).toLocaleString('pt-BR')}M<br>
           Receita: $${Number(empresa.receita).toLocaleString('pt-BR')}M
-
         `;
         li.style.cursor = 'pointer';
         li.onclick = () => {
-         window.location.href = `empresa.html?id=${empresa.id}`;
+          window.location.href = \`empresa.html?id=\${empresa.id}\`;
         };
         lista.appendChild(li);
       });
@@ -72,11 +105,8 @@
       filtradas.sort((a, b) => {
         const valA = a[coluna] ?? 0;
         const valB = b[coluna] ?? 0;
-
         if (typeof valA === 'string') {
-          return sentido === 'asc'
-            ? valA.localeCompare(valB)
-            : valB.localeCompare(valA);
+          return sentido === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
         } else {
           return sentido === 'asc' ? valA - valB : valB - valA;
         }
@@ -85,14 +115,46 @@
       renderizar(filtradas);
     }
 
+    document.getElementById('empresa-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const data = {
+        fields: {
+          "Nome da Empresa": document.getElementById('nome').value,
+          "Ticker": document.getElementById('ticker').value,
+          "Receita Anual (USD)": parseFloat(document.getElementById('receita').value),
+          "EBITDA (USD)": parseFloat(document.getElementById('ebitda').value),
+          "Valuation (USD)": parseFloat(document.getElementById('valuation').value),
+          "Notas": document.getElementById('notas').value
+        }
+      };
+
+      await fetch("https://api.airtable.com/v0/YOUR_BASE_ID/Empresas", {
+        method: 'POST',
+        headers: {
+          Authorization: "Bearer YOUR_API_KEY",
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      // Recarrega a lista após o cadastro
+      buscarEmpresas().then(empresas => {
+        todasEmpresas = empresas;
+        filtrarEBuscar();
+      });
+
+      e.target.reset();
+    });
+
+    buscarEmpresas().then(empresas => {
+      todasEmpresas = empresas;
+      filtrarEBuscar();
+    });
+
     searchInput.addEventListener('input', filtrarEBuscar);
     ordenarPor.addEventListener('change', filtrarEBuscar);
     ordem.addEventListener('change', filtrarEBuscar);
-
-    buscarEmpresas().then(empresas => {
-      todasEmpresas = (empresas || []).filter(e => e && typeof e.nome === 'string');
-      filtrarEBuscar();
-    });
   </script>
 </body>
 </html>
