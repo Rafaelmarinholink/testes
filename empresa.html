@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -6,6 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Análise da Empresa | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .grafico-barra {
+      background-color: #1e3a5f;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .barra-interna {
+      background-color: #63b3ed;
+      height: 24px;
+      color: #000;
+      padding-left: 8px;
+      line-height: 24px;
+      font-size: 0.85rem;
+    }
+    .nota {
+      background-color: #2c5282;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-top: 1rem;
+      font-style: italic;
+      color: #fff;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -16,7 +39,6 @@
 
     <button onclick="window.location.href='index.html'">← Voltar à Lista</button>
     <button id="botaoComparar">Comparar com outra empresa</button>
-
   </div>
 
   <script type="module">
@@ -32,6 +54,16 @@
       return '🟢 Dentro da média';
     }
 
+    function gerarBarra(titulo, valor, maximo) {
+      const largura = Math.min((valor / maximo) * 100, 100).toFixed(1);
+      return `
+        <div><strong>${titulo}:</strong> ${valor}</div>
+        <div class="grafico-barra">
+          <div class="barra-interna" style="width: ${largura}%">${largura}%</div>
+        </div>
+      `;
+    }
+
     buscarEmpresas().then(empresas => {
       const empresa = empresas.find(e => e.id === idEmpresa);
 
@@ -40,7 +72,7 @@
         return;
       }
 
-      const { nome, receita, ebitda, valuation, margem, ev_ebitda } = empresa;
+      const { nome, receita, ebitda, valuation, margem, ev_ebitda, notas } = empresa;
       const margemCalculada = receita && ebitda ? ((ebitda / receita) * 100).toFixed(2) : margem;
       const evCalculado = ebitda ? (valuation / ebitda).toFixed(2) : ev_ebitda;
 
@@ -50,22 +82,25 @@
 
       resultadoDiv.innerHTML = `
         <h3>${nome}</h3>
-        <p><strong>Receita:</strong> $${receita}M</p>
-        <p><strong>EBITDA:</strong> $${ebitda}M</p>
-        <p><strong>Valuation:</strong> $${valuation}M</p>
+        <p><strong>Receita:</strong> $${Number(receita).toLocaleString('pt-BR')}M</p>
+        <p><strong>EBITDA:</strong> $${Number(ebitda).toLocaleString('pt-BR')}M</p>
+        <p><strong>Valuation:</strong> $${Number(valuation).toLocaleString('pt-BR')}M</p>
         <hr />
         <p><strong>Margem EBITDA:</strong> ${margemCalculada}% – 
           ${avaliar(margemCalculada, BENCHMARK_EBITDA, BENCHMARK_EBITDA)}
         </p>
+        ${gerarBarra("Margem EBITDA", margemCalculada, 40)}
         <p><strong>EV/EBITDA:</strong> ${evCalculado}x –
           ${avaliar(evCalculado, BENCHMARK_EV_MIN, BENCHMARK_EV_MAX)}
         </p>
-        <p><em>Benchmarks usados: Margem EBITDA = 17%, EV/EBITDA entre 8.8x e 12.0x</em></p>
+        ${gerarBarra("EV/EBITDA", evCalculado, 20)}
+        <p><em>Benchmarks: Margem EBITDA = 17%, EV/EBITDA entre 8.8x e 12.0x</em></p>
+        ${notas ? `<div class="nota"><strong>Notas:</strong> ${notas}</div>` : ""}
       `;
-      document.getElementById('botaoComparar').onclick = () => {
-  window.location.href = `comparar.html?id=${idEmpresa}`;
-};
 
+      document.getElementById('botaoComparar').onclick = () => {
+        window.location.href = `comparar.html?id=${idEmpresa}`;
+      };
     });
   </script>
 </body>
