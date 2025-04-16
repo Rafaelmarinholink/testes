@@ -147,6 +147,11 @@
       });
       graficos += '</div>';
 
+      const saudavel =
+        margem >= 17 && ev !== "-" && ev >= 8.8 && ev <= 12
+          ? "🟢 Esta empresa demonstra bons fundamentos financeiros para investimento."
+          : "🔎 A empresa apresenta sinais de risco ou desempenho fora dos padrões ideais para micro caps do setor educacional.";
+
       return `
         <h3>${empresa.nome}</h3>
         <p><strong>Receita:</strong> $${formatar(empresa.receita)}</p>
@@ -155,6 +160,7 @@
         <p><strong>Margem EBITDA:</strong> ${margemFormatada}</p>
         <p><strong>EV/EBITDA:</strong> ${ev}x</p>
         ${graficos}
+        <p style="margin-top: 1rem;"><em>${saudavel}</em></p>
       `;
     }
 
