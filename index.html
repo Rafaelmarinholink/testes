@@ -48,9 +48,10 @@
         const li = document.createElement('li');
         li.innerHTML = `
           <strong>${empresa.nome}</strong><br>
-          Valuation: $${empresa.valuation}M<br>
-          EBITDA: $${empresa.ebitda}M<br>
-          Receita: $${empresa.receita}M
+          Valuation: $${Number(empresa.valuation).toLocaleString('pt-BR')}M
+          EBITDA: $${Number(empresa.ebitda).toLocaleString('pt-BR')}M
+          Receita: $${Number(empresa.receita).toLocaleString('pt-BR')}M
+
         `;
         li.style.cursor = 'pointer';
         li.onclick = () => {
