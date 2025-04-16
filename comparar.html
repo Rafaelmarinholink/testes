@@ -118,29 +118,33 @@
     }
 
     function gerarHTMLComGrafico(empresa) {
-      const margem = ((empresa.ebitda / empresa.receita) * 100).toFixed(2);
-      const ev = (empresa.valuation / empresa.ebitda).toFixed(2);
+      const margem = (empresa.receita > 0 && empresa.ebitda > 0)
+        ? (empresa.ebitda / empresa.receita) * 100
+        : 0;
+      const margemFormatada = margem.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + "%";
+      const ev = (empresa.ebitda > 0)
+        ? (empresa.valuation / empresa.ebitda).toFixed(2)
+        : "-";
 
       const dados = [
-        { titulo: "Receita", valor: empresa.receita },
-        { titulo: "EBITDA", valor: empresa.ebitda },
-        { titulo: "Valuation", valor: empresa.valuation },
-        { titulo: "Margem EBITDA", valor: margem }
+        { titulo: "Receita", valor: empresa.receita, formatado: formatar(empresa.receita) },
+        { titulo: "EBITDA", valor: empresa.ebitda, formatado: formatar(empresa.ebitda) },
+        { titulo: "Valuation", valor: empresa.valuation, formatado: formatar(empresa.valuation) },
+        { titulo: "Margem EBITDA", valor: margem, formatado: margemFormatada }
       ];
 
-      let graficos = '<div class="grafico-coluna">';
-      const max = Math.max(...dados.map(d => Number(d.valor)));
+      const max = Math.max(...dados.map(d => d.valor));
 
+      let graficos = '<div class="grafico-coluna">';
       dados.forEach(d => {
         const altura = (d.valor / max) * 100;
         graficos += `
           <div style="flex:1;">
-            <div class="barra" style="height:${altura}%">${Number(d.valor).toFixed(1)}</div>
+            <div class="barra" style="height:${altura}%">${d.formatado}</div>
             <div class="grafico-label">${d.titulo}</div>
           </div>
         `;
       });
-
       graficos += '</div>';
 
       return `
@@ -148,7 +152,7 @@
         <p><strong>Receita:</strong> $${formatar(empresa.receita)}</p>
         <p><strong>EBITDA:</strong> $${formatar(empresa.ebitda)}</p>
         <p><strong>Valuation:</strong> $${formatar(empresa.valuation)}</p>
-        <p><strong>Margem EBITDA:</strong> ${margem}%</p>
+        <p><strong>Margem EBITDA:</strong> ${margemFormatada}</p>
         <p><strong>EV/EBITDA:</strong> ${ev}x</p>
         ${graficos}
       `;
