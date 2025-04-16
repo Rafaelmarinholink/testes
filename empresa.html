@@ -5,7 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Análise da Empresa | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet" />
   <style>
+    .logo-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 2rem;
+    }
+    .logo-text {
+      font-family: 'Archivo Black', sans-serif;
+      color: white;
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+    }
+    .logo-img {
+      height: 80px;
+      width: auto;
+    }
     .grafico-legenda {
       display: flex;
       justify-content: space-between;
@@ -61,7 +80,10 @@
 </head>
 <body>
   <div class="container">
-    <h1 class="logo">Saber Capital</h1>
+    <div class="logo-wrapper">
+      <img src="logo bg removed.png" alt="Saber Capital logo" class="logo-img" />
+      <div class="logo-text">SABER<br>CAPITAL</div>
+    </div>
     <h2 class="subtitle">Análise Financeira – Setor de Educação</h2>
 
     <div id="resultado" class="resultado"></div>
