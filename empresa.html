@@ -15,7 +15,8 @@
     <div id="resultado" class="resultado"></div>
 
     <button onclick="window.location.href='index.html'">← Voltar à Lista</button>
-    <button onclick="window.location.href='index.html'">Comparar com outra empresa</button>
+    <button id="botaoComparar">Comparar com outra empresa</button>
+
   </div>
 
   <script type="module">
@@ -61,6 +62,10 @@
         </p>
         <p><em>Benchmarks usados: Margem EBITDA = 17%, EV/EBITDA entre 8.8x e 12.0x</em></p>
       `;
+      document.getElementById('botaoComparar').onclick = () => {
+  window.location.href = `comparar.html?id=${idEmpresa}`;
+};
+
     });
   </script>
 </body>
