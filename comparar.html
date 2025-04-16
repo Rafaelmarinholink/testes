@@ -8,8 +8,9 @@
   <style>
     .comparacao-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 40px 1fr;
       gap: 2rem;
+      align-items: start;
     }
     .empresa-box {
       background-color: #1a365d;
@@ -42,6 +43,43 @@
       background-color: #63b3ed;
       color: #0b1f3a;
     }
+    .botoes-centrais {
+      display: flex;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    .btn-inverter {
+      background-color: #ffffff;
+      color: #0b1f3a;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+    }
+    .grafico-coluna {
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-end;
+      height: 120px;
+      margin-top: 1rem;
+    }
+    .barra {
+      flex: 1;
+      text-align: center;
+      background-color: #63b3ed;
+      border-radius: 4px 4px 0 0;
+      color: #000;
+    }
+    .barra2 {
+      background-color: #ffffff88;
+    }
+    .grafico-label {
+      margin-top: 0.25rem;
+      font-size: 0.8rem;
+      color: #ccc;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -51,11 +89,15 @@
 
     <div class="comparacao-grid">
       <div class="empresa-box" id="empresa1"></div>
-
-      <div class="empresa-box">
+      <div class="botoes-centrais">
+        <button class="btn-inverter" id="inverterBtn">⇄</button>
+      </div>
+      <div class="empresa-box" id="empresa2Container">
         <input type="text" id="buscaEmpresa2" class="search-box" placeholder="Buscar empresa..." />
         <div class="empresa-lista" id="listaEmpresas2"></div>
         <div id="empresa2"></div>
+        <div class="grafico-coluna" id="graficoColuna" style="display:none;"></div>
+        <button id="novaComparacao" style="display:none; margin-top: 1rem;">+ Nova Comparação</button>
       </div>
     </div>
 
@@ -69,9 +111,13 @@
     const empresa2Div = document.getElementById('empresa2');
     const listaEmpresas2 = document.getElementById('listaEmpresas2');
     const buscaInput = document.getElementById('buscaEmpresa2');
+    const empresa2Container = document.getElementById('empresa2Container');
+    const novaComparacao = document.getElementById('novaComparacao');
+    const graficoColuna = document.getElementById('graficoColuna');
+    const inverterBtn = document.getElementById('inverterBtn');
 
     const urlParams = new URLSearchParams(window.location.search);
-    const empresa1Id = urlParams.get('id');
+    let empresa1Id = urlParams.get('id');
 
     let todasEmpresas = [];
 
@@ -80,7 +126,6 @@
     }
 
     function gerarHTML(empresa) {
-      if (!empresa) return '<p>Empresa não encontrada.</p>';
       const margem = ((empresa.ebitda / empresa.receita) * 100).toFixed(2);
       const ev = (empresa.valuation / empresa.ebitda).toFixed(2);
       return `
@@ -94,25 +139,64 @@
       `;
     }
 
-    function renderizarLista(empresas) {
-      listaEmpresas2.innerHTML = '';
-      empresas.forEach(e => {
-        const item = document.createElement('div');
-        item.textContent = e.nome;
-        item.onclick = () => {
-          empresa2Div.innerHTML = gerarHTML(e);
-        };
-        listaEmpresas2.appendChild(item);
+    function gerarGraficos(emp1, emp2) {
+      graficoColuna.innerHTML = "";
+
+      const dados = [
+        { titulo: "Receita", valor1: emp1.receita, valor2: emp2.receita },
+        { titulo: "EBITDA", valor1: emp1.ebitda, valor2: emp2.ebitda },
+        { titulo: "Valuation", valor1: emp1.valuation, valor2: emp2.valuation },
+        { titulo: "Margem EBITDA", valor1: ((emp1.ebitda / emp1.receita) * 100), valor2: ((emp2.ebitda / emp2.receita) * 100) }
+      ];
+
+      dados.forEach(d => {
+        const max = Math.max(d.valor1, d.valor2);
+        const altura1 = (d.valor1 / max) * 100;
+        const altura2 = (d.valor2 / max) * 100;
+
+        graficoColuna.innerHTML += `
+          <div style="flex:1;">
+            <div class="barra" style="height:${altura1}%">${d.valor1.toFixed(1)}</div>
+            <div class="barra barra2" style="height:${altura2}%">${d.valor2.toFixed(1)}</div>
+            <div class="grafico-label">${d.titulo}</div>
+          </div>
+        `;
       });
+
+      graficoColuna.style.display = "flex";
+    }
+
+    function resetComparacao() {
+      buscaInput.style.display = "block";
+      listaEmpresas2.style.display = "block";
+      empresa2Div.innerHTML = "";
+      graficoColuna.style.display = "none";
+      novaComparacao.style.display = "none";
     }
 
     buscarEmpresas().then(empresas => {
       todasEmpresas = empresas;
 
-      const empresa1 = todasEmpresas.find(e => e.id === empresa1Id);
+      let empresa1 = todasEmpresas.find(e => e.id === empresa1Id);
       empresa1Div.innerHTML = gerarHTML(empresa1);
 
       const restantes = todasEmpresas.filter(e => e.id !== empresa1Id);
+      const renderizarLista = (lista) => {
+        listaEmpresas2.innerHTML = '';
+        lista.forEach(e => {
+          const item = document.createElement('div');
+          item.textContent = e.nome;
+          item.onclick = () => {
+            empresa2Div.innerHTML = gerarHTML(e);
+            gerarGraficos(empresa1, e);
+            buscaInput.style.display = "none";
+            listaEmpresas2.style.display = "none";
+            novaComparacao.style.display = "block";
+          };
+          listaEmpresas2.appendChild(item);
+        });
+      };
+
       renderizarLista(restantes);
 
       buscaInput.addEventListener('input', () => {
@@ -120,6 +204,14 @@
         const filtradas = restantes.filter(e => e.nome.toLowerCase().includes(filtro));
         renderizarLista(filtradas);
       });
+
+      novaComparacao.onclick = () => resetComparacao();
+
+      inverterBtn.onclick = () => {
+        const empresaAtual = empresa1Id;
+        const novaEmpresa = todasEmpresas.find(e => e.id !== empresaAtual);
+        window.location.href = `comparar.html?id=${novaEmpresa.id}`;
+      };
     });
   </script>
 </body>
