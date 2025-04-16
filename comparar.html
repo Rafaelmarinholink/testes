@@ -67,21 +67,11 @@
       color: #000;
       font-size: 0.75rem;
     }
-    .barra-benchmark {
-      background-color: #ffffff88;
-    }
     .grafico-label {
       margin-top: 0.25rem;
       font-size: 0.8rem;
       color: #ccc;
       text-align: center;
-    }
-    .grafico-legenda {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.75rem;
-      color: #ccc;
-      margin-top: 0.5rem;
     }
   </style>
 </head>
@@ -112,7 +102,6 @@
     import { buscarEmpresas } from './airtable.js';
 
     const empresa1Box = document.getElementById('empresa1Box');
-    const empresa2Box = document.getElementById('empresa2Box');
     const empresa2Card = document.getElementById('empresa2Card');
     const listaEmpresas2 = document.getElementById('listaEmpresas2');
     const buscaInput = document.getElementById('buscaEmpresa2');
@@ -132,34 +121,27 @@
       const margem = ((empresa.ebitda / empresa.receita) * 100).toFixed(2);
       const ev = (empresa.valuation / empresa.ebitda).toFixed(2);
 
-      const benchmarks = {
-        receita: 1200,
-        ebitda: 300,
-        valuation: 3500,
-        margem: 17
-      };
-
       const dados = [
-        { titulo: "Receita", valor: empresa.receita, benchmark: benchmarks.receita },
-        { titulo: "EBITDA", valor: empresa.ebitda, benchmark: benchmarks.ebitda },
-        { titulo: "Valuation", valor: empresa.valuation, benchmark: benchmarks.valuation },
-        { titulo: "Margem EBITDA", valor: margem, benchmark: benchmarks.margem }
+        { titulo: "Receita", valor: empresa.receita },
+        { titulo: "EBITDA", valor: empresa.ebitda },
+        { titulo: "Valuation", valor: empresa.valuation },
+        { titulo: "Margem EBITDA", valor: margem }
       ];
 
       let graficos = '<div class="grafico-coluna">';
+      const max = Math.max(...dados.map(d => Number(d.valor)));
+
       dados.forEach(d => {
-        const max = Math.max(d.valor, d.benchmark);
-        const altEmpresa = (d.valor / max) * 100;
-        const altBenchmark = (d.benchmark / max) * 100;
+        const altura = (d.valor / max) * 100;
         graficos += `
           <div style="flex:1;">
-            <div class="barra" style="height:${altEmpresa}%">${Number(d.valor).toFixed(1)}</div>
-            <div class="barra barra-benchmark" style="height:${altBenchmark}%">${Number(d.benchmark).toFixed(1)}</div>
+            <div class="barra" style="height:${altura}%">${Number(d.valor).toFixed(1)}</div>
             <div class="grafico-label">${d.titulo}</div>
           </div>
         `;
       });
-      graficos += '</div><div class="grafico-legenda"><span>Empresa</span><span>Média</span></div>';
+
+      graficos += '</div>';
 
       return `
         <h3>${empresa.nome}</h3>
