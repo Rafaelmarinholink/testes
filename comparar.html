@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -17,6 +16,32 @@
       padding: 1.5rem;
       border-radius: 8px;
     }
+    .search-box {
+      margin-bottom: 1rem;
+      width: 100%;
+      padding: 0.5rem;
+      background-color: #1e3a5f;
+      border: none;
+      color: #fff;
+      border-radius: 5px;
+    }
+    .empresa-lista {
+      max-height: 200px;
+      overflow-y: auto;
+      background-color: #2c5282;
+      border-radius: 6px;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .empresa-lista div {
+      padding: 0.4rem;
+      cursor: pointer;
+      border-bottom: 1px solid #ffffff22;
+    }
+    .empresa-lista div:hover {
+      background-color: #63b3ed;
+      color: #0b1f3a;
+    }
   </style>
 </head>
 <body>
@@ -24,10 +49,14 @@
     <h1 class="logo">Saber Capital</h1>
     <h2 class="subtitle">Comparar Empresas</h2>
 
-    <select id="selecionarEmpresa" style="margin-bottom: 1rem;"></select>
     <div class="comparacao-grid">
       <div class="empresa-box" id="empresa1"></div>
-      <div class="empresa-box" id="empresa2"></div>
+
+      <div class="empresa-box">
+        <input type="text" id="buscaEmpresa2" class="search-box" placeholder="Buscar empresa..." />
+        <div class="empresa-lista" id="listaEmpresas2"></div>
+        <div id="empresa2"></div>
+      </div>
     </div>
 
     <button onclick="window.location.href='index.html'" style="margin-top:2rem;">← Voltar</button>
@@ -38,7 +67,9 @@
 
     const empresa1Div = document.getElementById('empresa1');
     const empresa2Div = document.getElementById('empresa2');
-    const select = document.getElementById('selecionarEmpresa');
+    const listaEmpresas2 = document.getElementById('listaEmpresas2');
+    const buscaInput = document.getElementById('buscaEmpresa2');
+
     const urlParams = new URLSearchParams(window.location.search);
     const empresa1Id = urlParams.get('id');
 
@@ -63,24 +94,31 @@
       `;
     }
 
+    function renderizarLista(empresas) {
+      listaEmpresas2.innerHTML = '';
+      empresas.forEach(e => {
+        const item = document.createElement('div');
+        item.textContent = e.nome;
+        item.onclick = () => {
+          empresa2Div.innerHTML = gerarHTML(e);
+        };
+        listaEmpresas2.appendChild(item);
+      });
+    }
+
     buscarEmpresas().then(empresas => {
       todasEmpresas = empresas;
 
       const empresa1 = todasEmpresas.find(e => e.id === empresa1Id);
       empresa1Div.innerHTML = gerarHTML(empresa1);
 
-      todasEmpresas
-        .filter(e => e.id !== empresa1Id)
-        .forEach(e => {
-          const opt = document.createElement('option');
-          opt.value = e.id;
-          opt.textContent = e.nome;
-          select.appendChild(opt);
-        });
+      const restantes = todasEmpresas.filter(e => e.id !== empresa1Id);
+      renderizarLista(restantes);
 
-      select.addEventListener('change', () => {
-        const empresa2 = todasEmpresas.find(e => e.id === select.value);
-        empresa2Div.innerHTML = gerarHTML(empresa2);
+      buscaInput.addEventListener('input', () => {
+        const filtro = buscaInput.value.toLowerCase();
+        const filtradas = restantes.filter(e => e.nome.toLowerCase().includes(filtro));
+        renderizarLista(filtradas);
       });
     });
   </script>
