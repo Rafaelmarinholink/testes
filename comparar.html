@@ -43,11 +43,6 @@
       background-color: #63b3ed;
       color: #0b1f3a;
     }
-    .botoes-centrais {
-      display: flex;
-      justify-content: center;
-      margin-top: 1rem;
-    }
     .btn-inverter {
       background-color: #ffffff;
       color: #0b1f3a;
@@ -70,8 +65,9 @@
       background-color: #63b3ed;
       border-radius: 4px 4px 0 0;
       color: #000;
+      font-size: 0.75rem;
     }
-    .barra2 {
+    .barra-benchmark {
       background-color: #ffffff88;
     }
     .grafico-label {
@@ -79,6 +75,13 @@
       font-size: 0.8rem;
       color: #ccc;
       text-align: center;
+    }
+    .grafico-legenda {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: #ccc;
+      margin-top: 0.5rem;
     }
   </style>
 </head>
@@ -88,15 +91,16 @@
     <h2 class="subtitle">Comparar Empresas</h2>
 
     <div class="comparacao-grid">
-      <div class="empresa-box" id="empresa1"></div>
-      <div class="botoes-centrais">
+      <div class="empresa-box" id="empresa1Box"></div>
+
+      <div style="display: flex; align-items: center; justify-content: center;">
         <button class="btn-inverter" id="inverterBtn">⇄</button>
       </div>
-      <div class="empresa-box" id="empresa2Container">
+
+      <div class="empresa-box" id="empresa2Box">
         <input type="text" id="buscaEmpresa2" class="search-box" placeholder="Buscar empresa..." />
         <div class="empresa-lista" id="listaEmpresas2"></div>
-        <div id="empresa2"></div>
-        <div class="grafico-coluna" id="graficoColuna" style="display:none;"></div>
+        <div id="empresa2Card"></div>
         <button id="novaComparacao" style="display:none; margin-top: 1rem;">+ Nova Comparação</button>
       </div>
     </div>
@@ -107,13 +111,12 @@
   <script type="module">
     import { buscarEmpresas } from './airtable.js';
 
-    const empresa1Div = document.getElementById('empresa1');
-    const empresa2Div = document.getElementById('empresa2');
+    const empresa1Box = document.getElementById('empresa1Box');
+    const empresa2Box = document.getElementById('empresa2Box');
+    const empresa2Card = document.getElementById('empresa2Card');
     const listaEmpresas2 = document.getElementById('listaEmpresas2');
     const buscaInput = document.getElementById('buscaEmpresa2');
-    const empresa2Container = document.getElementById('empresa2Container');
     const novaComparacao = document.getElementById('novaComparacao');
-    const graficoColuna = document.getElementById('graficoColuna');
     const inverterBtn = document.getElementById('inverterBtn');
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -125,52 +128,54 @@
       return Number(valor).toLocaleString('pt-BR') + 'M';
     }
 
-    function gerarHTML(empresa) {
+    function gerarHTMLComGrafico(empresa) {
       const margem = ((empresa.ebitda / empresa.receita) * 100).toFixed(2);
       const ev = (empresa.valuation / empresa.ebitda).toFixed(2);
+
+      const benchmarks = {
+        receita: 1200,
+        ebitda: 300,
+        valuation: 3500,
+        margem: 17
+      };
+
+      const dados = [
+        { titulo: "Receita", valor: empresa.receita, benchmark: benchmarks.receita },
+        { titulo: "EBITDA", valor: empresa.ebitda, benchmark: benchmarks.ebitda },
+        { titulo: "Valuation", valor: empresa.valuation, benchmark: benchmarks.valuation },
+        { titulo: "Margem EBITDA", valor: margem, benchmark: benchmarks.margem }
+      ];
+
+      let graficos = '<div class="grafico-coluna">';
+      dados.forEach(d => {
+        const max = Math.max(d.valor, d.benchmark);
+        const altEmpresa = (d.valor / max) * 100;
+        const altBenchmark = (d.benchmark / max) * 100;
+        graficos += `
+          <div style="flex:1;">
+            <div class="barra" style="height:${altEmpresa}%">${Number(d.valor).toFixed(1)}</div>
+            <div class="barra barra-benchmark" style="height:${altBenchmark}%">${Number(d.benchmark).toFixed(1)}</div>
+            <div class="grafico-label">${d.titulo}</div>
+          </div>
+        `;
+      });
+      graficos += '</div><div class="grafico-legenda"><span>Empresa</span><span>Média</span></div>';
+
       return `
         <h3>${empresa.nome}</h3>
         <p><strong>Receita:</strong> $${formatar(empresa.receita)}</p>
         <p><strong>EBITDA:</strong> $${formatar(empresa.ebitda)}</p>
         <p><strong>Valuation:</strong> $${formatar(empresa.valuation)}</p>
-        <hr />
         <p><strong>Margem EBITDA:</strong> ${margem}%</p>
         <p><strong>EV/EBITDA:</strong> ${ev}x</p>
+        ${graficos}
       `;
-    }
-
-    function gerarGraficos(emp1, emp2) {
-      graficoColuna.innerHTML = "";
-
-      const dados = [
-        { titulo: "Receita", valor1: emp1.receita, valor2: emp2.receita },
-        { titulo: "EBITDA", valor1: emp1.ebitda, valor2: emp2.ebitda },
-        { titulo: "Valuation", valor1: emp1.valuation, valor2: emp2.valuation },
-        { titulo: "Margem EBITDA", valor1: ((emp1.ebitda / emp1.receita) * 100), valor2: ((emp2.ebitda / emp2.receita) * 100) }
-      ];
-
-      dados.forEach(d => {
-        const max = Math.max(d.valor1, d.valor2);
-        const altura1 = (d.valor1 / max) * 100;
-        const altura2 = (d.valor2 / max) * 100;
-
-        graficoColuna.innerHTML += `
-          <div style="flex:1;">
-            <div class="barra" style="height:${altura1}%">${d.valor1.toFixed(1)}</div>
-            <div class="barra barra2" style="height:${altura2}%">${d.valor2.toFixed(1)}</div>
-            <div class="grafico-label">${d.titulo}</div>
-          </div>
-        `;
-      });
-
-      graficoColuna.style.display = "flex";
     }
 
     function resetComparacao() {
       buscaInput.style.display = "block";
       listaEmpresas2.style.display = "block";
-      empresa2Div.innerHTML = "";
-      graficoColuna.style.display = "none";
+      empresa2Card.innerHTML = "";
       novaComparacao.style.display = "none";
     }
 
@@ -178,17 +183,17 @@
       todasEmpresas = empresas;
 
       let empresa1 = todasEmpresas.find(e => e.id === empresa1Id);
-      empresa1Div.innerHTML = gerarHTML(empresa1);
+      empresa1Box.innerHTML = gerarHTMLComGrafico(empresa1);
 
       const restantes = todasEmpresas.filter(e => e.id !== empresa1Id);
+
       const renderizarLista = (lista) => {
         listaEmpresas2.innerHTML = '';
         lista.forEach(e => {
           const item = document.createElement('div');
           item.textContent = e.nome;
           item.onclick = () => {
-            empresa2Div.innerHTML = gerarHTML(e);
-            gerarGraficos(empresa1, e);
+            empresa2Card.innerHTML = gerarHTMLComGrafico(e);
             buscaInput.style.display = "none";
             listaEmpresas2.style.display = "none";
             novaComparacao.style.display = "block";
@@ -208,8 +213,7 @@
       novaComparacao.onclick = () => resetComparacao();
 
       inverterBtn.onclick = () => {
-        const empresaAtual = empresa1Id;
-        const novaEmpresa = todasEmpresas.find(e => e.id !== empresaAtual);
+        const novaEmpresa = todasEmpresas.find(e => e.id !== empresa1Id);
         window.location.href = `comparar.html?id=${novaEmpresa.id}`;
       };
     });
