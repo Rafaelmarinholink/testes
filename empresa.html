@@ -2,172 +2,129 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Análise da Empresa | Saber Capital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet" />
   <style>
-    .logo-wrapper {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
       margin-bottom: 2rem;
     }
-    .logo-text {
-      font-family: 'Archivo Black', sans-serif;
-      color: white;
-      font-size: 1.8rem;
-      letter-spacing: 1px;
-    }
-    .logo-img {
-      height: 80px;
-      width: auto;
-    }
-    .grafico-legenda {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      color: #ccc;
-      margin: 4px 0;
-    }
-    .grafico-barra-dupla {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 0.5rem;
-    }
-    .grafico-barra {
+    .metric-card {
       background-color: #1e3a5f;
-      border-radius: 6px;
-      overflow: hidden;
-      height: 24px;
-      flex: 1;
+      padding: 1rem;
+      border-radius: 10px;
     }
-    .barra-empresa {
-      background-color: #63b3ed;
-      height: 24px;
-      line-height: 24px;
-      padding-left: 5px;
-      color: #000;
-      font-size: 0.8rem;
+    .metric-title {
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: #cbd5e1;
     }
-    .barra-benchmark {
-      background-color: #ffffff55;
-      height: 24px;
-      line-height: 24px;
-      padding-left: 5px;
-      color: #fff;
-      font-size: 0.8rem;
+    .metric-value {
+      font-size: 1.5rem;
+      color: #63b3ed;
     }
-    .nota {
+    .section-title {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 1rem;
+      margin: 1rem 0 0.5rem;
+    }
+    .graph-placeholder {
       background-color: #2c5282;
-      padding: 1rem;
-      border-radius: 6px;
-      margin-top: 1rem;
-      font-style: italic;
-      color: #fff;
+      height: 150px;
+      border-radius: 10px;
+      margin-bottom: 1rem;
     }
-    .diagnostico {
+    .summary {
       background-color: #234e70;
-      border-left: 5px solid #63b3ed;
       padding: 1rem;
-      border-radius: 6px;
-      margin-top: 1rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+    .notes {
+      background-color: #1a365d;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    .btn-row {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <header>
     <div class="logo-wrapper">
-      <img src="logo bg removed.png" alt="Saber Capital logo" class="logo-img" />
-      <div class="logo-text">SABER<br>CAPITAL</div>
+      <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
+      <h1 class="logo-text">SABER<br>CAPITAL</h1>
     </div>
-    <h2 class="subtitle">Análise Financeira – Setor de Educação</h2>
+  </header>
 
-    <div id="resultado" class="resultado"></div>
+  <div class="container">
+    <p class="subtitle">Análise Financeira – Setor de Educação</p>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="metric-title">Receita Anual (milhões de dólares)</div>
+        <div class="metric-value" id="receita"></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">EBITDA (milhões de dólares)</div>
+        <div class="metric-value" id="ebitda"></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">Valuation (milhões de dólares)</div>
+        <div class="metric-value" id="valuation"></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">EBITDA Margin (%)</div>
+        <div class="metric-value" id="margem"></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">EV/EBITDA</div>
+        <div class="metric-value" id="ev"></div>
+      </div>
+    </div>
 
-    <button onclick="window.location.href='index.html'">← Voltar à Lista</button>
-    <button id="botaoComparar">Comparar com outra empresa</button>
+    <h3 class="section-title">Benchmark Comparison</h3>
+    <div class="graph-placeholder" id="grafico-benchmark"></div>
+
+    <h3 class="section-title">Health Diagnostic Summary</h3>
+    <div class="summary" id="diagnostico"></div>
+
+    <h3 class="section-title">Notes</h3>
+    <div class="notes" id="notas"></div>
+
+    <div class="btn-row">
+      <button class="btn" onclick="window.location.href='index.html'">Voltar à Lista</button>
+      <button class="btn" onclick="window.location.href='comparar.html?id=ID_AQUI'">Comparar com outra empresa</button>
+    </div>
   </div>
 
   <script type="module">
     import { buscarEmpresas } from './airtable.js';
-
-    const resultadoDiv = document.getElementById('resultado');
     const urlParams = new URLSearchParams(window.location.search);
     const idEmpresa = urlParams.get('id');
-
-    function gerarDiagnostico(margem, ev) {
-      const margemOK = margem >= 17;
-      const evOK = ev >= 8.8 && ev <= 12.0;
-      if (margemOK && evOK) {
-        return "A empresa apresenta uma margem EBITDA acima da média e um múltiplo EV/EBITDA dentro da faixa ideal. Isso sugere um perfil financeiro saudável e atrativo para investimento.";
-      } else if (margemOK && !evOK) {
-        return "Apesar de uma boa margem operacional, o múltiplo EV/EBITDA está fora da faixa ideal, indicando possível sobrevalorização ou risco setorial.";
-      } else if (!margemOK && evOK) {
-        return "O múltiplo EV/EBITDA está em linha com o setor, mas a margem EBITDA abaixo da média sugere possíveis desafios operacionais.";
-      } else {
-        return "A empresa apresenta desempenho abaixo do esperado tanto em margem quanto em múltiplos, indicando um perfil financeiro menos saudável.";
-      }
-    }
-
-    function gerarComparativo(titulo, valorEmpresa, valorBenchmark) {
-      const larguraEmpresa = Math.min(valorEmpresa, 100);
-      const larguraBenchmark = Math.min(valorBenchmark, 100);
-      return `
-        <div><strong>${titulo}</strong></div>
-        <div class="grafico-legenda">
-          <span>Empresa</span>
-          <span>Média do Setor</span>
-        </div>
-        <div class="grafico-barra-dupla">
-          <div class="grafico-barra">
-            <div class="barra-empresa" style="width: ${larguraEmpresa}%">${valorEmpresa}%</div>
-          </div>
-          <div class="grafico-barra">
-            <div class="barra-benchmark" style="width: ${larguraBenchmark}%">${valorBenchmark}%</div>
-          </div>
-        </div>
-      `;
-    }
-
     buscarEmpresas().then(empresas => {
       const empresa = empresas.find(e => e.id === idEmpresa);
-
-      if (!empresa) {
-        resultadoDiv.innerHTML = "<p>Empresa não encontrada.</p>";
-        return;
-      }
-
-      const { nome, receita, ebitda, valuation, margem, ev_ebitda, notas } = empresa;
-      const margemCalculada = receita && ebitda ? ((ebitda / receita) * 100).toFixed(2) : margem;
-      const evCalculado = ebitda ? (valuation / ebitda).toFixed(2) : ev_ebitda;
-
-      const BENCHMARK_EBITDA = 17;
-      const BENCHMARK_EV_MIN = 8.8;
-      const BENCHMARK_EV_MAX = 12.0;
-      const margemDiagnostico = parseFloat(margemCalculada);
-      const evDiagnostico = parseFloat(evCalculado);
-
-      resultadoDiv.innerHTML = `
-        <h3>${nome}</h3>
-        <p><strong>Receita:</strong> $${Number(receita).toLocaleString('pt-BR')}M</p>
-        <p><strong>EBITDA:</strong> $${Number(ebitda).toLocaleString('pt-BR')}M</p>
-        <p><strong>Valuation:</strong> $${Number(valuation).toLocaleString('pt-BR')}M</p>
-        <hr />
-        <p><strong>Margem EBITDA:</strong> ${margemCalculada}%</p>
-        ${gerarComparativo("Margem EBITDA", margemDiagnostico, BENCHMARK_EBITDA)}
-        <p><strong>EV/EBITDA:</strong> ${evCalculado}x</p>
-        ${gerarComparativo("EV/EBITDA (x10)", evDiagnostico * 10, ((BENCHMARK_EV_MIN + BENCHMARK_EV_MAX)/2) * 10)}
-        <div class="diagnostico">${gerarDiagnostico(margemDiagnostico, evDiagnostico)}</div>
-        ${notas ? `<div class="nota"><strong>Notas:</strong> ${notas}</div>` : ""}
-      `;
-
-      document.getElementById('botaoComparar').onclick = () => {
-        window.location.href = `comparar.html?id=${idEmpresa}`;
-      };
+      if (!empresa) return;
+      const { receita, ebitda, valuation, notas } = empresa;
+      const margem = receita && ebitda ? ((ebitda / receita) * 100).toFixed(1) : "-";
+      const ev = ebitda ? (valuation / ebitda).toFixed(2) : "-";
+      document.getElementById('receita').textContent = `$${Number(receita).toLocaleString('pt-BR')}M`;
+      document.getElementById('ebitda').textContent = `$${Number(ebitda).toLocaleString('pt-BR')}M`;
+      document.getElementById('valuation').textContent = `$${Number(valuation).toLocaleString('pt-BR')}M`;
+      document.getElementById('margem').textContent = `${margem}%`;
+      document.getElementById('ev').textContent = `${ev}x`;
+      document.getElementById('grafico-benchmark').textContent = '[ Gráfico de Benchmark Aqui ]';
+      document.getElementById('diagnostico').textContent = margem >= 17 && ev >= 8.8 && ev <= 12
+        ? "A empresa demonstra bons fundamentos financeiros para investimento."
+        : "A empresa apresenta desempenho abaixo dos parâmetros ideais do setor.";
+      document.getElementById('notas').textContent = notas || "Nenhuma nota registrada.";
     });
   </script>
 </body>
