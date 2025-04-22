@@ -3,74 +3,179 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Saber Capital | Home</title>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
+  <title>Saber Capital | Empresas</title>
   <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <style>
+    .logo-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 2rem;
+    }
+    .logo-text {
+      font-family: 'Archivo Black', sans-serif;
+      color: white;
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+    }
+    .logo-img {
+      height: 65px;
+      width: auto;
+    }
+    form {
+      margin-bottom: 2rem;
+      background-color: #1e3a5f;
+      padding: 1rem;
+      border-radius: 10px;
+    }
+    form input, form textarea {
+      width: 100%;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      background-color: #102c4c;
+      border: none;
+      color: #fff;
+      border-radius: 5px;
+    }
+    form button {
+      background-color: #fff;
+      color: #0b1f3a;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <div class="logo-wrapper">
-      <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
-      <h1 class="logo-text">SABER<br>CAPITAL</h1>
-    </div>
-  </header>
-
   <div class="container">
-    <p class="subtitle">Empresas do Setor Educacional</p>
+    <div class="logo-wrapper">
+      <img src="logo bg removed.png" alt="Saber Capital logo" class="logo-img" />
+      <div class="logo-text">SABER<br>CAPITAL</div>
+    </div>
+    <h2 class="subtitle">Empresas do Setor Educacional</h2>
 
-    <div class="card">
-      <h2>Cadastrar Nova Empresa</h2>
-      <form id="empresa-form">
-        <div class="form-group">
-          <label>Nome da Empresa</label>
-          <input type="text" id="nome" required />
-        </div>
-        <div class="form-group">
-          <label>Ticker</label>
-          <input type="text" id="ticker" required />
-        </div>
-        <div class="form-group">
-          <label>Receita Anual (milhões de USD)</label>
-          <input type="number" id="receita" required />
-        </div>
-        <div class="form-group">
-          <label>EBITDA (milhões de USD)</label>
-          <input type="number" id="ebitda" required />
-        </div>
-        <div class="form-group">
-          <label>Valuation (milhões de USD)</label>
-          <input type="number" id="valuation" required />
-        </div>
-        <div class="form-group">
-          <label>Notas (Opcional)</label>
-          <textarea id="notas"></textarea>
-        </div>
-        <button type="submit" class="btn">Cadastrar Empresa</button>
-      </form>
+    <!-- Formulário de cadastro -->
+    <form id="empresa-form">
+      <input type="text" id="nome" placeholder="Nome da Empresa" required />
+      <input type="text" id="ticker" placeholder="Ticker" required />
+      <input type="number" id="receita" placeholder="Receita Anual (valor em milhões de dólares)" required />
+      <input type="number" id="ebitda" placeholder="EBITDA (valor em milhões de dólares)" required />
+      <input type="number" id="valuation" placeholder="Valuation (valor em milhões de dólares)" required />
+      <textarea id="notas" placeholder="Notas (opcional)"></textarea>
+      <button type="submit">Cadastrar Empresa</button>
+    </form>
+
+    <!-- Barra de busca e ordenação -->
+    <input type="text" id="search" placeholder="🔍 Buscar empresa..." />
+    <div class="ordenar">
+      <label>Ordenar por:</label>
+      <select id="ordenarPor">
+        <option value="nome">Nome (A-Z)</option>
+        <option value="valuation">Valuation</option>
+        <option value="ebitda">EBITDA</option>
+        <option value="receita">Receita</option>
+      </select>
+      <select id="ordem">
+        <option value="asc">Crescente ↑</option>
+        <option value="desc">Decrescente ↓</option>
+      </select>
     </div>
 
-    <div class="card">
-      <h2>Buscar e Ordenar</h2>
-      <div class="form-group">
-        <input type="text" id="search" placeholder="🔍 Buscar empresa..." />
-      </div>
-      <div class="ordenar">
-        <select id="ordenarPor">
-          <option value="nome">Nome</option>
-          <option value="valuation">Valuation</option>
-          <option value="ebitda">EBITDA</option>
-          <option value="receita">Receita</option>
-        </select>
-        <select id="ordem">
-          <option value="asc">Crescente</option>
-          <option value="desc">Decrescente</option>
-        </select>
-      </div>
-      <div class="empresa-lista" id="empresa-lista"></div>
-    </div>
+    <ul id="listaEmpresas" class="lista-empresas"></ul>
   </div>
 
-  <script type="module" src="airtable.js"></script>
+  <script type="module">
+    import { buscarEmpresas } from './airtable.js';
+
+    const lista = document.getElementById('listaEmpresas');
+    const searchInput = document.getElementById('search');
+    const ordenarPor = document.getElementById('ordenarPor');
+    const ordem = document.getElementById('ordem');
+    let todasEmpresas = [];
+
+    function renderizar(empresas) {
+      lista.innerHTML = '';
+      empresas.forEach(empresa => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <strong>${empresa.nome}</strong><br>
+          Valuation: $${Number(empresa.valuation).toLocaleString('pt-BR')}M<br>
+          EBITDA: $${Number(empresa.ebitda).toLocaleString('pt-BR')}M<br>
+          Receita: $${Number(empresa.receita).toLocaleString('pt-BR')}M
+        `;
+        li.style.cursor = 'pointer';
+        li.onclick = () => {
+          window.location.href = `empresa.html?id=${empresa.id}`;
+        };
+        lista.appendChild(li);
+      });
+    }
+
+    function filtrarEBuscar() {
+      const texto = searchInput.value.toLowerCase();
+      const coluna = ordenarPor.value;
+      const sentido = ordem.value;
+
+      let filtradas = todasEmpresas
+        .filter(e => e && typeof e.nome === 'string' && e.nome.toLowerCase().includes(texto));
+
+      filtradas.sort((a, b) => {
+        const valA = a[coluna] ?? 0;
+        const valB = b[coluna] ?? 0;
+        if (typeof valA === 'string') {
+          return sentido === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        } else {
+          return sentido === 'asc' ? valA - valB : valB - valA;
+        }
+      });
+
+      renderizar(filtradas);
+    }
+
+    document.getElementById('empresa-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const data = {
+        fields: {
+          "Nome da Empresa": document.getElementById('nome').value,
+          "Ticker": document.getElementById('ticker').value,
+          "Receita Anual (USD)": parseFloat(document.getElementById('receita').value),
+          "EBITDA (USD)": parseFloat(document.getElementById('ebitda').value),
+          "Valuation (USD)": parseFloat(document.getElementById('valuation').value),
+          "Notas": document.getElementById('notas').value
+        }
+      };
+
+      await fetch("https://api.airtable.com/v0/appaq7tR3vt9vrN6y/Empresas", {
+        method: 'POST',
+        headers: {
+          Authorization: "Bearer patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6",
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      buscarEmpresas().then(empresas => {
+        todasEmpresas = empresas;
+        filtrarEBuscar();
+      });
+
+      e.target.reset();
+    });
+
+    buscarEmpresas().then(empresas => {
+      todasEmpresas = empresas;
+      filtrarEBuscar();
+    });
+
+    searchInput.addEventListener('input', filtrarEBuscar);
+    ordenarPor.addEventListener('change', filtrarEBuscar);
+    ordem.addEventListener('change', filtrarEBuscar);
+  </script>
 </body>
 </html>
