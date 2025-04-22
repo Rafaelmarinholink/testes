@@ -3,10 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Saber Capital | Home</title>
+  <title>Análise da Empresa | Saber Capital</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <style>
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .metric-card {
+      background-color: #1e3a5f;
+      padding: 1rem;
+      border-radius: 10px;
+    }
+    .metric-title {
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: #cbd5e1;
+    }
+    .metric-value {
+      font-size: 1.5rem;
+      color: #63b3ed;
+    }
+    .section-title {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 1rem;
+      margin: 1rem 0 0.5rem;
+    }
+    .graph-placeholder {
+      background-color: #2c5282;
+      height: 150px;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+    .summary {
+      background-color: #234e70;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+    .notes {
+      background-color: #1a365d;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    .btn-row {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -17,60 +66,66 @@
   </header>
 
   <div class="container">
-    <p class="subtitle">Empresas do Setor Educacional</p>
-
-    <div class="card">
-      <h2>Cadastrar Nova Empresa</h2>
-      <form id="empresa-form">
-        <div class="form-group">
-          <label>Nome da Empresa</label>
-          <input type="text" id="nome" required />
-        </div>
-        <div class="form-group">
-          <label>Ticker</label>
-          <input type="text" id="ticker" required />
-        </div>
-        <div class="form-group">
-          <label>Receita Anual (milhões de USD)</label>
-          <input type="number" id="receita" required />
-        </div>
-        <div class="form-group">
-          <label>EBITDA (milhões de USD)</label>
-          <input type="number" id="ebitda" required />
-        </div>
-        <div class="form-group">
-          <label>Valuation (milhões de USD)</label>
-          <input type="number" id="valuation" required />
-        </div>
-        <div class="form-group">
-          <label>Notas (Opcional)</label>
-          <textarea id="notas"></textarea>
-        </div>
-        <button type="submit" class="btn">Cadastrar Empresa</button>
-      </form>
+    <p class="subtitle">Análise Financeira – Setor de Educação</p>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="metric-title">Receita Anual (milhões de dólares)</div>
+        <div class="metric-value" id="receita"></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">EBITDA (milhões de dólares)</div>
+        <div class="metric-value" id="ebitda"></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">Valuation (milhões de dólares)</div>
+        <div class="metric-value" id="valuation"></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">EBITDA Margin (%)</div>
+        <div class="metric-value" id="margem"></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">EV/EBITDA</div>
+        <div class="metric-value" id="ev"></div>
+      </div>
     </div>
 
-    <div class="card">
-      <h2>Buscar e Ordenar</h2>
-      <div class="form-group">
-        <input type="text" id="search" placeholder="🔍 Buscar empresa..." />
-      </div>
-      <div class="ordenar">
-        <select id="ordenarPor">
-          <option value="nome">Nome</option>
-          <option value="valuation">Valuation</option>
-          <option value="ebitda">EBITDA</option>
-          <option value="receita">Receita</option>
-        </select>
-        <select id="ordem">
-          <option value="asc">Crescente</option>
-          <option value="desc">Decrescente</option>
-        </select>
-      </div>
-      <div class="empresa-lista" id="empresa-lista"></div>
+    <h3 class="section-title">Benchmark Comparison</h3>
+    <div class="graph-placeholder" id="grafico-benchmark"></div>
+
+    <h3 class="section-title">Health Diagnostic Summary</h3>
+    <div class="summary" id="diagnostico"></div>
+
+    <h3 class="section-title">Notes</h3>
+    <div class="notes" id="notas"></div>
+
+    <div class="btn-row">
+      <button class="btn" onclick="window.location.href='index.html'">Voltar à Lista</button>
+      <button class="btn" onclick="window.location.href='comparar.html?id=ID_AQUI'">Comparar com outra empresa</button>
     </div>
   </div>
 
-  <script type="module" src="script.js"></script>
+  <script type="module">
+    import { buscarEmpresas } from './airtable.js';
+    const urlParams = new URLSearchParams(window.location.search);
+    const idEmpresa = urlParams.get('id');
+    buscarEmpresas().then(empresas => {
+      const empresa = empresas.find(e => e.id === idEmpresa);
+      if (!empresa) return;
+      const { receita, ebitda, valuation, notas } = empresa;
+      const margem = receita && ebitda ? ((ebitda / receita) * 100).toFixed(1) : "-";
+      const ev = ebitda ? (valuation / ebitda).toFixed(2) : "-";
+      document.getElementById('receita').textContent = `$${Number(receita).toLocaleString('pt-BR')}M`;
+      document.getElementById('ebitda').textContent = `$${Number(ebitda).toLocaleString('pt-BR')}M`;
+      document.getElementById('valuation').textContent = `$${Number(valuation).toLocaleString('pt-BR')}M`;
+      document.getElementById('margem').textContent = `${margem}%`;
+      document.getElementById('ev').textContent = `${ev}x`;
+      document.getElementById('grafico-benchmark').textContent = '[ Gráfico de Benchmark Aqui ]';
+      document.getElementById('diagnostico').textContent = margem >= 17 && ev >= 8.8 && ev <= 12
+        ? "A empresa demonstra bons fundamentos financeiros para investimento."
+        : "A empresa apresenta desempenho abaixo dos parâmetros ideais do setor.";
+      document.getElementById('notas').textContent = notas || "Nenhuma nota registrada.";
+    });
+  </script>
 </body>
 </html>
