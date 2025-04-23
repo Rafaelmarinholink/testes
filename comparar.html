@@ -23,7 +23,7 @@
       flex: 1;
     }
     .barra-chart {
-      height: 200px;
+      height: 250px;
     }
     .card-titulo {
       font-family: 'Archivo Black', sans-serif;
@@ -132,9 +132,9 @@
         <div class="barra-chart"><canvas id="${canvasIdPrefix}1"></canvas></div>
         <div class="barra-chart"><canvas id="${canvasIdPrefix}2"></canvas></div>
         <div class="health">
-          ${margem >= 17 && ev >= 8.8 && ev <= 12
-            ? "🟢 Saudável para investimento."
-            : "🔎 Fora dos padrões ideais."}
+          ${margem >= 17 && ev !== "-" && ev >= 8.8 && ev <= 12
+            ? "🟢 Esta empresa demonstra bons fundamentos financeiros para investimento."
+            : "🔎 A empresa apresenta sinais de risco ou desempenho fora dos padrões ideais para micro caps do setor educacional."}
         </div>
       `;
     }
@@ -149,14 +149,27 @@
           datasets: [{
             label: titulo,
             data: [empresaVal, benchmarkVal],
-            backgroundColor: ['#63b3ed', '#f87171']
+            backgroundColor: ['#63b3ed', '#3182ce']
           }]
         },
         options: {
           responsive: true,
+          plugins: {
+            legend: {
+              labels: {
+                color: '#fff'
+              }
+            }
+          },
           scales: {
+            x: {
+              ticks: { color: '#fff' }
+            },
             y: {
-              beginAtZero: true
+              beginAtZero: true,
+              ticks: {
+                color: '#fff'
+              }
             }
           }
         }
