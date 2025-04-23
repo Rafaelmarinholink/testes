@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     .metric-grid {
       display: grid;
@@ -33,11 +34,11 @@
       font-size: 1rem;
       margin: 1rem 0 0.5rem;
     }
-    .graph-placeholder {
+    .canvas-container {
       background-color: #2c5282;
-      height: 150px;
       border-radius: 10px;
-      margin-bottom: 1rem;
+      padding: 1rem;
+      margin-bottom: 2rem;
     }
     .summary {
       background-color: #234e70;
@@ -59,10 +60,10 @@
 </head>
 <body>
   <header>
-    <div class="logo-wrapper">
+    <a href="index.html" class="logo-wrapper" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
       <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
-      <h1 class="logo-text">SABER<br>CAPITAL</h1>
-    </div>
+      <h1 class="logo-text" style="color: white; font-family: 'Archivo Black', sans-serif; line-height: 1.2;">SABER<br>CAPITAL</h1>
+    </a>
   </header>
 
   <div class="container">
@@ -91,7 +92,12 @@
     </div>
 
     <h3 class="section-title">Benchmark Comparison</h3>
-    <div class="graph-placeholder" id="grafico-benchmark"></div>
+    <div class="canvas-container">
+      <canvas id="graficoMargem"></canvas>
+    </div>
+    <div class="canvas-container">
+      <canvas id="graficoEV"></canvas>
+    </div>
 
     <h3 class="section-title">Health Diagnostic Summary</h3>
     <div class="summary" id="diagnostico"></div>
@@ -101,7 +107,7 @@
 
     <div class="btn-row">
       <button class="btn" onclick="window.location.href='index.html'">Voltar à Lista</button>
-      <button class="btn" onclick="window.location.href='comparar.html?id=ID_AQUI'">Comparar com outra empresa</button>
+      <button class="btn" id="botaoComparar">Comparar com outra empresa</button>
     </div>
   </div>
 
@@ -109,23 +115,71 @@
     import { buscarEmpresas } from './airtable.js';
     const urlParams = new URLSearchParams(window.location.search);
     const idEmpresa = urlParams.get('id');
+
+    function gerarDiagnostico(margem, ev) {
+      const margemOK = margem >= 17;
+      const evOK = ev >= 8.8 && ev <= 12.0;
+      if (margemOK && evOK) {
+        return "A empresa apresenta uma margem EBITDA acima da média e um múltiplo EV/EBITDA dentro da faixa ideal. Perfil financeiro saudável para investimento.";
+      } else if (margemOK && !evOK) {
+        return "Boa margem operacional, mas o múltiplo EV/EBITDA fora da faixa ideal pode indicar sobrevalorizacão ou risco.";
+      } else if (!margemOK && evOK) {
+        return "Múltiplo EV/EBITDA adequado, mas margem EBITDA baixa sugere desafios operacionais.";
+      } else {
+        return "Indicadores abaixo da média em margem e múltiplos. Perfil financeiro menos saudável.";
+      }
+    }
+
+    function desenharGrafico(id, titulo, valorEmpresa, valorBenchmark) {
+      const ctx = document.getElementById(id);
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Empresa', 'Média Benchmark'],
+          datasets: [{
+            label: titulo,
+            data: [valorEmpresa, valorBenchmark],
+            backgroundColor: ['#63b3ed', '#f87171']
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { callback: value => value + '%' }
+            }
+          }
+        }
+      });
+    }
+
     buscarEmpresas().then(empresas => {
       const empresa = empresas.find(e => e.id === idEmpresa);
       if (!empresa) return;
+
       const { receita, ebitda, valuation, notas } = empresa;
       const margem = receita && ebitda ? ((ebitda / receita) * 100).toFixed(1) : "-";
       const ev = ebitda ? (valuation / ebitda).toFixed(2) : "-";
+
       document.getElementById('receita').textContent = `$${Number(receita).toLocaleString('pt-BR')}M`;
       document.getElementById('ebitda').textContent = `$${Number(ebitda).toLocaleString('pt-BR')}M`;
       document.getElementById('valuation').textContent = `$${Number(valuation).toLocaleString('pt-BR')}M`;
       document.getElementById('margem').textContent = `${margem}%`;
       document.getElementById('ev').textContent = `${ev}x`;
-      document.getElementById('grafico-benchmark').textContent = '[ Gráfico de Benchmark Aqui ]';
-      document.getElementById('diagnostico').textContent = margem >= 17 && ev >= 8.8 && ev <= 12
-        ? "A empresa demonstra bons fundamentos financeiros para investimento."
-        : "A empresa apresenta desempenho abaixo dos parâmetros ideais do setor.";
+
+      const margemNum = parseFloat(margem);
+      const evNum = parseFloat(ev);
+      document.getElementById('diagnostico').textContent = gerarDiagnostico(margemNum, evNum);
       document.getElementById('notas').textContent = notas || "Nenhuma nota registrada.";
+
+      desenharGrafico('graficoMargem', 'Margem EBITDA (%)', margemNum, 17);
+      desenharGrafico('graficoEV', 'EV/EBITDA (normalizado x10)', evNum * 10, ((8.8 + 12.0) / 2) * 10);
     });
+
+    document.getElementById('botaoComparar').onclick = () => {
+      window.location.href = `comparar.html?id=${idEmpresa}`;
+    };
   </script>
 </body>
 </html>
