@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     .comparison-grid {
       display: grid;
@@ -19,18 +20,10 @@
       background-color: #1a365d;
       padding: 1.5rem;
       border-radius: 10px;
+      flex: 1;
     }
     .barra-chart {
-      background-color: #63b3ed;
-      height: 120px;
-      margin-top: 1rem;
-      border-radius: 6px;
-    }
-    .chart-label {
-      text-align: center;
-      margin-top: 0.25rem;
-      font-size: 0.9rem;
-      color: #cbd5e1;
+      height: 200px;
     }
     .card-titulo {
       font-family: 'Archivo Black', sans-serif;
@@ -45,29 +38,39 @@
       font-style: italic;
       color: #f4f4f4;
     }
-    .center-actions {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
+    .empresa-lista {
+      max-height: 200px;
+      overflow-y: auto;
+      background-color: #2c5282;
+      border-radius: 6px;
+      margin-top: 1rem;
+    }
+    .empresa-lista div {
+      padding: 0.4rem;
+      cursor: pointer;
+      border-bottom: 1px solid #ffffff22;
+    }
+    .empresa-lista div:hover {
+      background-color: #63b3ed;
+      color: #0b1f3a;
     }
     .btn-icon {
       background-color: #63b3ed;
       color: #0b1f3a;
-      border: none;
-      padding: 0.6rem 1rem;
       font-weight: bold;
-      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      border: none;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
   <header>
-    <div class="logo-wrapper">
+    <a href="index.html" class="logo-wrapper" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
       <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
-      <h1 class="logo-text">SABER<br>CAPITAL</h1>
-    </div>
+      <h1 class="logo-text" style="color: white; font-family: 'Archivo Black', sans-serif; line-height: 1.2;">SABER<br>CAPITAL</h1>
+    </a>
   </header>
 
   <div class="container">
@@ -75,14 +78,14 @@
     <div class="comparison-grid">
       <div class="empresa-box" id="empresa1Box">Carregando Empresa 1...</div>
 
-      <div class="center-actions">
+      <div style="display: flex; align-items: center; justify-content: center;">
         <button class="btn-icon" id="inverterBtn">⇄</button>
       </div>
 
       <div class="empresa-box" id="empresa2Box">
         <div id="buscaBox">
-          <input type="text" id="buscaEmpresa2" class="search-box" placeholder="Buscar empresa..." style="width: 100%; padding: 0.5rem; border-radius: 6px; border: none; background: #102c4c; color: #fff;" />
-          <div class="empresa-lista" id="listaEmpresas2" style="margin-top: 1rem;"></div>
+          <input type="text" id="buscaEmpresa2" placeholder="Buscar empresa..." style="width: 100%; padding: 0.5rem; border-radius: 6px; border: none; background: #102c4c; color: #fff;" />
+          <div class="empresa-lista" id="listaEmpresas2"></div>
         </div>
         <div id="empresa2Card"></div>
         <button id="novaComparacao" class="btn" style="margin-top: 1rem; display: none;">+ Nova Comparação</button>
@@ -95,11 +98,10 @@
     import { buscarEmpresas } from './airtable.js';
 
     const empresa1Box = document.getElementById('empresa1Box');
-    const empresa2Box = document.getElementById('empresa2Box');
+    const empresa2Card = document.getElementById('empresa2Card');
     const listaEmpresas2 = document.getElementById('listaEmpresas2');
     const buscaInput = document.getElementById('buscaEmpresa2');
     const novaComparacao = document.getElementById('novaComparacao');
-    const empresa2Card = document.getElementById('empresa2Card');
     const buscaBox = document.getElementById('buscaBox');
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -110,29 +112,58 @@
       return Number(valor).toLocaleString('pt-BR') + 'M';
     }
 
-    function gerarHTML(empresa) {
+    function gerarCardHTML(empresa, canvasIdPrefix) {
       const margem = empresa.receita && empresa.ebitda ? (empresa.ebitda / empresa.receita) * 100 : 0;
       const margemFormatada = margem.toFixed(1) + "%";
       const ev = empresa.ebitda ? (empresa.valuation / empresa.ebitda).toFixed(2) : "-";
 
+      setTimeout(() => {
+        desenharGrafico(`${canvasIdPrefix}1`, 'Margem EBITDA (%)', margem, 17);
+        desenharGrafico(`${canvasIdPrefix}2`, 'EV/EBITDA (x10)', ev * 10, ((8.8 + 12.0) / 2) * 10);
+      }, 100);
+
       return `
         <div class="card-titulo">${empresa.nome}</div>
-        <div class="metric">Revenue: $${formatar(empresa.receita)}</div>
+        <div class="metric">Receita: $${formatar(empresa.receita)}</div>
         <div class="metric">EBITDA: $${formatar(empresa.ebitda)}</div>
         <div class="metric">Valuation: $${formatar(empresa.valuation)}</div>
-        <div class="metric">EBITDA Margin: ${margemFormatada}</div>
+        <div class="metric">Margem EBITDA: ${margemFormatada}</div>
         <div class="metric">EV/EBITDA: ${ev}x</div>
-        <div class="barra-chart"></div>
-        <div class="chart-label">Indicadores</div>
+        <div class="barra-chart"><canvas id="${canvasIdPrefix}1"></canvas></div>
+        <div class="barra-chart"><canvas id="${canvasIdPrefix}2"></canvas></div>
         <div class="health">
           ${margem >= 17 && ev >= 8.8 && ev <= 12
-            ? "🟢 Empresa saudável para investimento."
-            : "🔎 Empresa fora dos padrões ideais de performance."}
+            ? "🟢 Saudável para investimento."
+            : "🔎 Fora dos padrões ideais."}
         </div>
       `;
     }
 
-    function resetarComparacao() {
+    function desenharGrafico(id, titulo, empresaVal, benchmarkVal) {
+      const ctx = document.getElementById(id);
+      if (!ctx) return;
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Empresa', 'Média'],
+          datasets: [{
+            label: titulo,
+            data: [empresaVal, benchmarkVal],
+            backgroundColor: ['#63b3ed', '#f87171']
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    function resetComparacao() {
       empresa2Card.innerHTML = "";
       novaComparacao.style.display = "none";
       buscaBox.style.display = "block";
@@ -140,20 +171,21 @@
 
     buscarEmpresas().then(empresas => {
       todasEmpresas = empresas;
-      const empresa1 = empresas.find(e => e.id === empresa1Id);
-      empresa1Box.innerHTML = gerarHTML(empresa1);
-      const restantes = empresas.filter(e => e.id !== empresa1Id);
+
+      const empresa1 = todasEmpresas.find(e => e.id === empresa1Id);
+      empresa1Box.innerHTML = gerarCardHTML(empresa1, "e1");
+
+      const restantes = todasEmpresas.filter(e => e.id !== empresa1Id);
 
       function renderizarLista(lista) {
         listaEmpresas2.innerHTML = '';
         lista.forEach(e => {
           const item = document.createElement('div');
           item.textContent = e.nome;
-          item.style.cursor = 'pointer';
           item.onclick = () => {
-            empresa2Card.innerHTML = gerarHTML(e);
-            novaComparacao.style.display = 'block';
-            buscaBox.style.display = 'none';
+            empresa2Card.innerHTML = gerarCardHTML(e, "e2");
+            buscaBox.style.display = "none";
+            novaComparacao.style.display = "block";
           };
           listaEmpresas2.appendChild(item);
         });
@@ -167,7 +199,7 @@
         renderizarLista(filtradas);
       });
 
-      novaComparacao.onclick = resetarComparacao;
+      novaComparacao.onclick = resetComparacao;
 
       document.getElementById('inverterBtn').onclick = () => {
         const novaEmpresa = restantes[0];
