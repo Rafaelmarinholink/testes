@@ -167,10 +167,23 @@
         },
         options: {
           responsive: true,
+          plugins: {
+            legend: {
+              labels: {
+                color: '#fff'
+              }
+            }
+          },
           scales: {
+            x: {
+              ticks: { color: '#fff' }
+            },
             y: {
               beginAtZero: true,
-              ticks: { callback: value => value + '%' }
+              ticks: {
+                callback: value => value + '%',
+                color: '#fff'
+              }
             }
           }
         }
