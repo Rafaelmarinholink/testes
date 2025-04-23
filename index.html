@@ -10,10 +10,10 @@
 </head>
 <body>
   <header>
-    <div class="logo-wrapper">
+    <a href="index.html" class="logo-wrapper" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
       <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
-      <h1 class="logo-text">SABER<br>CAPITAL</h1>
-    </div>
+      <h1 class="logo-text" style="color: white; font-family: 'Archivo Black', sans-serif; line-height: 1.2;">SABER<br>CAPITAL</h1>
+    </a>
   </header>
 
   <div class="container">
@@ -55,21 +55,28 @@
       <div class="form-group">
         <input type="text" id="search" placeholder="🔍 Buscar empresa..." />
       </div>
-      <div class="ordenar">
-        <select id="ordenarPor">
-          <option value="nome">Nome</option>
-          <option value="valuation">Valuation</option>
-          <option value="ebitda">EBITDA</option>
-          <option value="receita">Receita</option>
-        </select>
-        <select id="ordem">
-          <option value="asc">Crescente</option>
-          <option value="desc">Decrescente</option>
-        </select>
+      <div class="ordenar" style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
+        <div class="form-group" style="flex: 1; min-width: 150px;">
+          <label for="ordenarPor">Ordenar por</label>
+          <select id="ordenarPor">
+            <option value="nome">Nome</option>
+            <option value="valuation">Valuation</option>
+            <option value="ebitda">EBITDA</option>
+            <option value="receita">Receita</option>
+          </select>
+        </div>
+        <div class="form-group" style="flex: 1; min-width: 150px;">
+          <label for="ordem">Ordem</label>
+          <select id="ordem">
+            <option value="asc">Crescente</option>
+            <option value="desc">Decrescente</option>
+          </select>
+        </div>
       </div>
       <div class="empresa-lista" id="empresa-lista"></div>
     </div>
   </div>
+
   <script type="module" src="script.js"></script>
 </body>
 </html>
