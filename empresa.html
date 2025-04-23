@@ -34,11 +34,18 @@
       font-size: 1rem;
       margin: 1rem 0 0.5rem;
     }
+    .canvas-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
     .canvas-container {
+      flex: 1 1 45%;
       background-color: #2c5282;
       border-radius: 10px;
       padding: 1rem;
-      margin-bottom: 2rem;
     }
     .summary {
       background-color: #234e70;
@@ -56,6 +63,17 @@
       gap: 1rem;
       margin-top: 2rem;
     }
+    #titulo-nome {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 1.2rem;
+      background-color: #1e3a5f;
+      color: #fff;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+      border-radius: 10px;
+      text-align: center;
+      word-wrap: break-word;
+    }
   </style>
 </head>
 <body>
@@ -68,6 +86,8 @@
 
   <div class="container">
     <p class="subtitle">Análise Financeira – Setor de Educação</p>
+    <div id="titulo-nome"></div>
+
     <div class="metric-grid">
       <div class="metric-card">
         <div class="metric-title">Receita Anual (milhões de dólares)</div>
@@ -92,11 +112,9 @@
     </div>
 
     <h3 class="section-title">Benchmark Comparison</h3>
-    <div class="canvas-container">
-      <canvas id="graficoMargem"></canvas>
-    </div>
-    <div class="canvas-container">
-      <canvas id="graficoEV"></canvas>
+    <div class="canvas-row">
+      <div class="canvas-container"><canvas id="graficoMargem"></canvas></div>
+      <div class="canvas-container"><canvas id="graficoEV"></canvas></div>
     </div>
 
     <h3 class="section-title">Health Diagnostic Summary</h3>
@@ -122,7 +140,7 @@
       if (margemOK && evOK) {
         return "A empresa apresenta uma margem EBITDA acima da média e um múltiplo EV/EBITDA dentro da faixa ideal. Perfil financeiro saudável para investimento.";
       } else if (margemOK && !evOK) {
-        return "Boa margem operacional, mas o múltiplo EV/EBITDA fora da faixa ideal pode indicar sobrevalorizacão ou risco.";
+        return "Boa margem operacional, mas o múltiplo EV/EBITDA fora da faixa ideal pode indicar sobrevalorização ou risco.";
       } else if (!margemOK && evOK) {
         return "Múltiplo EV/EBITDA adequado, mas margem EBITDA baixa sugere desafios operacionais.";
       } else {
@@ -135,11 +153,11 @@
       new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: ['Empresa', 'Média Benchmark'],
+          labels: ['Empresa', 'Benchmark'],
           datasets: [{
             label: titulo,
             data: [valorEmpresa, valorBenchmark],
-            backgroundColor: ['#63b3ed', '#f87171']
+            backgroundColor: ['#63b3ed', '#4a90e2']
           }]
         },
         options: {
@@ -158,10 +176,11 @@
       const empresa = empresas.find(e => e.id === idEmpresa);
       if (!empresa) return;
 
-      const { receita, ebitda, valuation, notas } = empresa;
+      const { nome, receita, ebitda, valuation, notas } = empresa;
       const margem = receita && ebitda ? ((ebitda / receita) * 100).toFixed(1) : "-";
       const ev = ebitda ? (valuation / ebitda).toFixed(2) : "-";
 
+      document.getElementById('titulo-nome').textContent = nome;
       document.getElementById('receita').textContent = `$${Number(receita).toLocaleString('pt-BR')}M`;
       document.getElementById('ebitda').textContent = `$${Number(ebitda).toLocaleString('pt-BR')}M`;
       document.getElementById('valuation').textContent = `$${Number(valuation).toLocaleString('pt-BR')}M`;
