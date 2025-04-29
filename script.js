@@ -1,3 +1,50 @@
+function calcularRating(dados) {
+  let nota = 0;
+
+  // Crescimento YoY (20%)
+  if (dados.crescimento_yoy > 25) nota += 20;
+  else if (dados.crescimento_yoy >= 10) nota += 15;
+  else if (dados.crescimento_yoy >= 0) nota += 10;
+  else nota += 0;
+
+  // Retenção / NRR (20%)
+  if (dados.nrr > 110) nota += 20;
+  else if (dados.nrr >= 95) nota += 15;
+  else if (dados.nrr >= 85) nota += 10;
+  else nota += 5;
+
+  // LTV (15%)
+  if (dados.ltv > 1000) nota += 15;
+  else if (dados.ltv >= 500) nota += 10;
+  else nota += 5;
+
+  // Churn Rate (15%)
+  if (dados.churn < 5) nota += 15;
+  else if (dados.churn <= 10) nota += 10;
+  else nota += 5;
+
+  // Margem de Contribuição (10%)
+  if (dados.margem_contribuicao > 40) nota += 10;
+  else if (dados.margem_contribuicao >= 20) nota += 7;
+  else nota += 5;
+
+  // EV/EBITDA (10%)
+  if (dados.ev_ebitda >= 9 && dados.ev_ebitda <= 14) nota += 10;
+  else nota += 5;
+
+  // CAC (5%)
+  if (dados.cac < 100) nota += 5;
+  else if (dados.cac <= 300) nota += 3;
+  else nota += 2;
+
+  // Receita Anual (5%)
+  if (dados.receita > 100) nota += 5;
+  else if (dados.receita >= 50) nota += 3;
+  else nota += 2;
+
+  return Math.min(nota, 100);
+}
+
 import { buscarEmpresas } from './airtable.js';
 
 const lista = document.getElementById('empresa-lista');
