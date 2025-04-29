@@ -6,7 +6,6 @@ const form = document.getElementById('empresa-form');
 const sucessoAlert = document.getElementById('sucesso-alert');
 const erroAlert = document.getElementById('erro-alert');
 
-// Calcula o Rating com base nos KPIs
 function calcularRating(dados) {
   let nota = 0;
   if (dados.crescimento_yoy > 25) nota += 20;
@@ -52,7 +51,6 @@ function mostrarToast(elemento) {
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  // Valida todos os campos obrigatórios
   const campos = form.querySelectorAll('input[required]');
   let valido = true;
   campos.forEach(input => {
@@ -127,6 +125,10 @@ function carregarTopEmpresas() {
         Rating: ${emp.rating ?? 'N/A'}<br/>
         Receita: $${Number(emp.receita).toLocaleString('pt-BR')}M
       `;
+      card.style.cursor = 'pointer';
+      card.onclick = () => {
+        window.location.href = `empresa.html?id=${emp.id}`;
+      };
       listaTop.appendChild(card);
     });
   });
