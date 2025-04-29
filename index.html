@@ -9,7 +9,6 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
 
   <style>
-    /* Popup de erro */
     .popup-erro {
       position: fixed;
       top: 50%;
@@ -35,17 +34,14 @@
       right: 0.75rem;
     }
 
-    /* borda de erro nos campos inválidos */
     input.error, textarea.error {
       border: 2px solid #ef4444 !important;
     }
 
-    /* Correção visual da logo */
     .logo-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
-      text-align: center;
       cursor: pointer;
     }
   </style>
@@ -61,34 +57,31 @@
   <div class="container">
     <p class="subtitle">Empresas do Setor Educacional</p>
 
-    <!-- Popup de Erro -->
     <div id="popupErro" class="popup-erro">
       <button onclick="document.getElementById('popupErro').style.display='none'">&times;</button>
       Por favor, preencha todos os campos obrigatórios destacados.
     </div>
 
-    <!-- Formulário Completo -->
     <div class="card">
       <h2>Cadastrar Nova Empresa</h2>
       <form id="empresa-form">
-        <div class="form-group"><label>Nome da Empresa</label><input type="text" id="nome" required /></div>
-        <div class="form-group"><label>Ticker</label><input type="text" id="ticker" required /></div>
-        <div class="form-group"><label>Receita Anual (milhões de USD)</label><input type="number" id="receita" required /></div>
-        <div class="form-group"><label>EBITDA (milhões de USD)</label><input type="number" id="ebitda" required /></div>
-        <div class="form-group"><label>Valuation (milhões de USD)</label><input type="number" id="valuation" required /></div>
-        <div class="form-group"><label>Crescimento YoY (%)</label><input type="number" id="crescimento_yoy" required /></div>
-        <div class="form-group"><label>Retenção / NRR (%)</label><input type="number" id="nrr" required /></div>
-        <div class="form-group"><label>LTV (USD)</label><input type="number" id="ltv" required /></div>
-        <div class="form-group"><label>Taxa de Churn (%)</label><input type="number" id="churn" required /></div>
-        <div class="form-group"><label>Margem de Contribuição (%)</label><input type="number" id="margem_contribuicao" required /></div>
-        <div class="form-group"><label>EV/EBITDA</label><input type="number" id="ev_ebitda" required /></div>
-        <div class="form-group"><label>CAC (USD)</label><input type="number" id="cac" required /></div>
+        <div class="form-group"><label>Nome da Empresa</label><input type="text" id="nome" /></div>
+        <div class="form-group"><label>Ticker</label><input type="text" id="ticker" /></div>
+        <div class="form-group"><label>Receita Anual (milhões de USD)</label><input type="number" id="receita" /></div>
+        <div class="form-group"><label>EBITDA (milhões de USD)</label><input type="number" id="ebitda" /></div>
+        <div class="form-group"><label>Valuation (milhões de USD)</label><input type="number" id="valuation" /></div>
+        <div class="form-group"><label>Crescimento YoY (%)</label><input type="number" id="crescimento_yoy" /></div>
+        <div class="form-group"><label>Retenção / NRR (%)</label><input type="number" id="nrr" /></div>
+        <div class="form-group"><label>LTV (USD)</label><input type="number" id="ltv" /></div>
+        <div class="form-group"><label>Taxa de Churn (%)</label><input type="number" id="churn" /></div>
+        <div class="form-group"><label>Margem de Contribuição (%)</label><input type="number" id="margem_contribuicao" /></div>
+        <div class="form-group"><label>EV/EBITDA</label><input type="number" id="ev_ebitda" /></div>
+        <div class="form-group"><label>CAC (USD)</label><input type="number" id="cac" /></div>
         <div class="form-group"><label>Notas (opcional)</label><textarea id="notas"></textarea></div>
         <button type="submit" class="btn">Cadastrar Empresa</button>
       </form>
     </div>
 
-    <!-- Top 3 Empresas -->
     <div class="card">
       <h2>Top 3 Empresas por Rating</h2>
       <div id="top-empresas" class="empresa-lista"></div>
@@ -96,7 +89,6 @@
     </div>
   </div>
 
-  <!-- Integração correta com script.js -->
   <script type="module" src="script.js"></script>
 </body>
 </html>
