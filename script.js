@@ -96,17 +96,7 @@ function filtrarEBuscar() {
 document.getElementById('empresa-form').addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const data = {
-    fields: {
-      "Nome da Empresa": document.getElementById('nome').value,
-      "Ticker": document.getElementById('ticker').value,
-      "Receita Anual (USD)": parseFloat(document.getElementById('receita').value),
-      "EBITDA (USD)": parseFloat(document.getElementById('ebitda').value),
-      "Valuation (USD)": parseFloat(document.getElementById('valuation').value),
-      "Notas": document.getElementById('notas').value
-    }
-  };
-const dados = {
+  const dados = {
   crescimento_yoy: parseFloat(document.getElementById('crescimento_yoy').value),
   nrr: parseFloat(document.getElementById('nrr').value),
   ltv: parseFloat(document.getElementById('ltv').value),
@@ -118,6 +108,19 @@ const dados = {
 };
 
 const ratingCalculado = calcularRating(dados);
+
+const data = {
+  fields: {
+    "Nome da Empresa": document.getElementById('nome').value,
+    "Ticker": document.getElementById('ticker').value,
+    "Receita Anual (USD)": parseFloat(document.getElementById('receita').value),
+    "EBITDA (USD)": parseFloat(document.getElementById('ebitda').value),
+    "Valuation (USD)": parseFloat(document.getElementById('valuation').value),
+    "Notas": document.getElementById('notas').value,
+    "Rating": ratingCalculado  // 🔥 Agora está incluso corretamente!
+  }
+};
+
 
   await fetch("https://api.airtable.com/v0/appaq7tR3vt9vrN6y/Empresas", {
     method: 'POST',
@@ -145,7 +148,3 @@ searchInput.addEventListener('input', filtrarEBuscar);
 ordenarPor.addEventListener('change', filtrarEBuscar);
 ordem.addEventListener('change', filtrarEBuscar);
 
-"fields": {
-  ...
-  "Rating": ratingCalculado
-}
