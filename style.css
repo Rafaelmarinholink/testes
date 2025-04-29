@@ -1,162 +1,160 @@
 body {
   margin: 0;
-
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #0b1f3a;
-  color: #f4f4f4;
-}
-
-header {
-  background-color: #102c4c;
-  padding: 1rem 2rem;
-}
-
-.logo-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.logo-img {
-  height: 60px;
-}
-
-.logo-text {
-  font-family: 'Archivo Black', sans-serif;
+  font-family: Arial, sans-serif;
+  background-color: #0c1f35;
   color: white;
-  font-size: 1.5rem;
-  line-height: 1.2;
-
-
-
 }
 
 .container {
   max-width: 900px;
-  margin: 2rem auto;
-  padding: 0 2rem;
-
-
+  margin: 0 auto;
+  padding: 20px;
 }
 
-.subtitle {
-  font-size: 1rem;
+/* Cabeçalho */
+.header {
+  background-color: #0f2a47;
+  padding: 12px 24px;
+}
 
-  color: #cbd5e1;
-  margin-bottom: 2rem;
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  height: 55px;
+  margin-right: 12px;
+  vertical-align: middle;
+}
+
+.logo-text {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 20px;
+  color: white;
+  letter-spacing: 1px;
+}
+
+/* Formulário */
+.form-section {
+  background-color: #1a3b5d;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+}
+
+.form-section h3 {
+  margin-top: 0;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+form input,
+form textarea {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+form button {
+  padding: 10px;
+  background-color: #3a8dde;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #2c6fb6;
+}
+
+/* Top 3 */
+.top-empresas {
+  background-color: #1a3b5d;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.card-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 15px;
 }
 
 .card {
-  background-color: #1e3a5f;
-  padding: 1.5rem;
-  border-radius: 10px;
-  margin-bottom: 2rem;
-}
-
-.card h2 {
-  margin-top: 0;
-  font-size: 1.2rem;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.3rem;
-}
-
-.form-group input,
-.form-group textarea,
-select {
+  background-color: #173350;
+  padding: 15px;
+  border-radius: 8px;
   width: 100%;
-  padding: 0.6rem;
-  border-radius: 6px;
-  border: none;
-  background-color: #102c4c;
-  color: #fff;
-  font-size: 1rem;
-
-
-
-
+  max-width: 250px;
 }
 
-input::placeholder {
-  color: #ccc;
-
+.card h4 {
+  margin: 0 0 8px;
 }
 
-.btn {
-  background-color: #fff;
+.card p {
+  margin: 4px 0;
+}
 
-
-  color: #0b1f3a;
-  padding: 0.6rem 1rem;
-  border: none;
-
+.btn-ver-todas,
+.btn-voltar {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 15px;
+  background-color: #3a8dde;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
   font-weight: bold;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-top: 0.5rem;
-
-
-
-
 }
 
-.ordenar {
+.btn-ver-todas:hover,
+.btn-voltar:hover {
+  background-color: #2c6fb6;
+}
+
+.mensagem-status {
+  margin-top: 20px;
+  font-size: 14px;
+  color: lightgreen;
+}
+
+/* Busca e ordenação */
+.busca-e-ordenacao {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  margin-bottom: 1rem;
-
-
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-.empresa-lista {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1rem;
-
-
-
-
-
-
-
+.busca-e-ordenacao input,
+.busca-e-ordenacao select {
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  font-size: 14px;
 }
 
-.empresa-card {
-  background-color: #1a365d;
-  padding: 1rem;
-  border-radius: 8px;
+/* Responsivo */
+@media (max-width: 600px) {
+  .card-container {
+    flex-direction: column;
+  }
 
+  .busca-e-ordenacao {
+    flex-direction: column;
+  }
 
-
-}
-
-.empresa-card strong {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #63b3ed;
+  .card {
+    width: 100%;
+  }
 }
