@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <style>
-    /* Estilo para popup de erro */
     .popup-erro {
       position: fixed;
       top: 50%;
@@ -35,13 +34,21 @@
     }
 
     input.error, textarea.error {
-      border: 2px solid #ef4444;
+      border: 2px solid #ef4444 !important;
+    }
+
+    header .logo-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
   <header>
-    <div class="logo-wrapper" onclick="window.location.href='index.html'" style="cursor:pointer; text-align:center;">
+    <div class="logo-wrapper" onclick="window.location.href='index.html'">
       <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
       <h1 class="logo-text">SABER<br>CAPITAL</h1>
     </div>
@@ -50,13 +57,11 @@
   <div class="container">
     <p class="subtitle">Empresas do Setor Educacional</p>
 
-    <!-- Popup Erro -->
     <div id="popupErro" class="popup-erro">
       <button onclick="document.getElementById('popupErro').style.display='none'">&times;</button>
       Por favor, preencha todos os campos obrigatórios destacados.
     </div>
 
-    <!-- Formulário Completo -->
     <div class="card">
       <h2>Cadastrar Nova Empresa</h2>
       <form id="empresa-form">
@@ -77,13 +82,10 @@
       </form>
     </div>
 
-    <!-- Top 3 Empresas -->
     <div class="card">
       <h2>Top 3 Empresas por Rating</h2>
       <div id="top-empresas" class="empresa-lista"></div>
-      <div style="margin-top: 1rem;">
-        <button onclick="window.location.href='empresas.html'">Visualizar Todas as Empresas</button>
-      </div>
+      <button onclick="window.location.href='empresas.html'">Visualizar Todas as Empresas</button>
     </div>
   </div>
 
@@ -97,7 +99,10 @@
       let valido = true;
 
       campos.forEach(campo => {
-        if (!campo.value.trim()) {
+        if (campo.type === 'number' && !campo.value) {
+          campo.classList.add('error');
+          valido = false;
+        } else if (campo.type === 'text' && !campo.value.trim()) {
           campo.classList.add('error');
           valido = false;
         } else {
@@ -108,9 +113,11 @@
       if (!valido) {
         document.getElementById('popupErro').style.display = 'block';
         return;
+      } else {
+        document.getElementById('popupErro').style.display = 'none';
       }
 
-      // Resto do código de envio ao Airtable aqui
+      // Lógica para envio ao Airtable segue aqui
     });
 
     function carregarTopEmpresas() {
