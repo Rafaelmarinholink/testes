@@ -106,6 +106,18 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
       "Notas": document.getElementById('notas').value
     }
   };
+const dados = {
+  crescimento_yoy: parseFloat(document.getElementById('crescimento_yoy').value),
+  nrr: parseFloat(document.getElementById('nrr').value),
+  ltv: parseFloat(document.getElementById('ltv').value),
+  churn: parseFloat(document.getElementById('churn').value),
+  margem_contribuicao: parseFloat(document.getElementById('margem_contribuicao').value),
+  ev_ebitda: parseFloat(document.getElementById('ev_ebitda').value),
+  cac: parseFloat(document.getElementById('cac').value),
+  receita: parseFloat(document.getElementById('receita').value)
+};
+
+const ratingCalculado = calcularRating(dados);
 
   await fetch("https://api.airtable.com/v0/appaq7tR3vt9vrN6y/Empresas", {
     method: 'POST',
@@ -132,3 +144,8 @@ buscarEmpresas().then(empresas => {
 searchInput.addEventListener('input', filtrarEBuscar);
 ordenarPor.addEventListener('change', filtrarEBuscar);
 ordem.addEventListener('change', filtrarEBuscar);
+
+"fields": {
+  ...
+  "Rating": ratingCalculado
+}
