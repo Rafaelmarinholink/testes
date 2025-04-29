@@ -7,7 +7,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
+
   <style>
+    /* Popup de erro */
     .popup-erro {
       position: fixed;
       top: 50%;
@@ -33,11 +35,13 @@
       right: 0.75rem;
     }
 
+    /* borda de erro nos campos inválidos */
     input.error, textarea.error {
       border: 2px solid #ef4444 !important;
     }
 
-    header .logo-wrapper {
+    /* Correção visual da logo */
+    .logo-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -57,11 +61,13 @@
   <div class="container">
     <p class="subtitle">Empresas do Setor Educacional</p>
 
+    <!-- Popup de Erro -->
     <div id="popupErro" class="popup-erro">
       <button onclick="document.getElementById('popupErro').style.display='none'">&times;</button>
       Por favor, preencha todos os campos obrigatórios destacados.
     </div>
 
+    <!-- Formulário Completo -->
     <div class="card">
       <h2>Cadastrar Nova Empresa</h2>
       <form id="empresa-form">
@@ -82,6 +88,7 @@
       </form>
     </div>
 
+    <!-- Top 3 Empresas -->
     <div class="card">
       <h2>Top 3 Empresas por Rating</h2>
       <div id="top-empresas" class="empresa-lista"></div>
@@ -89,58 +96,7 @@
     </div>
   </div>
 
-<script type="module"
-    import { buscarEmpresas } from './airtable.js';
-
-    document.getElementById('empresa-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const campos = document.querySelectorAll('#empresa-form input[required]');
-      let valido = true;
-
-      campos.forEach(campo => {
-        if (campo.type === 'number' && !campo.value) {
-          campo.classList.add('error');
-          valido = false;
-        } else if (campo.type === 'text' && !campo.value.trim()) {
-          campo.classList.add('error');
-          valido = false;
-        } else {
-          campo.classList.remove('error');
-        }
-      });
-
-      if (!valido) {
-        document.getElementById('popupErro').style.display = 'block';
-        return;
-      } else {
-        document.getElementById('popupErro').style.display = 'none';
-      }
-
-      // Lógica para envio ao Airtable segue aqui
-    });
-
-    function carregarTopEmpresas() {
-      buscarEmpresas().then(empresas => {
-        const top3 = empresas.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)).slice(0, 3);
-        const listaTop = document.getElementById('top-empresas');
-        listaTop.innerHTML = '';
-        top3.forEach(emp => {
-          const card = document.createElement('div');
-          card.className = 'empresa-card';
-          card.innerHTML = `
-            <strong>${emp.nome}</strong><br>
-            Rating: ${emp.rating ?? 'N/A'}<br>
-            Receita: $${Number(emp.receita).toLocaleString('pt-BR')}M
-          `;
-          card.style.cursor = 'pointer';
-          card.onclick = () => window.location.href = `empresa.html?id=${emp.id}`;
-          listaTop.appendChild(card);
-        });
-      });
-    }
-
-    carregarTopEmpresas();
-  </script>
+  <!-- Integração correta com script.js -->
+  <script type="module" src="script.js"></script>
 </body>
 </html>
