@@ -7,73 +7,102 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <style>
+    .alert-success {
+      background-color: #22c55e;
+      color: white;
+      padding: 1rem;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+      text-align: center;
+      font-weight: bold;
+      display: none;
+    }
+
+    .alert-error {
+      background-color: #ef4444;
+      color: white;
+      padding: 1rem;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+      text-align: center;
+      font-weight: bold;
+      display: none;
+    }
+
+    input.error, textarea.error {
+      border: 2px solid #ef4444;
+    }
+
+    .btn-ver-todas {
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+
+    .btn-ver-todas a {
+      background-color: #fff;
+      color: #0b1f3a;
+      padding: 0.75rem 1.5rem;
+      font-weight: bold;
+      border-radius: 6px;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .empresa-card {
+      background-color: #1a365d;
+      padding: 1rem;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+  </style>
 </head>
 <body>
   <header>
-    <a href="index.html" class="logo-wrapper" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+    <div class="logo-wrapper" onclick="window.location.href='index.html'" style="cursor:pointer;">
       <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
-      <h1 class="logo-text" style="color: white; font-family: 'Archivo Black', sans-serif; line-height: 1.2;">SABER<br>CAPITAL</h1>
-    </a>
+      <h1 class="logo-text">SABER<br>CAPITAL</h1>
+    </div>
   </header>
 
   <div class="container">
     <p class="subtitle">Empresas do Setor Educacional</p>
 
+    <!-- TOASTS -->
+    <div id="sucesso-alert" class="alert-success">Empresa cadastrada com sucesso!</div>
+    <div id="erro-alert" class="alert-error">Por favor, preencha todos os campos obrigatórios.</div>
+
+    <!-- Formulário de cadastro -->
     <div class="card">
       <h2>Cadastrar Nova Empresa</h2>
       <form id="empresa-form">
-        <div class="form-group">
-          <label>Nome da Empresa</label>
-          <input type="text" id="nome" required />
-        </div>
-        <div class="form-group">
-          <label>Ticker</label>
-          <input type="text" id="ticker" required />
-        </div>
-        <div class="form-group">
-          <label>Receita Anual (milhões de USD)</label>
-          <input type="number" id="receita" required />
-        </div>
-        <div class="form-group">
-          <label>EBITDA (milhões de USD)</label>
-          <input type="number" id="ebitda" required />
-        </div>
-        <div class="form-group">
-          <label>Valuation (milhões de USD)</label>
-          <input type="number" id="valuation" required />
-        </div>
-        <div class="form-group">
-          <label>Notas (Opcional)</label>
-          <textarea id="notas"></textarea>
-        </div>
+        <div class="form-group"><label>Nome da Empresa</label><input type="text" id="nome" required /></div>
+        <div class="form-group"><label>Ticker</label><input type="text" id="ticker" required /></div>
+        <div class="form-group"><label>Receita Anual (milhões de USD)</label><input type="number" id="receita" required /></div>
+        <div class="form-group"><label>EBITDA (milhões de USD)</label><input type="number" id="ebitda" required /></div>
+        <div class="form-group"><label>Valuation (milhões de USD)</label><input type="number" id="valuation" required /></div>
+        <div class="form-group"><label>Notas (opcional)</label><textarea id="notas"></textarea></div>
+        <hr />
+        <div class="form-group"><label>Crescimento YoY (%)</label><input type="number" id="crescimento_yoy" required /></div>
+        <div class="form-group"><label>Retenção / NRR (%)</label><input type="number" id="nrr" required /></div>
+        <div class="form-group"><label>LTV (Lifetime Value - USD)</label><input type="number" id="ltv" required /></div>
+        <div class="form-group"><label>Taxa de Churn (%)</label><input type="number" id="churn" required /></div>
+        <div class="form-group"><label>Margem de Contribuição (%)</label><input type="number" id="margem_contribuicao" required /></div>
+        <div class="form-group"><label>EV/EBITDA (x vezes)</label><input type="number" id="ev_ebitda" required /></div>
+        <div class="form-group"><label>CAC (Custo de Aquisição - USD)</label><input type="number" id="cac" required /></div>
         <button type="submit" class="btn">Cadastrar Empresa</button>
       </form>
     </div>
 
+    <!-- Top 3 empresas -->
     <div class="card">
-      <h2>Buscar e Ordenar</h2>
-      <div class="form-group">
-        <input type="text" id="search" placeholder="🔍 Buscar empresa..." />
+      <h2>Top 3 Empresas por Rating</h2>
+      <div id="top-empresas" class="empresa-lista"></div>
+
+      <div class="btn-ver-todas">
+        <a href="empresas.html">Visualizar Todas as Empresas</a>
       </div>
-      <div class="ordenar" style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
-        <div class="form-group" style="flex: 1; min-width: 150px;">
-          <label for="ordenarPor">Ordenar por</label>
-          <select id="ordenarPor">
-            <option value="nome">Nome</option>
-            <option value="valuation">Valuation</option>
-            <option value="ebitda">EBITDA</option>
-            <option value="receita">Receita</option>
-          </select>
-        </div>
-        <div class="form-group" style="flex: 1; min-width: 150px;">
-          <label for="ordem">Ordem</label>
-          <select id="ordem">
-            <option value="asc">Crescente</option>
-            <option value="desc">Decrescente</option>
-          </select>
-        </div>
-      </div>
-      <div class="empresa-lista" id="empresa-lista"></div>
     </div>
   </div>
 
