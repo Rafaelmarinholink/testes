@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Empresas | Saber Capital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <style>
+    .empresa-card {
+      background-color: #1a365d;
+      padding: 1rem;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-wrapper" onclick="window.location.href='index.html'" style="cursor:pointer;">
+      <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
+      <h1 class="logo-text">SABER<br>CAPITAL</h1>
+    </div>
+  </header>
+
+  <div class="container">
+    <h2 class="subtitle">Todas as Empresas Cadastradas</h2>
+
+    <div class="form-group">
+      <input type="text" id="search" placeholder="🔍 Buscar empresa..." />
+    </div>
+    <div class="ordenar">
+      <select id="ordenarPor">
+        <option value="nome">Nome</option>
+        <option value="valuation">Valuation</option>
+        <option value="ebitda">EBITDA</option>
+        <option value="receita">Receita</option>
+        <option value="rating">Rating</option>
+      </select>
+      <select id="ordem">
+        <option value="asc">Crescente</option>
+        <option value="desc">Decrescente</option>
+      </select>
+    </div>
+
+    <div class="empresa-lista" id="lista-empresas"></div>
+  </div>
+
+  <script type="module">
+    import { buscarEmpresas } from './airtable.js';
+
+    const lista = document.getElementById('lista-empresas');
+    const searchInput = document.getElementById('search');
+    const ordenarPor = document.getElementById('ordenarPor');
+    const ordem = document.getElementById('ordem');
+    let todasEmpresas = [];
+
+    function renderizar(empresas) {
+      lista.innerHTML = '';
+      empresas.forEach(empresa => {
+        const card = document.createElement('div');
+        card.className = 'empresa-card';
+        card.innerHTML = `
+          <strong>${empresa.nome}</strong><br/>
+          Rating: ${empresa.rating ?? 'N/A'}<br/>
+          Receita: $${Number(empresa.receita).toLocaleString('pt-BR')}M<br/>
+          EBITDA: $${Number(empresa.ebitda).toLocaleString('pt-BR')}M<br/>
+          Valuation: $${Number(empresa.valuation).toLocaleString('pt-BR')}M
+        `;
+        lista.appendChild(card);
+      });
+    }
+
+    function filtrarEBuscar() {
+      const texto = searchInput.value.toLowerCase();
+      const coluna = ordenarPor.value;
+      const sentido = ordem.value;
+
+      let filtradas = todasEmpresas.filter(e =>
+        e.nome.toLowerCase().includes(texto)
+      );
+
+      filtradas.sort((a, b) => {
+        const valA = a[coluna] ?? 0;
+        const valB = b[coluna] ?? 0;
+        if (typeof valA === 'string') {
+          return sentido === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        } else {
+          return sentido === 'asc' ? valA - valB : valB - valA;
+        }
+      });
+
+      renderizar(filtradas);
+    }
+
+    buscarEmpresas().then(empresas => {
+      todasEmpresas = empresas;
+      filtrarEBuscar();
+    });
+
+    searchInput.addEventListener('input', filtrarEBuscar);
+    ordenarPor.addEventListener('change', filtrarEBuscar);
+    ordem.addEventListener('change', filtrarEBuscar);
+  </script>
+</body>
+</html>
