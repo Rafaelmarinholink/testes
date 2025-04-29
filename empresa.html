@@ -4,219 +4,155 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Análise da Empresa | Saber Capital</title>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    .metric-grid {
+    .grid-indicadores {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 1rem;
-      margin-bottom: 2rem;
+      margin-top: 1rem;
     }
-    .metric-card {
+    .indicador {
       background-color: #1e3a5f;
       padding: 1rem;
-      border-radius: 10px;
-    }
-    .metric-title {
-      font-weight: bold;
-      font-size: 0.9rem;
-      color: #cbd5e1;
-    }
-    .metric-value {
-      font-size: 1.5rem;
-      color: #63b3ed;
-    }
-    .section-title {
-      font-family: 'Archivo Black', sans-serif;
-      font-size: 1rem;
-      margin: 1rem 0 0.5rem;
-    }
-    .canvas-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      justify-content: center;
-      margin-bottom: 2rem;
-    }
-    .canvas-container {
-      flex: 1 1 400px;
-      background-color: #2c5282;
-      border-radius: 10px;
-      padding: 1rem;
-      max-width: 450px;
-    }
-    .canvas-container canvas {
-      max-width: 100%;
-      height: 250px !important;
-    }
-    .summary {
-      background-color: #234e70;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 2rem;
-    }
-    .notes {
-      background-color: #1a365d;
-      padding: 1rem;
-      border-radius: 8px;
-    }
-    .btn-row {
-      display: flex;
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-    #titulo-nome {
-      font-family: 'Archivo Black', sans-serif;
-      font-size: 1.2rem;
-      background-color: #1e3a5f;
+      border-radius: 6px;
       color: #fff;
-      padding: 0.75rem 1rem;
-      margin-bottom: 1rem;
-      border-radius: 10px;
-      text-align: center;
-      word-wrap: break-word;
+    }
+    .rating-gauge {
+      max-width: 320px;
+      margin: 2rem auto;
+    }
+    .diagnostico, .notas {
+      background-color: #1a365d;
+      color: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1.5rem;
+    }
+    .grid-benchmark {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
     }
   </style>
 </head>
 <body>
   <header>
-    <a href="index.html" class="logo-wrapper" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+    <div class="logo-wrapper" onclick="window.location.href='index.html'" style="cursor:pointer;">
       <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
-      <h1 class="logo-text" style="color: white; font-family: 'Archivo Black', sans-serif; line-height: 1.2;">SABER<br>CAPITAL</h1>
-    </a>
+      <h1 class="logo-text">SABER<br>CAPITAL</h1>
+    </div>
   </header>
 
   <div class="container">
-    <p class="subtitle">Análise Financeira – Setor de Educação</p>
-    <div id="titulo-nome"></div>
+    <h2 class="subtitle" id="nomeEmpresa">Análise Financeira</h2>
 
-    <div class="metric-grid">
-      <div class="metric-card">
-        <div class="metric-title">Receita Anual (milhões de dólares)</div>
-        <div class="metric-value" id="receita"></div>
+    <div class="grid-indicadores" id="indicadores"></div>
+
+    <div class="rating-gauge">
+      <canvas id="gaugeChart"></canvas>
+    </div>
+
+    <div class="grid-benchmark">
+      <div>
+        <h3>Benchmark Comparison</h3>
+        <canvas id="grafico1"></canvas>
       </div>
-      <div class="metric-card">
-        <div class="metric-title">EBITDA (milhões de dólares)</div>
-        <div class="metric-value" id="ebitda"></div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-title">Valuation (milhões de dólares)</div>
-        <div class="metric-value" id="valuation"></div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-title">EBITDA Margin (%)</div>
-        <div class="metric-value" id="margem"></div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-title">EV/EBITDA</div>
-        <div class="metric-value" id="ev"></div>
+      <div>
+        <h3>Health Diagnostic Summary</h3>
+        <div class="diagnostico" id="diagnostico"></div>
       </div>
     </div>
 
-    <h3 class="section-title">Benchmark Comparison</h3>
-    <div class="canvas-row">
-      <div class="canvas-container"><canvas id="graficoMargem"></canvas></div>
-      <div class="canvas-container"><canvas id="graficoEV"></canvas></div>
+    <div class="notas">
+      <h3>Notes</h3>
+      <p id="notas"></p>
     </div>
 
-    <h3 class="section-title">Health Diagnostic Summary</h3>
-    <div class="summary" id="diagnostico"></div>
-
-    <h3 class="section-title">Notes</h3>
-    <div class="notes" id="notas"></div>
-
-    <div class="btn-row">
-      <button class="btn" onclick="window.location.href='index.html'">Voltar à Lista</button>
-      <button class="btn" id="botaoComparar">Comparar com outra empresa</button>
+    <div style="margin-top:2rem;">
+      <button onclick="window.location.href='index.html'">Voltar à Lista</button>
+      <button onclick="comparar()">Comparar com outra empresa</button>
     </div>
   </div>
 
   <script type="module">
     import { buscarEmpresas } from './airtable.js';
+
     const urlParams = new URLSearchParams(window.location.search);
     const idEmpresa = urlParams.get('id');
 
-    function gerarDiagnostico(margem, ev) {
-      const margemOK = margem >= 17;
-      const evOK = ev >= 8.8 && ev <= 12.0;
-      if (margemOK && evOK) {
-        return "A empresa apresenta uma margem EBITDA acima da média e um múltiplo EV/EBITDA dentro da faixa ideal. Perfil financeiro saudável para investimento.";
-      } else if (margemOK && !evOK) {
-        return "Boa margem operacional, mas o múltiplo EV/EBITDA fora da faixa ideal pode indicar sobrevalorização ou risco.";
-      } else if (!margemOK && evOK) {
-        return "Múltiplo EV/EBITDA adequado, mas margem EBITDA baixa sugere desafios operacionais.";
-      } else {
-        return "Indicadores abaixo da média em margem e múltiplos. Perfil financeiro menos saudável.";
-      }
-    }
-
-    function desenharGrafico(id, titulo, valorEmpresa, valorBenchmark) {
-      const ctx = document.getElementById(id);
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['Empresa', 'Benchmark'],
-          datasets: [{
-            label: titulo,
-            data: [valorEmpresa, valorBenchmark],
-            backgroundColor: ['#63b3ed', '#3182ce']
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              labels: {
-                color: '#fff'
-              }
-            }
-          },
-          scales: {
-            x: {
-              ticks: { color: '#fff' }
-            },
-            y: {
-              beginAtZero: true,
-              ticks: {
-                callback: value => value + '%',
-                color: '#fff'
-              }
-            }
-          }
-        }
-      });
+    function comparar() {
+      window.location.href = `comparar.html?id=${idEmpresa}`;
     }
 
     buscarEmpresas().then(empresas => {
       const empresa = empresas.find(e => e.id === idEmpresa);
       if (!empresa) return;
 
-      const { nome, receita, ebitda, valuation, notas } = empresa;
-      const margem = receita && ebitda ? ((ebitda / receita) * 100).toFixed(1) : "-";
-      const ev = ebitda ? (valuation / ebitda).toFixed(2) : "-";
+      document.getElementById('nomeEmpresa').textContent = empresa.nome;
 
-      document.getElementById('titulo-nome').textContent = nome;
-      document.getElementById('receita').textContent = `$${Number(receita).toLocaleString('pt-BR')}M`;
-      document.getElementById('ebitda').textContent = `$${Number(ebitda).toLocaleString('pt-BR')}M`;
-      document.getElementById('valuation').textContent = `$${Number(valuation).toLocaleString('pt-BR')}M`;
-      document.getElementById('margem').textContent = `${margem}%`;
-      document.getElementById('ev').textContent = `${ev}x`;
+      const campos = [
+        { label: 'Receita Anual (milhões de dólares)', valor: empresa.receita },
+        { label: 'EBITDA (milhões de dólares)', valor: empresa.ebitda },
+        { label: 'Valuation (milhões de dólares)', valor: empresa.valuation },
+        { label: 'Margem EBITDA (%)', valor: empresa.margem ?? '-' },
+        { label: 'EV/EBITDA', valor: empresa.ev_ebitda ?? '-' },
+        { label: 'Volume de Vendas / Faturamento', valor: empresa.receita },
+        { label: 'Ticket / ARPU (USD)', valor: empresa.arpu ?? '-' },
+        { label: 'LTV (USD)', valor: empresa.ltv ?? '-' },
+        { label: 'Crescimento YoY', valor: empresa.crescimento_yoy ?? '-' },
+        { label: 'CAC (USD)', valor: empresa.cac ?? '-' },
+        { label: 'Taxa de Churn', valor: empresa.churn ?? '-' },
+        { label: 'Conversão de Propostas', valor: empresa.conversao ?? '-' },
+        { label: 'Retenção / NRR', valor: empresa.nrr ?? '-' },
+        { label: 'Margem de Contribuição', valor: empresa.margem_contribuicao ?? '-' },
+      ];
 
-      const margemNum = parseFloat(margem);
-      const evNum = parseFloat(ev);
-      document.getElementById('diagnostico').textContent = gerarDiagnostico(margemNum, evNum);
-      document.getElementById('notas').textContent = notas || "Nenhuma nota registrada.";
+      const grid = document.getElementById('indicadores');
+      campos.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'indicador';
+        div.innerHTML = `<strong>${c.label}</strong><br>${c.valor}${c.label.includes('%') ? '%' : ''}`;
+        grid.appendChild(div);
+      });
 
-      desenharGrafico('graficoMargem', 'Margem EBITDA (%)', margemNum, 17);
-      desenharGrafico('graficoEV', 'EV/EBITDA (normalizado x10)', evNum * 10, ((8.8 + 12.0) / 2) * 10);
+      // Diagnóstico simples
+      document.getElementById('diagnostico').textContent = empresa.rating >= 70
+        ? 'Empresa apresenta fundamentos financeiros saudáveis e consistentes.'
+        : 'A empresa pode ter riscos operacionais ou desafios de rentabilidade.';
+
+      document.getElementById('notas').textContent = empresa.notas || 'Nenhuma nota registrada.';
+
+      new Chart(document.getElementById('gaugeChart'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Rating'],
+          datasets: [{
+            data: [empresa.rating ?? 0, 100 - (empresa.rating ?? 0)],
+            backgroundColor: ['#3b82f6', '#1e293b'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          rotation: -90,
+          circumference: 180,
+          cutout: '70%',
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false },
+            title: {
+              display: true,
+              text: empresa.rating + ' / 100',
+              color: '#fff',
+              font: { size: 24, weight: 'bold' },
+              padding: 10
+            }
+          }
+        }
+      });
     });
-
-    document.getElementById('botaoComparar').onclick = () => {
-      window.location.href = `comparar.html?id=${idEmpresa}`;
-    };
   </script>
 </body>
 </html>
