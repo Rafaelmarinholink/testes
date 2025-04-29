@@ -1,0 +1,113 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #0b1f3a;
+  color: #f4f4f4;
+}
+
+header {
+  background-color: #102c4c;
+  padding: 1rem 2rem;
+}
+
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-img {
+  height: 60px;
+}
+
+.logo-text {
+  font-family: 'Archivo Black', sans-serif;
+  color: white;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #cbd5e1;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background-color: #1e3a5f;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.form-group input,
+.form-group textarea,
+select {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: none;
+  background-color: #102c4c;
+  color: #fff;
+  font-size: 1rem;
+}
+
+input::placeholder {
+  color: #ccc;
+}
+
+.btn {
+  background-color: #fff;
+  color: #0b1f3a;
+  padding: 0.6rem 1rem;
+  border: none;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.ordenar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.empresa-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.empresa-card {
+  background-color: #1a365d;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.empresa-card strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #63b3ed;
+}
