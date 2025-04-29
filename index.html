@@ -7,10 +7,41 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <style>
+    /* Estilo para popup de erro */
+    .popup-erro {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #ef4444;
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 1000;
+    }
+
+    .popup-erro button {
+      background-color: transparent;
+      color: white;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      position: absolute;
+      top: 0.5rem;
+      right: 0.75rem;
+    }
+
+    input.error, textarea.error {
+      border: 2px solid #ef4444;
+    }
+  </style>
 </head>
 <body>
   <header>
-    <div class="logo-wrapper" onclick="window.location.href='index.html'" style="cursor:pointer;">
+    <div class="logo-wrapper" onclick="window.location.href='index.html'" style="cursor:pointer; text-align:center;">
       <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
       <h1 class="logo-text">SABER<br>CAPITAL</h1>
     </div>
@@ -19,9 +50,11 @@
   <div class="container">
     <p class="subtitle">Empresas do Setor Educacional</p>
 
-    <!-- Toasts -->
-    <div id="sucesso-alert" class="alert-success">Empresa cadastrada com sucesso!</div>
-    <div id="erro-alert" class="alert-error">Por favor, preencha todos os campos obrigatórios.</div>
+    <!-- Popup Erro -->
+    <div id="popupErro" class="popup-erro">
+      <button onclick="document.getElementById('popupErro').style.display='none'">&times;</button>
+      Por favor, preencha todos os campos obrigatórios destacados.
+    </div>
 
     <!-- Formulário Completo -->
     <div class="card">
@@ -44,17 +77,63 @@
       </form>
     </div>
 
-    <!-- Top 3 empresas -->
+    <!-- Top 3 Empresas -->
     <div class="card">
       <h2>Top 3 Empresas por Rating</h2>
       <div id="top-empresas" class="empresa-lista"></div>
-
       <div style="margin-top: 1rem;">
         <button onclick="window.location.href='empresas.html'">Visualizar Todas as Empresas</button>
       </div>
     </div>
   </div>
 
-  <script type="module" src="script.js"></script>
+  <script type="module">
+    import { buscarEmpresas } from './airtable.js';
+
+    document.getElementById('empresa-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const campos = document.querySelectorAll('#empresa-form input[required]');
+      let valido = true;
+
+      campos.forEach(campo => {
+        if (!campo.value.trim()) {
+          campo.classList.add('error');
+          valido = false;
+        } else {
+          campo.classList.remove('error');
+        }
+      });
+
+      if (!valido) {
+        document.getElementById('popupErro').style.display = 'block';
+        return;
+      }
+
+      // Resto do código de envio ao Airtable aqui
+    });
+
+    function carregarTopEmpresas() {
+      buscarEmpresas().then(empresas => {
+        const top3 = empresas.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)).slice(0, 3);
+        const listaTop = document.getElementById('top-empresas');
+        listaTop.innerHTML = '';
+        top3.forEach(emp => {
+          const card = document.createElement('div');
+          card.className = 'empresa-card';
+          card.innerHTML = `
+            <strong>${emp.nome}</strong><br>
+            Rating: ${emp.rating ?? 'N/A'}<br>
+            Receita: $${Number(emp.receita).toLocaleString('pt-BR')}M
+          `;
+          card.style.cursor = 'pointer';
+          card.onclick = () => window.location.href = `empresa.html?id=${emp.id}`;
+          listaTop.appendChild(card);
+        });
+      });
+    }
+
+    carregarTopEmpresas();
+  </script>
 </body>
 </html>
