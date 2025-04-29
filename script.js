@@ -1,43 +1,42 @@
+// script.js
+import { buscarEmpresas } from './airtable.js';
+
+const listaTop = document.getElementById('top-empresas');
+const form = document.getElementById('empresa-form');
+const sucessoAlert = document.getElementById('sucesso-alert');
+const erroAlert = document.getElementById('erro-alert');
+
+// Calcula o Rating com base nos KPIs
 function calcularRating(dados) {
   let nota = 0;
-
-  // Crescimento YoY (20%)
   if (dados.crescimento_yoy > 25) nota += 20;
   else if (dados.crescimento_yoy >= 10) nota += 15;
   else if (dados.crescimento_yoy >= 0) nota += 10;
-  else nota += 0;
 
-  // Retenção / NRR (20%)
   if (dados.nrr > 110) nota += 20;
   else if (dados.nrr >= 95) nota += 15;
   else if (dados.nrr >= 85) nota += 10;
   else nota += 5;
 
-  // LTV (15%)
   if (dados.ltv > 1000) nota += 15;
   else if (dados.ltv >= 500) nota += 10;
   else nota += 5;
 
-  // Churn Rate (15%)
   if (dados.churn < 5) nota += 15;
   else if (dados.churn <= 10) nota += 10;
   else nota += 5;
 
-  // Margem de Contribuição (10%)
   if (dados.margem_contribuicao > 40) nota += 10;
   else if (dados.margem_contribuicao >= 20) nota += 7;
   else nota += 5;
 
-  // EV/EBITDA (10%)
   if (dados.ev_ebitda >= 9 && dados.ev_ebitda <= 14) nota += 10;
   else nota += 5;
 
-  // CAC (5%)
   if (dados.cac < 100) nota += 5;
   else if (dados.cac <= 300) nota += 3;
   else nota += 2;
 
-  // Receita Anual (5%)
   if (dados.receita > 100) nota += 5;
   else if (dados.receita >= 50) nota += 3;
   else nota += 2;
@@ -45,82 +44,62 @@ function calcularRating(dados) {
   return Math.min(nota, 100);
 }
 
-import { buscarEmpresas } from './airtable.js';
-
-const lista = document.getElementById('empresa-lista');
-const searchInput = document.getElementById('search');
-const ordenarPor = document.getElementById('ordenarPor');
-const ordem = document.getElementById('ordem');
-let todasEmpresas = [];
-
-function renderizar(empresas) {
-  lista.innerHTML = '';
-  empresas.forEach(empresa => {
-    const card = document.createElement('div');
-    card.className = 'empresa-card';
-    card.innerHTML = `
-      <strong>${empresa.nome}</strong>
-      Valuation: $${Number(empresa.valuation).toLocaleString('pt-BR')}M<br/>
-      EBITDA: $${Number(empresa.ebitda).toLocaleString('pt-BR')}M<br/>
-      Receita: $${Number(empresa.receita).toLocaleString('pt-BR')}M
-    `;
-    card.onclick = () => {
-      window.location.href = `empresa.html?id=${empresa.id}`;
-    };
-    lista.appendChild(card);
-  });
+function mostrarToast(elemento) {
+  elemento.style.display = 'block';
+  setTimeout(() => elemento.style.display = 'none', 3000);
 }
 
-function filtrarEBuscar() {
-  const texto = searchInput.value.toLowerCase();
-  const coluna = ordenarPor.value;
-  const sentido = ordem.value;
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-  let filtradas = todasEmpresas.filter(e =>
-    e.nome.toLowerCase().includes(texto)
-  );
-
-  filtradas.sort((a, b) => {
-    const valA = a[coluna] ?? 0;
-    const valB = b[coluna] ?? 0;
-    if (typeof valA === 'string') {
-      return sentido === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+  // Valida todos os campos obrigatórios
+  const campos = form.querySelectorAll('input[required]');
+  let valido = true;
+  campos.forEach(input => {
+    if (!input.value.trim()) {
+      input.classList.add('error');
+      valido = false;
     } else {
-      return sentido === 'asc' ? valA - valB : valB - valA;
+      input.classList.remove('error');
     }
   });
 
-  renderizar(filtradas);
-}
-
-document.getElementById('empresa-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
+  if (!valido) {
+    mostrarToast(erroAlert);
+    return;
+  }
 
   const dados = {
-  crescimento_yoy: parseFloat(document.getElementById('crescimento_yoy').value),
-  nrr: parseFloat(document.getElementById('nrr').value),
-  ltv: parseFloat(document.getElementById('ltv').value),
-  churn: parseFloat(document.getElementById('churn').value),
-  margem_contribuicao: parseFloat(document.getElementById('margem_contribuicao').value),
-  ev_ebitda: parseFloat(document.getElementById('ev_ebitda').value),
-  cac: parseFloat(document.getElementById('cac').value),
-  receita: parseFloat(document.getElementById('receita').value)
-};
+    crescimento_yoy: parseFloat(document.getElementById('crescimento_yoy').value),
+    nrr: parseFloat(document.getElementById('nrr').value),
+    ltv: parseFloat(document.getElementById('ltv').value),
+    churn: parseFloat(document.getElementById('churn').value),
+    margem_contribuicao: parseFloat(document.getElementById('margem_contribuicao').value),
+    ev_ebitda: parseFloat(document.getElementById('ev_ebitda').value),
+    cac: parseFloat(document.getElementById('cac').value),
+    receita: parseFloat(document.getElementById('receita').value)
+  };
 
-const ratingCalculado = calcularRating(dados);
+  const rating = calcularRating(dados);
 
-const data = {
-  fields: {
-    "Nome da Empresa": document.getElementById('nome').value,
-    "Ticker": document.getElementById('ticker').value,
-    "Receita Anual (USD)": parseFloat(document.getElementById('receita').value),
-    "EBITDA (USD)": parseFloat(document.getElementById('ebitda').value),
-    "Valuation (USD)": parseFloat(document.getElementById('valuation').value),
-    "Notas": document.getElementById('notas').value,
-    "Rating": ratingCalculado  // 🔥 Agora está incluso corretamente!
-  }
-};
-
+  const data = {
+    fields: {
+      "Nome da Empresa": document.getElementById('nome').value,
+      "Ticker": document.getElementById('ticker').value,
+      "Receita Anual (USD)": dados.receita,
+      "EBITDA (USD)": parseFloat(document.getElementById('ebitda').value),
+      "Valuation (USD)": parseFloat(document.getElementById('valuation').value),
+      "Notas": document.getElementById('notas').value,
+      "Rating": rating,
+      "Crescimento YoY (%)": dados.crescimento_yoy,
+      "Retenção / NRR (%)": dados.nrr,
+      "LTV (USD)": dados.ltv,
+      "Taxa de Churn (%)": dados.churn,
+      "Margem de Contribuição (%)": dados.margem_contribuicao,
+      "EV/EBITDA": dados.ev_ebitda,
+      "CAC (USD)": dados.cac
+    }
+  };
 
   await fetch("https://api.airtable.com/v0/appaq7tR3vt9vrN6y/Empresas", {
     method: 'POST',
@@ -131,20 +110,26 @@ const data = {
     body: JSON.stringify(data)
   });
 
-  buscarEmpresas().then(empresas => {
-    todasEmpresas = empresas;
-    filtrarEBuscar();
-  });
-
+  mostrarToast(sucessoAlert);
   e.target.reset();
+  carregarTopEmpresas();
 });
 
-buscarEmpresas().then(empresas => {
-  todasEmpresas = empresas;
-  filtrarEBuscar();
-});
+function carregarTopEmpresas() {
+  buscarEmpresas().then(empresas => {
+    const top3 = empresas.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)).slice(0, 3);
+    listaTop.innerHTML = '';
+    top3.forEach(emp => {
+      const card = document.createElement('div');
+      card.className = 'empresa-card';
+      card.innerHTML = `
+        <strong>${emp.nome}</strong><br/>
+        Rating: ${emp.rating ?? 'N/A'}<br/>
+        Receita: $${Number(emp.receita).toLocaleString('pt-BR')}M
+      `;
+      listaTop.appendChild(card);
+    });
+  });
+}
 
-searchInput.addEventListener('input', filtrarEBuscar);
-ordenarPor.addEventListener('change', filtrarEBuscar);
-ordem.addEventListener('change', filtrarEBuscar);
-
+carregarTopEmpresas();
