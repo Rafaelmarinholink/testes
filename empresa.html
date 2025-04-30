@@ -36,15 +36,17 @@
       gap: 1rem;
       margin-top: 1rem;
     }
+    .botoes {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo-wrapper" onclick="window.location.href='index.html'" style="cursor:pointer;">
-      <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
-      <h1 class="logo-text">SABER<br>CAPITAL</h1>
-    </div>
-  </header>
+  <!-- Header externo -->
+  <header id="site-header"></header>
 
   <div class="container">
     <h2 class="subtitle" id="nomeEmpresa">Análise Financeira</h2>
@@ -71,9 +73,9 @@
       <p id="notas"></p>
     </div>
 
-    <div style="margin-top:2rem;">
-      <button onclick="window.location.href='index.html'">Voltar à Lista</button>
-      <button onclick="comparar()">Comparar com outra empresa</button>
+    <div class="botoes">
+      <button class="btn" onclick="window.location.href='index.html'">Voltar à Lista</button>
+      <button class="btn" onclick="comparar()">Comparar com outra empresa</button>
     </div>
   </div>
 
@@ -118,7 +120,6 @@
         grid.appendChild(div);
       });
 
-      // Diagnóstico simples
       document.getElementById('diagnostico').textContent = empresa.rating >= 70
         ? 'Empresa apresenta fundamentos financeiros saudáveis e consistentes.'
         : 'A empresa pode ter riscos operacionais ou desafios de rentabilidade.';
@@ -153,6 +154,11 @@
         }
       });
     });
+
+    // Carrega o header externo
+    fetch('header.html')
+      .then(res => res.text())
+      .then(html => document.getElementById('site-header').innerHTML = html);
   </script>
 </body>
 </html>
