@@ -36,46 +36,68 @@
       gap: 1rem;
       margin-top: 1rem;
     }
-    .botoes {
+    .logo-wrapper {
       display: flex;
+      align-items: center;
       justify-content: center;
-      gap: 1rem;
-      margin-top: 2rem;
+      gap: 12px;
+      margin-bottom: 1rem;
+      cursor: pointer;
+    }
+    .logo-text {
+      font-family: 'Archivo Black', sans-serif;
+      color: white;
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+    }
+    .logo-img {
+      height: 65px;
+      width: auto;
+    }
+    .subtitle {
+      font-size: 1rem;
+      text-align: center;
+      color: #cbd5e1;
+      margin-bottom: 2rem;
     }
   </style>
 </head>
 <body>
-  <!-- Header externo -->
-  <header id="site-header"></header>
-
   <div class="container">
-    <h2 class="subtitle" id="nomeEmpresa">Análise Financeira</h2>
-
-    <div class="grid-indicadores" id="indicadores"></div>
-
-    <div class="rating-gauge">
-      <canvas id="gaugeChart"></canvas>
-    </div>
-
-    <div class="grid-benchmark">
-      <div>
-        <h3>Benchmark Comparison</h3>
-        <canvas id="grafico1"></canvas>
+    <div class="card">
+      <div class="logo-wrapper" onclick="window.location.href='index.html'">
+        <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
+        <h1 class="logo-text">SABER<br>CAPITAL</h1>
       </div>
-      <div>
-        <h3>Health Diagnostic Summary</h3>
-        <div class="diagnostico" id="diagnostico"></div>
+
+      <h2 class="subtitle" id="nomeEmpresa">Análise Financeira</h2>
+
+      <div class="grid-indicadores" id="indicadores"></div>
+
+      <div class="rating-gauge">
+        <canvas id="gaugeChart"></canvas>
       </div>
-    </div>
 
-    <div class="notas">
-      <h3>Notes</h3>
-      <p id="notas"></p>
-    </div>
+      <div class="grid-benchmark">
+        <div>
+          <h3>Benchmark Comparison</h3>
+          <canvas id="grafico1"></canvas>
+        </div>
+        <div>
+          <h3>Health Diagnostic Summary</h3>
+          <div class="diagnostico" id="diagnostico"></div>
+        </div>
+      </div>
 
-    <div class="botoes">
-      <button class="btn" onclick="window.location.href='index.html'">Voltar à Lista</button>
-      <button class="btn" onclick="comparar()">Comparar com outra empresa</button>
+      <div class="notas">
+        <h3>Notes</h3>
+        <p id="notas"></p>
+      </div>
+
+      <div style="margin-top:2rem;">
+        <button onclick="window.location.href='index.html'">Voltar à Lista</button>
+        <button id="btnComparar">Comparar com outra empresa</button>
+      </div>
     </div>
   </div>
 
@@ -85,9 +107,9 @@
     const urlParams = new URLSearchParams(window.location.search);
     const idEmpresa = urlParams.get('id');
 
-    function comparar() {
+    document.getElementById('btnComparar').addEventListener('click', () => {
       window.location.href = `comparar.html?id=${idEmpresa}`;
-    }
+    });
 
     buscarEmpresas().then(empresas => {
       const empresa = empresas.find(e => e.id === idEmpresa);
@@ -154,11 +176,6 @@
         }
       });
     });
-
-    // Carrega o header externo
-    fetch('header.html')
-      .then(res => res.text())
-      .then(html => document.getElementById('site-header').innerHTML = html);
   </script>
 </body>
 </html>
