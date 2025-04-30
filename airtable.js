@@ -8,7 +8,6 @@ const headers = {
   'Content-Type': 'application/json'
 };
 
-// Função para buscar empresas
 async function buscarEmpresas() {
   try {
     const response = await fetch(airtableURL, { headers });
@@ -20,14 +19,11 @@ async function buscarEmpresas() {
       receita: record.fields["Receita Anual (USD)"],
       ebitda: record.fields["EBITDA (USD)"],
       valuation: record.fields["Valuation (USD)"],
-      crescimento_yoy: record.fields["Crescimento YoY"],
-      nrr: record.fields["Retenção NRR"],
-      ltv: record.fields["LTV"],
-      churn: record.fields["Churn"],
-      margem_contribuicao: record.fields["Margem de Contribuição"],
       margem_ebitda: record.fields["Margem EBITDA"],
       ev_ebitda: record.fields["EV/EBITDA"],
-      cac: record.fields["CAC"],
+      crescimento_yoy: record.fields["Crescimento YoY"],
+      margem_bruta: record.fields["Margem Bruta"],
+      consistencia_yoy: record.fields["Consistência Crescimento YoY"],
       notas: record.fields["Notas"],
       rating: record.fields["Rating"]
     }));
@@ -37,5 +33,4 @@ async function buscarEmpresas() {
   }
 }
 
-// Exportando função
 export { buscarEmpresas };
