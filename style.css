@@ -22,26 +22,32 @@ body {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 }
 
+.logo {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
 .logo-wrapper {
   display: flex;
-  justify-content: center;
   align-items: center;
-  flex-directions: row;
-  margin: 1rem auto;
-  text-align: center;
-  cursor: pointer;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 2rem;
 }
 
 .logo-img {
-  width: 65px;
-  margin-right: 0.5rem;
+  height: 80px;
+  width: auto;
 }
 
 .logo-text {
   font-family: 'Archivo Black', sans-serif;
-  font-size: 1.5rem;
   color: white;
-  line-height: 1;
+  font-size: 1.8rem;
+  letter-spacing: 1px;
 }
 
 .subtitle {
