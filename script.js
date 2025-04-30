@@ -3,12 +3,11 @@ import { buscarEmpresas } from './airtable.js';
 document.getElementById('empresa-form').addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const campos = document.querySelectorAll('#empresa-form input[required]');
+  const campos = document.querySelectorAll('#empresa-form input, #empresa-form textarea');
   let valido = true;
 
   campos.forEach(campo => {
-    if ((campo.type === 'number' && campo.value === '') || 
-        (campo.type === 'text' && campo.value.trim() === '')) {
+    if (campo.hasAttribute('required') && !campo.value.trim()) {
       campo.classList.add('error');
       valido = false;
     } else {
@@ -33,13 +32,6 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
     cac: parseFloat(document.getElementById('cac').value),
     receita: parseFloat(document.getElementById('receita').value)
   };
-
-  for (const key in dados) {
-    if (isNaN(dados[key])) {
-      alert(`Preencha corretamente o campo: ${key}`);
-      return;
-    }
-  }
 
   const ratingCalculado = calcularRating(dados);
 
