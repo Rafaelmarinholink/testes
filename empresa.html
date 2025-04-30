@@ -39,45 +39,41 @@
   </style>
 </head>
 <body>
+  <header>
+    <div class="logo-wrapper" onclick="window.location.href='index.html'" style="cursor:pointer;">
+      <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
+      <h1 class="logo-text">SABER<br>CAPITAL</h1>
+    </div>
+  </header>
+
   <div class="container">
-    <div class="card">
+    <h2 class="subtitle" id="nomeEmpresa">Análise Financeira</h2>
 
-      <!-- Header dentro do card -->
-      <div class="logo-wrapper" onclick="window.location.href='index.html'" style="cursor:pointer;">
-        <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
-        <h1 class="logo-text">SABER<br>CAPITAL</h1>
+    <div class="grid-indicadores" id="indicadores"></div>
+
+    <div class="rating-gauge">
+      <canvas id="gaugeChart"></canvas>
+    </div>
+
+    <div class="grid-benchmark">
+      <div>
+        <h3>Benchmark Comparison</h3>
+        <canvas id="grafico1"></canvas>
       </div>
-      <p class="subtitle">Empresas do Setor Educacional</p>
-
-      <!-- Conteúdo -->
-      <h2 class="subtitle" id="nomeEmpresa">Análise Financeira</h2>
-      <div class="grid-indicadores" id="indicadores"></div>
-
-      <div class="rating-gauge">
-        <canvas id="gaugeChart"></canvas>
+      <div>
+        <h3>Health Diagnostic Summary</h3>
+        <div class="diagnostico" id="diagnostico"></div>
       </div>
+    </div>
 
-      <div class="grid-benchmark">
-        <div>
-          <h3>Benchmark Comparison</h3>
-          <canvas id="grafico1"></canvas>
-        </div>
-        <div>
-          <h3>Health Diagnostic Summary</h3>
-          <div class="diagnostico" id="diagnostico"></div>
-        </div>
-      </div>
+    <div class="notas">
+      <h3>Notes</h3>
+      <p id="notas"></p>
+    </div>
 
-      <div class="notas">
-        <h3>Notes</h3>
-        <p id="notas"></p>
-      </div>
-
-      <!-- Botões padronizados -->
-      <div style="margin-top:2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-        <button class="btn" onclick="window.location.href='index.html'">Voltar à Lista</button>
-        <button class="btn" id="btnComparar">Comparar com outra empresa</button>
-      </div>
+    <div style="margin-top:2rem;">
+      <button onclick="window.location.href='index.html'">Voltar à Lista</button>
+      <button onclick="comparar()">Comparar com outra empresa</button>
     </div>
   </div>
 
@@ -87,9 +83,9 @@
     const urlParams = new URLSearchParams(window.location.search);
     const idEmpresa = urlParams.get('id');
 
-    document.getElementById('btnComparar').addEventListener('click', () => {
+    function comparar() {
       window.location.href = `comparar.html?id=${idEmpresa}`;
-    });
+    }
 
     buscarEmpresas().then(empresas => {
       const empresa = empresas.find(e => e.id === idEmpresa);
@@ -98,27 +94,21 @@
       document.getElementById('nomeEmpresa').textContent = empresa.nome;
 
       const campos = [
-        { label: 'Receita Anual (milhões de dólares)', valor: empresa.receita },
-        { label: 'EBITDA (milhões de dólares)', valor: empresa.ebitda },
-        { label: 'Valuation (milhões de dólares)', valor: empresa.valuation },
-        { label: 'Margem EBITDA', valor: empresa.margem_ebitda },
-        { label: 'EV/EBITDA', valor: empresa.ev_ebitda ?? '-' },
-        { label: 'Volume de Vendas / Faturamento', valor: empresa.receita },
-        { label: 'Ticket / ARPU (USD)', valor: empresa.arpu ?? '-' },
-        { label: 'LTV (USD)', valor: empresa.ltv ?? '-' },
-        { label: 'Crescimento YoY', valor: empresa.crescimento_yoy ?? '-' },
-        { label: 'CAC (USD)', valor: empresa.cac ?? '-' },
-        { label: 'Taxa de Churn', valor: empresa.churn ?? '-' },
-        { label: 'Conversão de Propostas', valor: empresa.conversao ?? '-' },
-        { label: 'Retenção / NRR', valor: empresa.nrr ?? '-' },
-        { label: 'Margem de Contribuição', valor: empresa.margem_contribuicao ?? '-' },
+        { label: 'Receita Anual (USD)', valor: empresa.receita },
+        { label: 'EBITDA (USD)', valor: empresa.ebitda },
+        { label: 'Valuation (USD)', valor: empresa.valuation },
+        { label: 'Margem EBITDA (%)', valor: empresa.margem_ebitda },
+        { label: 'EV/EBITDA', valor: empresa.ev_ebitda },
+        { label: 'Crescimento YoY (%)', valor: empresa.crescimento_yoy },
+        { label: 'Margem Bruta (%)', valor: empresa.margem_bruta },
+        { label: 'Consistência Crescimento YoY', valor: empresa.consistencia_yoy },
       ];
 
       const grid = document.getElementById('indicadores');
       campos.forEach(c => {
         const div = document.createElement('div');
         div.className = 'indicador';
-        div.innerHTML = `<strong>${c.label}</strong><br>${c.valor}${c.label.includes('%') ? '%' : ''}`;
+        div.innerHTML = `<strong>${c.label}</strong><br>${c.valor ?? '-'}`;
         grid.appendChild(div);
       });
 
