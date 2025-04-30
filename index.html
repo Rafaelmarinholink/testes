@@ -4,10 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Saber Capital | Home</title>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
-
   <style>
     .popup-erro {
       position: fixed;
@@ -16,13 +15,12 @@
       transform: translate(-50%, -50%);
       background-color: #ef4444;
       color: white;
-      padding: 1rem 2rem;
+      padding: 1.5rem 2rem;
       border-radius: 8px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.3);
       display: none;
       z-index: 1000;
     }
-
     .popup-erro button {
       background-color: transparent;
       color: white;
@@ -33,11 +31,9 @@
       top: 0.5rem;
       right: 0.75rem;
     }
-
     input.error, textarea.error {
       border: 2px solid #ef4444 !important;
     }
-
     .logo-wrapper {
       display: flex;
       justify-content: center;
@@ -65,18 +61,18 @@
     <div class="card">
       <h2>Cadastrar Nova Empresa</h2>
       <form id="empresa-form">
-        <div class="form-group"><label>Nome da Empresa</label><input type="text" id="nome" /></div>
-        <div class="form-group"><label>Ticker</label><input type="text" id="ticker" /></div>
-        <div class="form-group"><label>Receita Anual (milhões de USD)</label><input type="number" id="receita" /></div>
-        <div class="form-group"><label>EBITDA (milhões de USD)</label><input type="number" id="ebitda" /></div>
-        <div class="form-group"><label>Valuation (milhões de USD)</label><input type="number" id="valuation" /></div>
-        <div class="form-group"><label>Crescimento YoY (%)</label><input type="number" id="crescimento_yoy" /></div>
-        <div class="form-group"><label>Retenção / NRR (%)</label><input type="number" id="nrr" /></div>
-        <div class="form-group"><label>LTV (USD)</label><input type="number" id="ltv" /></div>
-        <div class="form-group"><label>Taxa de Churn (%)</label><input type="number" id="churn" /></div>
-        <div class="form-group"><label>Margem de Contribuição (%)</label><input type="number" id="margem_contribuicao" /></div>
-        <div class="form-group"><label>EV/EBITDA</label><input type="number" id="ev_ebitda" /></div>
-        <div class="form-group"><label>CAC (USD)</label><input type="number" id="cac" /></div>
+        <div class="form-group"><label>Nome da Empresa</label><input type="text" id="nome" required /></div>
+        <div class="form-group"><label>Ticker</label><input type="text" id="ticker" required /></div>
+        <div class="form-group"><label>Receita Anual (milhões de USD)</label><input type="number" id="receita" required /></div>
+        <div class="form-group"><label>EBITDA (milhões de USD)</label><input type="number" id="ebitda" required /></div>
+        <div class="form-group"><label>Valuation (milhões de USD)</label><input type="number" id="valuation" required /></div>
+        <div class="form-group"><label>Crescimento YoY (%)</label><input type="number" id="crescimento_yoy" required /></div>
+        <div class="form-group"><label>Retenção / NRR (%)</label><input type="number" id="nrr" required /></div>
+        <div class="form-group"><label>LTV (USD)</label><input type="number" id="ltv" required /></div>
+        <div class="form-group"><label>Taxa de Churn (%)</label><input type="number" id="churn" required /></div>
+        <div class="form-group"><label>Margem de Contribuição (%)</label><input type="number" id="margem_contribuicao" required /></div>
+        <div class="form-group"><label>EV/EBITDA</label><input type="number" id="ev_ebitda" required /></div>
+        <div class="form-group"><label>CAC (USD)</label><input type="number" id="cac" required /></div>
         <div class="form-group"><label>Notas (opcional)</label><textarea id="notas"></textarea></div>
         <button type="submit" class="btn">Cadastrar Empresa</button>
       </form>
