@@ -7,8 +7,8 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
   let valido = true;
 
   campos.forEach(campo => {
-    if ((campo.type === 'number' && !campo.value) || 
-        (campo.type === 'text' && !campo.value.trim())) {
+    if ((campo.type === 'number' && campo.value === '') || 
+        (campo.type === 'text' && campo.value.trim() === '')) {
       campo.classList.add('error');
       valido = false;
     } else {
@@ -34,6 +34,13 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
     receita: parseFloat(document.getElementById('receita').value)
   };
 
+  for (const key in dados) {
+    if (isNaN(dados[key])) {
+      alert(`Preencha corretamente o campo: ${key}`);
+      return;
+    }
+  }
+
   const ratingCalculado = calcularRating(dados);
 
   const data = {
@@ -58,14 +65,13 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
   await fetch("https://api.airtable.com/v0/appaq7tR3vt9vrN6y/Empresas", {
     method: 'POST',
     headers: {
-      Authorization: "patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6",
+      Authorization: "Bearer patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6",
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(data)
   });
 
   buscarEmpresas().then(empresas => carregarTopEmpresas(empresas));
-
   e.target.reset();
 });
 
