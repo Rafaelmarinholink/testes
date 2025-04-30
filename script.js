@@ -27,11 +27,9 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
   const dados = {
     crescimento_yoy: parseFloat(document.getElementById('crescimento_yoy').value),
     consistencia_yoy: parseFloat(document.getElementById('consistencia').value),
-    margem_ebitda: parseFloat(document.getElementById('margem_ebitda').value),
     margem_bruta: parseFloat(document.getElementById('margem_bruta').value),
     ebitda: parseFloat(document.getElementById('ebitda').value),
     receita: parseFloat(document.getElementById('receita').value),
-    ev_ebitda: parseFloat(document.getElementById('ev_ebitda').value),
     valuation: parseFloat(document.getElementById('valuation').value)
   };
 
@@ -44,8 +42,6 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
       "Receita Anual (USD)": dados.receita,
       "EBITDA (USD)": dados.ebitda,
       "Valuation (USD)": dados.valuation,
-      "Margem EBITDA": dados.margem_ebitda,
-      "EV/EBITDA": dados.ev_ebitda,
       "Crescimento YoY": dados.crescimento_yoy,
       "Margem Bruta": dados.margem_bruta,
       "Consistência Crescimento YoY": dados.consistencia_yoy,
@@ -71,11 +67,9 @@ function calcularRating(dados) {
   const kpis = [
     { chave: 'crescimento_yoy', peso: 20, nota: getNota(dados.crescimento_yoy, [0,10,25], [60,80,100]) },
     { chave: 'consistencia_yoy', peso: 15, nota: getNota(dados.consistencia_yoy, [0,5,10], [60,80,100]) },
-    { chave: 'margem_ebitda', peso: 15, nota: getNota(dados.margem_ebitda, [0,10,20], [60,80,100]) },
     { chave: 'margem_bruta', peso: 10, nota: getNota(dados.margem_bruta, [0,30,50], [60,80,100]) },
     { chave: 'ebitda', peso: 10, nota: getNota(dados.ebitda, [0,10,30], [60,80,100]) },
     { chave: 'receita', peso: 10, nota: getNota(dados.receita, [0,50,100], [60,80,100]) },
-    { chave: 'ev_ebitda', peso: 10, nota: getNotaEV(dados.ev_ebitda) },
     { chave: 'valuation', peso: 5, nota: getNota(dados.valuation, [0,100,200], [60,80,100]) },
   ];
 
@@ -95,13 +89,6 @@ function getNota(valor, limites, notas) {
   if (valor <= limites[0]) return notas[0];
   if (valor <= limites[1]) return notas[1];
   return notas[2];
-}
-
-function getNotaEV(valor) {
-  if (isNaN(valor)) return 0;
-  if (valor >= 9 && valor <= 14) return 100;
-  if (valor >= 7 && valor < 9 || valor > 14 && valor <= 16) return 80;
-  return 60;
 }
 
 function carregarTopEmpresas(empresas) {
