@@ -33,14 +33,15 @@ body {
 }
 
 .logo-img {
-  width: 75px;
-  margin-right: 10px;
+  width: 65px;
+  margin-right: 0.5rem;
 }
 
 .logo-text {
   font-family: 'Archivo Black', sans-serif;
-  font-size: 1.8rem;
-  text-align: left;
+  font-size: 1.5rem;
+  color: white;
+  line-height: 1;
 }
 
 .subtitle {
