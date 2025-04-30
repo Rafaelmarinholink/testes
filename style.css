@@ -26,6 +26,9 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-directions: row;
+  margin: 1rem auto;
+  text-align: center;
   cursor: pointer;
 }
 
