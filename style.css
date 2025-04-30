@@ -21,13 +21,16 @@ body {
   border-radius: 10px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 }
-
-.logo {
-  font-size: 2rem;
-  font-weight: bold;
-  text-align: center;
-  color: #ffffff;
-  margin-bottom: 0.5rem;
+header {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  mergin-bottom: 2rem;
+}
+.header-container {
+ display: flex;
+ justify-content: center;
+ width: 100%;
 }
 
 .logo-wrapper {
@@ -35,7 +38,7 @@ body {
   justify-content: center;
   align-items: center;
   gap: 12px;
-  margin: 2rem auto;
+  text-allign: center;
 }
 
 .logo-img {
