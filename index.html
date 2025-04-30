@@ -36,30 +36,39 @@
     }
     .logo-wrapper {
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 1rem;
       cursor: pointer;
+    }
+    .logo-text {
+      font-family: 'Archivo Black', sans-serif;
+      color: white;
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+    }
+    .logo-img {
+      height: 65px;
+      width: auto;
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo-wrapper" onclick="window.location.href='index.html'">
-      <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
-      <h1 class="logo-text">SABER<br>CAPITAL</h1>
-    </div>
-  </div>
-</header>
-
   <div class="container">
-    <p class="subtitle">Empresas do Setor Educacional</p>
-
-    <div id="popupErro" class="popup-erro">
-      <button onclick="document.getElementById('popupErro').style.display='none'">&times;</button>
-      Por favor, preencha todos os campos obrigatórios destacados.
-    </div>
-
     <div class="card">
+      <div class="logo-wrapper" onclick="window.location.href='index.html'">
+        <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
+        <h1 class="logo-text">SABER<br>CAPITAL</h1>
+      </div>
+
+      <p class="subtitle">Empresas do Setor Educacional</p>
+
+      <div id="popupErro" class="popup-erro">
+        <button onclick="document.getElementById('popupErro').style.display='none'">&times;</button>
+        Por favor, preencha todos os campos obrigatórios destacados.
+      </div>
+
       <h2>Cadastrar Nova Empresa</h2>
       <form id="empresa-form">
         <div class="form-group"><label>Nome da Empresa</label><input type="text" id="nome" required /></div>
