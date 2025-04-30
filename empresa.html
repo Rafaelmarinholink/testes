@@ -36,42 +36,21 @@
       gap: 1rem;
       margin-top: 1rem;
     }
-    .logo-wrapper {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 1rem;
-      cursor: pointer;
-    }
-    .logo-text {
-      font-family: 'Archivo Black', sans-serif;
-      color: white;
-      font-size: 1.8rem;
-      letter-spacing: 1px;
-    }
-    .logo-img {
-      height: 65px;
-      width: auto;
-    }
-    .subtitle {
-      font-size: 1rem;
-      text-align: center;
-      color: #cbd5e1;
-      margin-bottom: 2rem;
-    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="card">
-      <div class="logo-wrapper" onclick="window.location.href='index.html'">
+
+      <!-- Header dentro do card -->
+      <div class="logo-wrapper" onclick="window.location.href='index.html'" style="cursor:pointer;">
         <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
         <h1 class="logo-text">SABER<br>CAPITAL</h1>
       </div>
+      <p class="subtitle">Empresas do Setor Educacional</p>
 
+      <!-- Conteúdo -->
       <h2 class="subtitle" id="nomeEmpresa">Análise Financeira</h2>
-
       <div class="grid-indicadores" id="indicadores"></div>
 
       <div class="rating-gauge">
@@ -94,9 +73,10 @@
         <p id="notas"></p>
       </div>
 
-      <div style="margin-top:2rem;">
-        <button onclick="window.location.href='index.html'">Voltar à Lista</button>
-        <button id="btnComparar">Comparar com outra empresa</button>
+      <!-- Botões padronizados -->
+      <div style="margin-top:2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+        <button class="btn" onclick="window.location.href='index.html'">Voltar à Lista</button>
+        <button class="btn" id="btnComparar">Comparar com outra empresa</button>
       </div>
     </div>
   </div>
