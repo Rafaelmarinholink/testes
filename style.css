@@ -32,14 +32,14 @@ body {
 
 .logo-wrapper {
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   gap: 12px;
-  margin-bottom: 2rem;
+  margin: 2rem auto;
 }
 
 .logo-img {
-  height: 80px;
+  height: 65px;
   width: auto;
 }
 
@@ -48,6 +48,7 @@ body {
   color: white;
   font-size: 1.8rem;
   letter-spacing: 1px;
+  letter-height: 1;
 }
 
 .subtitle {
