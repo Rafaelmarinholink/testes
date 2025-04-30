@@ -7,25 +7,68 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <style>
+    .popup-erro {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #ef4444;
+      color: white;
+      padding: 1.5rem 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 1000;
+    }
+    .popup-erro button {
+      background-color: transparent;
+      color: white;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      position: absolute;
+      top: 0.5rem;
+      right: 0.75rem;
+    }
+    input.error, textarea.error {
+      border: 2px solid #ef4444 !important;
+    }
+    .logo-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 1rem;
+      cursor: pointer;
+    }
+    .logo-text {
+      font-family: 'Archivo Black', sans-serif;
+      color: white;
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+    }
+    .logo-img {
+      height: 65px;
+      width: auto;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <div class="card" style="text-align: center; padding: 2rem;">
+  <div class="container">
+    <div class="card">
       <div class="logo-wrapper" onclick="window.location.href='index.html'">
         <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
         <h1 class="logo-text">SABER<br>CAPITAL</h1>
       </div>
+
       <p class="subtitle">Empresas do Setor Educacional</p>
-    </div>
-  </header>
 
-  <div class="container">
-    <div id="popupErro" class="popup-erro">
-      <button onclick="document.getElementById('popupErro').style.display='none'">&times;</button>
-      Por favor, preencha todos os campos obrigatórios destacados.
-    </div>
+      <div id="popupErro" class="popup-erro">
+        <button onclick="document.getElementById('popupErro').style.display='none'">&times;</button>
+        Por favor, preencha todos os campos obrigatórios destacados.
+      </div>
 
-    <div class="card">
       <h2>Cadastrar Nova Empresa</h2>
       <form id="empresa-form">
         <div class="form-group"><label>Nome da Empresa</label><input type="text" id="nome" required /></div>
@@ -47,7 +90,7 @@
     <div class="card">
       <h2>Top 3 Empresas por Rating</h2>
       <div id="top-empresas" class="empresa-lista"></div>
-      <button class="btn" onclick="window.location.href='empresas.html'">Visualizar Todas as Empresas</button>
+      <button onclick="window.location.href='empresas.html'">Visualizar Todas as Empresas</button>
     </div>
   </div>
 
