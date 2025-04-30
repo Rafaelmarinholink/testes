@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Saber Capital | Home</title>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <style>
     .popup-erro {
       position: fixed;
@@ -21,6 +21,7 @@
       display: none;
       z-index: 1000;
     }
+
     .popup-erro button {
       background-color: transparent;
       color: white;
@@ -31,17 +32,50 @@
       top: 0.5rem;
       right: 0.75rem;
     }
+
     input.error, textarea.error {
       border: 2px solid #ef4444 !important;
+    }
+
+    .logo-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .logo-img {
+      height: 65px;
+      width: auto;
+    }
+
+    .logo-text {
+      font-family: 'Archivo Black', sans-serif;
+      color: white;
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      text-align: center;
+      color: #cbd5e1;
+      margin-bottom: 2rem;
     }
   </style>
 </head>
 <body>
-  <!-- Header carregado dinamicamente -->
-  <header id="site-header"></header>
-
   <div class="container">
-    <p class="subtitle">Empresas do Setor Educacional</p>
+    <div class="card" style="text-align:center;">
+      <div class="logo-wrapper" onclick="window.location.href='index.html'" style="cursor:pointer;">
+        <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
+        <h1 class="logo-text">SABER<br>CAPITAL</h1>
+      </div>
+      <p class="subtitle">Empresas do Setor Educacional</p>
+    </div>
 
     <div id="popupErro" class="popup-erro">
       <button onclick="document.getElementById('popupErro').style.display='none'">&times;</button>
@@ -70,16 +104,12 @@
     <div class="card">
       <h2>Top 3 Empresas por Rating</h2>
       <div id="top-empresas" class="empresa-lista"></div>
-      <button class="btn" onclick="window.location.href='empresas.html'">Visualizar Todas as Empresas</button>
+      <div style="text-align: center; margin-top: 1rem;">
+        <button class="btn" onclick="window.location.href='empresas.html'">Visualizar Todas as Empresas</button>
+      </div>
     </div>
   </div>
 
   <script type="module" src="script.js"></script>
-  <script>
-    // Carrega o header externo
-    fetch('header.html')
-      .then(res => res.text())
-      .then(html => document.getElementById('site-header').innerHTML = html);
-  </script>
 </body>
 </html>
