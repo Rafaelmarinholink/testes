@@ -47,7 +47,6 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
       "LTV": dados.ltv,
       "Churn": dados.churn,
       "Margem de Contribuição": dados.margem_contribuicao,
-      "EV/EBITDA": dados.ev_ebitda,
       "CAC": dados.cac,
       "Notas": document.getElementById('notas').value,
       "Rating": ratingCalculado
