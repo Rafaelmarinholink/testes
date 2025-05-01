@@ -88,11 +88,11 @@
         { label: 'Valuation', valor: formatarMilhoes(empresa.valuation) },
         { label: 'Margem EBITDA', valor: formatarPercentual(empresa.margem_ebitda) },
         { label: 'EV/EBITDA', valor: formatarMultiplo(empresa.ev_ebitda) },
-        { label: 'Crescimento YoY', valor: `${parseFloat(empresa.crescimento_yoy).toFixed(1)}%` },
+        { label: 'Crescimento YoY', valor: `${parseFloat(empresa.crescimento_yoy * 100).toFixed(1)}%` },
         { label: 'Margem Bruta', valor: formatarPercentual(empresa.margem_bruta) },
         { label: 'S&M', valor: formatarPercentual(empresa.sm) },
         { label: 'SG&A', valor: formatarPercentual(empresa.sga) },
-        { label: 'Consistência Crescimento YoY', valor: empresa.consistencia_crescimento ?? '-' }
+        { label: 'Consistência Crescimento YoY', valor: empresa.consistencia_yoy ?? '-' }
       ];
 
       const grid = document.getElementById('indicadores');
