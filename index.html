@@ -79,16 +79,16 @@
         <div class="form-group"><label>Notas (opcional)</label><textarea id="notas"></textarea></div>
         <div class="form-group"><label>Crescimento YoY (%)</label><input type="number" step="any" id="crescimento_yoy" required /></div>
         <div class="form-group"><label>Margem Bruta (%)</label><input type="number" step="any" id="margem_bruta" required /></div>
-        <div class="form-group"><label>S&M (milhões de USD)</label><input type="number" step="any" id="sm" required /></div>
-        <div class="form-group"><label>SG&A (milhões de USD)</label><input type="number" step="any" id="sga" required /></div>
+        <div class="form-group"><label>S&M (%)</label><input type="number" step="any" id="sm" required /></div>
+        <div class="form-group"><label>SG&A (%)</label><input type="number" step="any" id="sga" required /></div>
         <div class="form-group">
           <label>Consistência Crescimento YoY</label>
           <select id="consistencia" required>
-            <option value="">Selecione...</option>
-            <option value="Alta">Alta</option>
-            <option value="Média">Média</option>
-            <option value="Baixa">Baixa</option>
-          </select>
+  <option value="">Selecione...</option>
+  <option value="Crescimento positivo">Crescimento positivo</option>
+  <option value="Estável">Estável</option>
+  <option value="Declínio acentuado">Declínio acentuado</option>
+</select>
         </div>
         <button type="submit" class="btn">Cadastrar Empresa</button>
       </form>
