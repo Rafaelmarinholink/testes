@@ -3,72 +3,65 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Comparar Empresas | Saber Capital</title>
+  <title>Análise da Empresa | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    .logo-wrapper {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 1rem;
-      cursor: pointer;
-    }
-    .logo-text {
-      font-family: 'Archivo Black', sans-serif;
-      color: white;
-      font-size: 1.8rem;
-    }
-    .logo-img {
-      height: 65px;
-      width: auto;
-    }
-    .grid-comparacao {
-      display: flex;
-      flex-wrap: wrap;
+    .grid-indicadores {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 1rem;
-      margin-bottom: 2rem;
-    }
-    .card-empresa {
-      background-color: #1e3a5f;
-      padding: 1rem;
-      border-radius: 8px;
-      color: white;
-      flex: 1;
-      min-width: 300px;
+      margin-top: 1rem;
     }
     .indicador {
-      margin-bottom: 0.6rem;
+      background-color: #1e3a5f;
+      padding: 1rem;
+      border-radius: 6px;
+      color: #fff;
+    }
+    .rating-gauge {
+      max-width: 320px;
+      margin: 2rem auto;
+    }
+    .diagnostico, .notas, .aprovacao {
+      background-color: #1a365d;
+      color: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1.5rem;
     }
     .btn {
-      padding: 0.75rem 1.2rem;
-      font-size: 1rem;
-      background-color: #ffffff;
-      color: #0b1f3a;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-right: 1rem;
+      margin-right: 0.5rem;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="card">
-      <div class="logo-wrapper" onclick="window.location.href='index.html'">
+      <div class="logo-wrapper" onclick="window.location.href='index.html'" style="cursor:pointer;">
         <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
         <h1 class="logo-text">SABER<br>CAPITAL</h1>
       </div>
 
-      <h2 class="subtitle">Comparar Empresas</h2>
+      <h2 class="subtitle" id="nomeEmpresa">Análise Financeira</h2>
 
-      <div class="grid-comparacao" id="comparacao"></div>
+      <div class="grid-indicadores" id="indicadores"></div>
 
-      <div>
-        <button class="btn" onclick="window.location.href='index.html'">← Nova Comparação</button>
-        <button class="btn" onclick="inverterEmpresas()">Inverter Empresas</button>
+      <div class="rating-gauge">
+        <canvas id="gaugeChart"></canvas>
+      </div>
+
+      <div class="aprovacao" id="aprovacao"></div>
+      <div class="diagnostico" id="diagnostico"></div>
+
+      <div class="notas">
+        <h3>Notas</h3>
+        <p id="notas"></p>
+      </div>
+
+      <div style="margin-top:2rem;">
+        <button class="btn" onclick="window.location.href='index.html'">← Voltar à Lista</button>
+        <button class="btn" id="btnComparar">Comparar com outra empresa</button>
       </div>
     </div>
   </div>
@@ -76,46 +69,118 @@
   <script type="module">
     import { buscarEmpresas } from './airtable.js';
 
+    const formatarMilhoes = v => v ? `R$ ${parseFloat(v).toFixed(1)} Milhões` : '-';
+    const formatarPercentual = v => v ? `${(parseFloat(v) * 100).toFixed(1)}%` : '-';
+    const formatarMultiplo = v => v ? `${parseFloat(v).toFixed(2)}x` : '-';
+
     const urlParams = new URLSearchParams(window.location.search);
-    const id1 = urlParams.get('id');
-    const id2 = urlParams.get('id2');
+    const idEmpresa = urlParams.get('id');
 
-    let empresas = [];
-    let empresaA = null;
-    let empresaB = null;
-
-    function inverterEmpresas() {
-      window.location.href = `comparar.html?id=${id2}&id2=${id1}`;
+    function gerarAprovacao(rating) {
+      if (rating >= 75) return "Status: Elegível para investimento";
+      if (rating >= 50) return "Status: Exige análise complementar";
+      return "Status: Não recomendado neste estágio";
     }
 
-    function criarCard(empresa) {
-      const div = document.createElement('div');
-      div.className = 'card-empresa';
-      div.innerHTML = `
-        <h3>${empresa.nome}</h3>
-        <div class="indicador">Receita: R$ ${Number(empresa.receita).toLocaleString('pt-BR')}M</div>
-        <div class="indicador">EBITDA: R$ ${Number(empresa.ebitda).toLocaleString('pt-BR')}M</div>
-        <div class="indicador">Valuation: R$ ${Number(empresa.valuation).toLocaleString('pt-BR')}M</div>
-        <div class="indicador">Margem EBITDA: ${(empresa.margem_ebitda * 100).toFixed(1)}%</div>
-        <div class="indicador">EV/EBITDA: ${empresa.ev_ebitda?.toFixed(2)}x</div>
-        <div class="indicador">Crescimento YoY: ${(empresa.crescimento_yoy * 100).toFixed(1)}%</div>
-        <div class="indicador">Margem Bruta: ${(empresa.margem_bruta * 100).toFixed(1)}%</div>
-        <div class="indicador">S&M: ${(empresa.sm * 100).toFixed(1)}%</div>
-        <div class="indicador">SG&A: ${(empresa.sga * 100).toFixed(1)}%</div>
-        <div class="indicador">Consistência: ${empresa.consistencia_yoy}</div>
-        <div class="indicador">Rating: ${empresa.rating}</div>
-      `;
-      return div;
+    function gerarAnalise(empresa) {
+      const frases = [];
+
+      if (empresa.crescimento_yoy >= 0.2)
+        frases.push("apresenta crescimento expressivo ano a ano");
+      else if (empresa.crescimento_yoy >= 0.05)
+        frases.push("demonstra crescimento moderado e consistente");
+      else if (empresa.crescimento_yoy < 0)
+        frases.push("registra retração no crescimento, o que pode indicar desafios estruturais");
+
+      if (empresa.margem_bruta >= 0.6)
+        frases.push("mantém excelente margem bruta, evidenciando alta eficiência operacional");
+      else if (empresa.margem_bruta >= 0.4)
+        frases.push("opera com boa margem bruta, com oportunidades de melhoria em custos diretos");
+      else
+        frases.push("enfrenta margens brutas comprimidas, exigindo revisão estratégica da entrega de valor");
+
+      if (empresa.sm >= 0.4)
+        frases.push("apresenta gastos elevados com marketing e vendas (S&M), o que pode indicar dependência significativa de aquisição paga");
+
+      if (empresa.sga >= 0.3)
+        frases.push("registra despesas administrativas (SG&A) acima do ideal, sugerindo ineficiências operacionais");
+
+      if (empresa.ebitda > 0)
+        frases.push("gera caixa operacional positivo, o que sustenta sua viabilidade no curto e médio prazo");
+      else
+        frases.push("enfrenta desafios na geração de caixa, demandando maior controle sobre estrutura de custos");
+
+      if (empresa.consistencia_yoy === "Crescimento positivo")
+        frases.push("exibe consistência em sua evolução histórica, o que contribui para previsibilidade futura");
+      else if (empresa.consistencia_yoy === "Declínio acentuado")
+        frases.push("aponta um declínio recente preocupante no histórico de desempenho");
+
+      return "A empresa " + frases.join(", ") + ".";
     }
 
-    buscarEmpresas().then(lista => {
-      empresas = lista;
-      empresaA = empresas.find(e => e.id === id1);
-      empresaB = empresas.find(e => e.id === id2);
+    buscarEmpresas().then(empresas => {
+      const empresa = empresas.find(e => e.id === idEmpresa);
+      if (!empresa) return;
 
-      const comparacaoDiv = document.getElementById('comparacao');
-      if (empresaA) comparacaoDiv.appendChild(criarCard(empresaA));
-      if (empresaB) comparacaoDiv.appendChild(criarCard(empresaB));
+      document.getElementById('nomeEmpresa').textContent = empresa.nome;
+
+      const campos = [
+        { label: 'Receita Anual', valor: formatarMilhoes(empresa.receita) },
+        { label: 'EBITDA', valor: formatarMilhoes(empresa.ebitda) },
+        { label: 'Valuation', valor: formatarMilhoes(empresa.valuation) },
+        { label: 'Margem EBITDA', valor: formatarPercentual(empresa.margem_ebitda) },
+        { label: 'EV/EBITDA', valor: formatarMultiplo(empresa.ev_ebitda) },
+        { label: 'Crescimento YoY', valor: formatarPercentual(empresa.crescimento_yoy) },
+        { label: 'Margem Bruta', valor: formatarPercentual(empresa.margem_bruta) },
+        { label: 'S&M', valor: formatarPercentual(empresa.sm) },
+        { label: 'SG&A', valor: formatarPercentual(empresa.sga) },
+        { label: 'Consistência Crescimento YoY', valor: empresa.consistencia_yoy ?? '-' }
+      ];
+
+      const grid = document.getElementById('indicadores');
+      campos.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'indicador';
+        div.innerHTML = `<strong>${c.label}</strong><br>${c.valor}`;
+        grid.appendChild(div);
+      });
+
+      const rating = empresa.rating ?? 0;
+      document.getElementById('aprovacao').textContent = gerarAprovacao(rating);
+      document.getElementById('diagnostico').textContent = gerarAnalise(empresa);
+      document.getElementById('notas').textContent = empresa.notas || 'Nenhuma nota registrada.';
+
+      document.getElementById('btnComparar').addEventListener('click', () => {
+        window.location.href = `comparar.html?id=${empresa.id}`;
+      });
+
+      new Chart(document.getElementById('gaugeChart'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Rating'],
+          datasets: [{
+            data: [rating, 100 - rating],
+            backgroundColor: ['#3b82f6', '#1e293b'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          rotation: -90,
+          circumference: 180,
+          cutout: '70%',
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false },
+            title: {
+              display: true,
+              text: `${rating} / 100`,
+              color: '#fff',
+              font: { size: 24, weight: 'bold' },
+              padding: 10
+            }
+          }
+        }
+      });
     });
   </script>
 </body>
