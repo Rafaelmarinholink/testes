@@ -3,54 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Saber Capital | Home</title>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
+  <title>Análise da Empresa | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    .popup-erro {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: #ef4444;
-      color: white;
-      padding: 1.5rem 2rem;
+    .grid-indicadores {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .indicador {
+      background-color: #1e3a5f;
+      padding: 1rem;
+      border-radius: 6px;
+      color: #fff;
+    }
+    .rating-gauge {
+      max-width: 320px;
+      margin: 2rem auto;
+    }
+    .diagnostico, .notas {
+      background-color: #1a365d;
+      color: #fff;
+      padding: 1rem;
       border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      display: none;
-      z-index: 1000;
-    }
-    .popup-erro button {
-      background-color: transparent;
-      color: white;
-      border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-      position: absolute;
-      top: 0.5rem;
-      right: 0.75rem;
-    }
-    input.error, textarea.error, select.error {
-      border: 2px solid #ef4444 !important;
-    }
-    .logo-wrapper {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 1rem;
-      cursor: pointer;
-    }
-    .logo-text {
-      font-family: 'Archivo Black', sans-serif;
-      color: white;
-      font-size: 1.8rem;
-      letter-spacing: 1px;
-    }
-    .logo-img {
-      height: 65px;
-      width: auto;
+      margin-top: 1.5rem;
     }
   </style>
 </head>
@@ -62,45 +40,112 @@
         <h1 class="logo-text">SABER<br>CAPITAL</h1>
       </div>
 
-      <p class="subtitle">Empresas do Setor Educacional</p>
+      <h2 class="subtitle" id="nomeEmpresa">Análise Financeira</h2>
 
-      <div id="popupErro" class="popup-erro">
-        <button onclick="document.getElementById('popupErro').style.display='none'">&times;</button>
-        Por favor, preencha todos os campos obrigatórios destacados.
+      <div class="grid-indicadores" id="indicadores"></div>
+
+      <div class="rating-gauge">
+        <canvas id="gaugeChart"></canvas>
       </div>
 
-      <h2>Cadastrar Nova Empresa</h2>
-      <form id="empresa-form">
-        <div class="form-group"><label>Nome da Empresa</label><input type="text" id="nome" required /></div>
-        <div class="form-group"><label>Ticker</label><input type="text" id="ticker" required /></div>
-        <div class="form-group"><label>Receita Anual (milhões de USD)</label><input type="number" step="any" id="receita" required /></div>
-        <div class="form-group"><label>EBITDA (milhões de USD)</label><input type="number" step="any" id="ebitda" required /></div>
-        <div class="form-group"><label>Valuation (milhões de USD)</label><input type="number" step="any" id="valuation" required /></div>
-        <div class="form-group"><label>Notas (opcional)</label><textarea id="notas"></textarea></div>
-        <div class="form-group"><label>Crescimento YoY (%)</label><input type="number" step="any" id="crescimento_yoy" required /></div>
-        <div class="form-group"><label>Margem Bruta (%)</label><input type="number" step="any" id="margem_bruta" required /></div>
-        <div class="form-group"><label>S&M (%)</label><input type="number" step="any" id="sm" required /></div>
-        <div class="form-group"><label>SG&A (%)</label><input type="number" step="any" id="sga" required /></div>
-        <div class="form-group">
-          <label>Consistência Crescimento YoY</label>
-          <select id="consistencia_crescimento" required>
-  <option value="">Selecione...</option>
-  <option value="Crescimento positivo">Crescimento positivo</option>
-  <option value="Estável">Estável</option>
-  <option value="Declínio acentuado">Declínio acentuado</option>
-</select>
-        </div>
-        <button type="submit" class="btn">Cadastrar Empresa</button>
-      </form>
-    </div>
+      <div class="diagnostico" id="diagnostico"></div>
 
-    <div class="card">
-      <h2>Top 3 Empresas por Rating</h2>
-      <div id="top-empresas" class="empresa-lista"></div>
-      <button class="btn" onclick="window.location.href='empresas.html'">Visualizar Todas as Empresas</button>
+      <div class="notas">
+        <h3>Notas</h3>
+        <p id="notas"></p>
+      </div>
+
+      <div style="margin-top:2rem;">
+        <button class="btn" onclick="window.location.href='index.html'">Voltar à Lista</button>
+        <button class="btn" onclick="comparar()">Comparar com outra empresa</button>
+      </div>
     </div>
   </div>
 
-  <script type="module" src="script.js"></script>
+  <script type="module">
+    import { buscarEmpresas } from './airtable.js';
+
+    const formatarMilhoes = v => v ? `R$ ${parseFloat(v).toFixed(1)} Milhões` : '-';
+    const formatarPercentual = v => v ? `${(parseFloat(v) * 100).toFixed(1)}%` : '-';
+    const formatarMultiplo = v => v ? `${parseFloat(v).toFixed(2)}x` : '-';
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const idEmpresa = urlParams.get('id');
+
+    function comparar() {
+      window.location.href = `comparar.html?id=${idEmpresa}`;
+    }
+
+    buscarEmpresas().then(empresas => {
+      const empresa = empresas.find(e => e.id === idEmpresa);
+      if (!empresa) return;
+
+      document.getElementById('nomeEmpresa').textContent = empresa.nome;
+
+      const campos = [
+        { label: 'Receita Anual', valor: formatarMilhoes(empresa.receita) },
+        { label: 'EBITDA', valor: formatarMilhoes(empresa.ebitda) },
+        { label: 'Valuation', valor: formatarMilhoes(empresa.valuation) },
+        { label: 'Margem EBITDA', valor: formatarPercentual(empresa.margem_ebitda) },
+        { label: 'EV/EBITDA', valor: formatarMultiplo(empresa.ev_ebitda) },
+        { label: 'Crescimento YoY', valor: `${parseFloat(empresa.crescimento_yoy).toFixed(1)}%` },
+        { label: 'Margem Bruta', valor: formatarPercentual(empresa.margem_bruta) },
+        { label: 'S&M', valor: formatarPercentual(empresa.sm) },
+        { label: 'SG&A', valor: formatarPercentual(empresa.sga) },
+        { label: 'Consistência Crescimento YoY', valor: empresa.consistencia_crescimento ?? '-' }
+      ];
+
+      const grid = document.getElementById('indicadores');
+      campos.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'indicador';
+        div.innerHTML = `<strong>${c.label}</strong><br>${c.valor}`;
+        grid.appendChild(div);
+      });
+
+      // Diagnóstico baseado em rating
+      const rating = empresa.rating ?? 0;
+      const diagnostico = document.getElementById('diagnostico');
+      if (rating >= 75) {
+        diagnostico.textContent = "A empresa apresenta excelente desempenho financeiro, com fundamentos sólidos e indicadores robustos.";
+      } else if (rating >= 60) {
+        diagnostico.textContent = "A empresa demonstra boa saúde financeira, mas há pontos que podem ser otimizados para melhorar seu desempenho.";
+      } else if (rating >= 40) {
+        diagnostico.textContent = "A empresa pode enfrentar desafios de rentabilidade ou crescimento sustentado. É recomendável uma análise mais detalhada.";
+      } else {
+        diagnostico.textContent = "Atenção: diversos indicadores apontam fragilidade financeira. A análise deve considerar riscos elevados.";
+      }
+
+      document.getElementById('notas').textContent = empresa.notas || 'Nenhuma nota registrada.';
+
+      new Chart(document.getElementById('gaugeChart'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Rating'],
+          datasets: [{
+            data: [rating, 100 - rating],
+            backgroundColor: ['#3b82f6', '#1e293b'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          rotation: -90,
+          circumference: 180,
+          cutout: '70%',
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false },
+            title: {
+              display: true,
+              text: `${rating} / 100`,
+              color: '#fff',
+              font: { size: 24, weight: 'bold' },
+              padding: 10
+            }
+          }
+        }
+      });
+    });
+  </script>
 </body>
 </html>
