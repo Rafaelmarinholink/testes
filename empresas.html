@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Todas as Empresas | Saber Capital</title>
+  <title>Empresas | Saber Capital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <style>
     .empresa-card {
@@ -13,10 +13,9 @@
       margin-bottom: 1rem;
       padding: 1rem;
       border-radius: 8px;
-      cursor: pointer;
       transition: background-color 0.3s ease;
+      cursor: pointer;
     }
-
     .empresa-card:hover {
       background-color: #63b3ed;
       color: #0b1f3a;
@@ -30,8 +29,8 @@
         <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
         <h1 class="logo-text">SABER<br>CAPITAL</h1>
       </div>
+
       <p class="subtitle">Empresas do Setor Educacional</p>
-      <h2 class="subtitle">Todas as Empresas Cadastradas</h2>
 
       <div class="form-group">
         <input type="text" id="search" placeholder="🔍 Buscar empresa..." />
@@ -51,6 +50,8 @@
       </div>
 
       <div class="empresa-lista" id="lista-empresas"></div>
+
+      <button class="btn" onclick="window.location.href='index.html'">← Voltar ao Cadastro</button>
     </div>
   </div>
 
