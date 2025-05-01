@@ -76,6 +76,37 @@
       window.location.href = `comparar.html?id=${idEmpresa}`;
     }
 
+    function gerarDiagnostico(empresa) {
+      let frases = [];
+
+      if (empresa.crescimento_yoy >= 0.2) frases.push("apresenta forte crescimento ano a ano");
+      else if (empresa.crescimento_yoy >= 0.05) frases.push("tem um ritmo de crescimento moderado");
+      else if (empresa.crescimento_yoy < 0) frases.push("vem enfrentando queda no crescimento");
+
+      if (empresa.margem_bruta >= 0.6) frases.push("possui excelente margem bruta");
+      else if (empresa.margem_bruta >= 0.4) frases.push("tem boa margem bruta");
+      else frases.push("apresenta margem bruta abaixo do ideal");
+
+      if (empresa.sm > 0.5) frases.push("gasta muito com marketing e vendas, o que pode indicar alta dependência de aquisição paga");
+
+      if (empresa.sga > 0.4) frases.push("tem despesas administrativas elevadas");
+
+      if (empresa.ebitda > 0) frases.push("gera caixa operacional positivo");
+      else frases.push("ainda não atingiu geração de caixa positiva");
+
+      if (empresa.consistencia_yoy === "Crescimento positivo") frases.push("mantém trajetória de crescimento saudável");
+      else if (empresa.consistencia_yoy === "Declínio acentuado") frases.push("tem histórico recente de retração significativa");
+
+      const rating = empresa.rating ?? 0;
+      let resumo = "";
+      if (rating >= 75) resumo = "Os indicadores refletem um excelente desempenho financeiro, com fundamentos sólidos.";
+      else if (rating >= 60) resumo = "Os dados indicam uma empresa saudável, embora com pontos que podem ser otimizados.";
+      else if (rating >= 40) resumo = "Os números apontam atenção a certos riscos operacionais ou de eficiência.";
+      else resumo = "Os indicadores sugerem fragilidade financeira relevante e alta exposição a riscos.";
+
+      return `A empresa ${frases.join(", " )}. ${resumo}`;
+    }
+
     buscarEmpresas().then(empresas => {
       const empresa = empresas.find(e => e.id === idEmpresa);
       if (!empresa) return;
@@ -103,20 +134,7 @@
         grid.appendChild(div);
       });
 
-      const diagnostico = [];
-      if (empresa.crescimento_yoy > 0.15) diagnostico.push("crescimento consistente ano a ano");
-      if (empresa.margem_bruta > 0.6) diagnostico.push("excelente margem bruta");
-      if (empresa.sm > 0.4) diagnostico.push("gastos elevados com marketing e vendas");
-      if (empresa.sga > 0.3) diagnostico.push("despesas administrativas acima do ideal");
-      if (empresa.ebitda > 0) diagnostico.push("gera caixa operacional positivo");
-      if (empresa.consistencia_yoy?.toLowerCase().includes("positivo")) diagnostico.push("trajetória de crescimento saudável");
-
-      document.getElementById('diagnostico').textContent =
-        diagnostico.length > 0
-          ? `A empresa ${diagnostico.join(", ")}.
-             Os dados indicam um panorama ${empresa.rating >= 70 ? "positivo" : empresa.rating >= 50 ? "razoável, mas com pontos de atenção" : "de alerta sobre a performance financeira"}.`
-          : "Diagnóstico não disponível para esta empresa.";
-
+      document.getElementById('diagnostico').textContent = gerarDiagnostico(empresa);
       document.getElementById('notas').textContent = empresa.notas || 'Nenhuma nota registrada.';
 
       new Chart(document.getElementById('gaugeChart'), {
