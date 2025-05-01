@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Análise da Empresa | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     .grid-indicadores {
@@ -30,50 +31,35 @@
       border-radius: 8px;
       margin-top: 1.5rem;
     }
-    .grid-benchmark {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo-wrapper" onclick="window.location.href='index.html'" style="cursor:pointer;">
-      <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
-      <h1 class="logo-text">SABER<br>CAPITAL</h1>
-    </div>
-  </header>
-
   <div class="container">
-    <h2 class="subtitle" id="nomeEmpresa">Análise Financeira</h2>
-
-    <div class="grid-indicadores" id="indicadores"></div>
-
-    <div class="rating-gauge">
-      <canvas id="gaugeChart"></canvas>
-    </div>
-
-    <div class="grid-benchmark">
-      <div>
-        <h3>Benchmark Comparison</h3>
-        <canvas id="grafico1"></canvas>
+    <div class="card">
+      <div class="logo-wrapper" onclick="window.location.href='index.html'">
+        <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
+        <h1 class="logo-text">SABER<br>CAPITAL</h1>
       </div>
-      <div>
-        <h3>Health Diagnostic Summary</h3>
-        <div class="diagnostico" id="diagnostico"></div>
+
+      <p class="subtitle" id="nomeEmpresa">Análise Financeira</p>
+
+      <div class="grid-indicadores" id="indicadores"></div>
+
+      <div class="rating-gauge">
+        <canvas id="gaugeChart"></canvas>
       </div>
-    </div>
 
-    <div class="notas">
-      <h3>Notes</h3>
-      <p id="notas"></p>
-    </div>
+      <div class="diagnostico" id="diagnostico"></div>
 
-    <div style="margin-top:2rem;">
-      <button onclick="window.location.href='index.html'">Voltar à Lista</button>
-      <button onclick="comparar()">Comparar com outra empresa</button>
+      <div class="notas">
+        <h3>Notas</h3>
+        <p id="notas"></p>
+      </div>
+
+      <div style="margin-top:2rem; display: flex; gap: 1rem; justify-content: center;">
+        <button class="btn" onclick="window.location.href='index.html'">Voltar</button>
+        <button class="btn" onclick="comparar()">Comparar com outra empresa</button>
+      </div>
     </div>
   </div>
 
@@ -87,6 +73,42 @@
       window.location.href = `comparar.html?id=${idEmpresa}`;
     }
 
+    function gerarDiagnosticoCompleto(e) {
+      const safe = v => v !== undefined && v !== null && v !== '' && !isNaN(v);
+
+      const positivos = [];
+      const riscos = [];
+
+      if (safe(e.ebitda) && e.ebitda > 0) positivos.push("EBITDA positivo");
+      else riscos.push("EBITDA negativo ou ausente");
+
+      if (safe(e.margem_ebitda) && e.margem_ebitda >= 15) positivos.push("Margem EBITDA saudável");
+      else riscos.push("Margem EBITDA abaixo do ideal");
+
+      if (safe(e.crescimento_yoy) && e.crescimento_yoy >= 10) positivos.push("Crescimento YoY consistente");
+      else riscos.push("Crescimento abaixo do esperado");
+
+      if (safe(e.margem_bruta) && e.margem_bruta >= 40) positivos.push("Margem Bruta elevada");
+      else riscos.push("Margem Bruta modesta");
+
+      if (safe(e.sm) && safe(e.receita) && e.sm / e.receita < 0.2) positivos.push("S&M eficiente");
+      else riscos.push("S&M proporcionalmente alto");
+
+      if (safe(e.sga) && e.sga < 20) positivos.push("SG&A controlado");
+      else riscos.push("SG&A elevado");
+
+      if (safe(e.ev_ebitda) && e.ev_ebitda >= 8 && e.ev_ebitda <= 14) positivos.push("EV/EBITDA dentro da faixa ideal");
+      else riscos.push("EV/EBITDA fora da faixa de referência");
+
+      if (e.consistencia_yoy?.toLowerCase() === 'alta') positivos.push("Crescimento com boa consistência");
+      else riscos.push("Consistência do crescimento fraca ou não informada");
+
+      let texto = "";
+      if (positivos.length > 0) texto += "Pontos fortes: " + positivos.join(", ") + ". ";
+      if (riscos.length > 0) texto += "Pontos de atenção: " + riscos.join(", ") + ".";
+      return texto;
+    }
+
     buscarEmpresas().then(empresas => {
       const empresa = empresas.find(e => e.id === idEmpresa);
       if (!empresa) return;
@@ -94,28 +116,28 @@
       document.getElementById('nomeEmpresa').textContent = empresa.nome;
 
       const campos = [
-        { label: 'Receita Anual (USD)', valor: empresa.receita },
-        { label: 'EBITDA (USD)', valor: empresa.ebitda },
-        { label: 'Valuation (USD)', valor: empresa.valuation },
-        { label: 'Margem EBITDA (%)', valor: empresa.margem_ebitda },
-        { label: 'EV/EBITDA', valor: empresa.ev_ebitda },
-        { label: 'Crescimento YoY (%)', valor: empresa.crescimento_yoy },
-        { label: 'Margem Bruta (%)', valor: empresa.margem_bruta },
-        { label: 'Consistência Crescimento YoY', valor: empresa.consistencia_yoy },
+        { label: 'Receita Anual', valor: empresa.receita, sufixo: 'M' },
+        { label: 'EBITDA', valor: empresa.ebitda, sufixo: 'M' },
+        { label: 'Valuation', valor: empresa.valuation, sufixo: 'M' },
+        { label: 'Margem EBITDA', valor: empresa.margem_ebitda, sufixo: '%' },
+        { label: 'EV/EBITDA', valor: empresa.ev_ebitda, sufixo: 'x' },
+        { label: 'Crescimento YoY', valor: empresa.crescimento_yoy, sufixo: '%' },
+        { label: 'Margem Bruta', valor: empresa.margem_bruta, sufixo: '%' },
+        { label: 'S&M', valor: empresa.sm, sufixo: 'M' },
+        { label: 'SG&A', valor: empresa.sga, sufixo: 'M' },
+        { label: 'Consistência Crescimento YoY', valor: empresa.consistencia_yoy, sufixo: '' }
       ];
 
       const grid = document.getElementById('indicadores');
       campos.forEach(c => {
         const div = document.createElement('div');
         div.className = 'indicador';
-        div.innerHTML = `<strong>${c.label}</strong><br>${c.valor ?? '-'}`;
+        const v = (c.valor !== undefined && c.valor !== null) ? c.valor : '-';
+        div.innerHTML = `<strong>${c.label}</strong><br>${v}${c.sufixo}`;
         grid.appendChild(div);
       });
 
-      document.getElementById('diagnostico').textContent = empresa.rating >= 70
-        ? 'Empresa apresenta fundamentos financeiros saudáveis e consistentes.'
-        : 'A empresa pode ter riscos operacionais ou desafios de rentabilidade.';
-
+      document.getElementById('diagnostico').textContent = gerarDiagnosticoCompleto(empresa);
       document.getElementById('notas').textContent = empresa.notas || 'Nenhuma nota registrada.';
 
       new Chart(document.getElementById('gaugeChart'), {
@@ -137,7 +159,7 @@
             tooltip: { enabled: false },
             title: {
               display: true,
-              text: empresa.rating + ' / 100',
+              text: (empresa.rating ?? 0) + ' / 100',
               color: '#fff',
               font: { size: 24, weight: 'bold' },
               padding: 10
