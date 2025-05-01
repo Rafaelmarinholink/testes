@@ -86,8 +86,6 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
       "Receita Anual (USD)": dados.receita,
       "EBITDA (USD)": dados.ebitda,
       "Valuation (USD)": parseFloat(document.getElementById('valuation').value),
-      "Margem EBITDA": '', // campo de fórmula na Airtable
-      "EV/EBITDA": '',     // campo de fórmula na Airtable
       "Notas": document.getElementById('notas').value,
       "Rating": ratingCalculado,
       "Crescimento YoY": dados.crescimento_yoy,
