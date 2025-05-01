@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Empresas | Saber Capital</title>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet" />
+  <title>Todas as Empresas | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <style>
     .empresa-card {
@@ -13,8 +13,8 @@
       margin-bottom: 1rem;
       padding: 1rem;
       border-radius: 8px;
-      transition: background-color 0.3s ease;
       cursor: pointer;
+      transition: background-color 0.3s ease;
     }
 
     .empresa-card:hover {
@@ -51,8 +51,6 @@
       </div>
 
       <div class="empresa-lista" id="lista-empresas"></div>
-
-      <button class="btn" onclick="window.location.href='index.html'">Voltar para Cadastro</button>
     </div>
   </div>
 
@@ -73,9 +71,9 @@
         card.innerHTML = `
           <strong>${empresa.nome}</strong><br/>
           Rating: ${empresa.rating ?? 'N/A'}<br/>
-          Receita: $${Number(empresa.receita).toLocaleString('pt-BR')}M<br/>
-          EBITDA: $${Number(empresa.ebitda).toLocaleString('pt-BR')}M<br/>
-          Valuation: $${Number(empresa.valuation).toLocaleString('pt-BR')}M
+          Receita: R$ ${Number(empresa.receita).toLocaleString('pt-BR')} Milhões<br/>
+          EBITDA: R$ ${Number(empresa.ebitda).toLocaleString('pt-BR')} Milhões<br/>
+          Valuation: R$ ${Number(empresa.valuation).toLocaleString('pt-BR')} Milhões
         `;
         card.onclick = () => {
           window.location.href = `empresa.html?id=${empresa.id}`;
