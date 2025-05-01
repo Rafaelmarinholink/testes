@@ -107,3 +107,26 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
   buscarEmpresas().then(empresas => carregarTopEmpresas(empresas));
   e.target.reset();
 });
+
+function carregarTopEmpresas(empresas) {
+  const top3 = empresas
+    .filter(emp => emp.rating !== undefined && emp.rating !== null)
+    .sort((a, b) => b.rating - a.rating)
+    .slice(0, 3);
+
+  const listaTop = document.getElementById('top-empresas');
+  listaTop.innerHTML = '';
+
+  top3.forEach(emp => {
+    const card = document.createElement('div');
+    card.className = 'empresa-card';
+    card.innerHTML = `
+      <strong>${emp.nome}</strong><br>
+      Rating: ${emp.rating ?? 'N/A'}<br>
+      Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões
+    `;
+    card.style.cursor = 'pointer';
+    card.onclick = () => window.location.href = `empresa.html?id=${emp.id}`;
+    listaTop.appendChild(card);
+  });
+}
