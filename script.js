@@ -159,3 +159,4 @@ function carregarTopEmpresas(empresas) {
     listaTop.appendChild(card);
   });
 }
+buscarEmpresas().then(empresas => carregarTopEmpresas(empresas)
