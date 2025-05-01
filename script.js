@@ -12,14 +12,9 @@ function calcularRating(dados) {
   };
 
   const preenchidos = Object.keys(pesos).filter(key =>
-    dados[key] !== null &&
-    dados[key] !== '' &&
-    dados[key] !== 'N/A' &&
-    (!isNaN(dados[key]) || key === 'consistencia_crescimento')
+    dados[key] !== null && dados[key] !== '' && !isNaN(dados[key]) && dados[key] !== 'N/A'
   );
-
   const pesoTotal = preenchidos.reduce((acc, key) => acc + pesos[key], 0);
-  if (pesoTotal === 0) return 0;
 
   const redistribuido = {};
   preenchidos.forEach(key => {
@@ -28,35 +23,25 @@ function calcularRating(dados) {
 
   let nota = 0;
 
-  if (!isNaN(dados.crescimento_yoy)) {
-    if (dados.crescimento_yoy >= 20) nota += redistribuido.crescimento_yoy;
-    else if (dados.crescimento_yoy >= 5) nota += redistribuido.crescimento_yoy * 0.7;
-    else if (dados.crescimento_yoy > 0) nota += redistribuido.crescimento_yoy * 0.5;
-  }
+  if (dados.crescimento_yoy >= 20) nota += redistribuido.crescimento_yoy;
+  else if (dados.crescimento_yoy >= 5) nota += redistribuido.crescimento_yoy * 0.7;
+  else if (dados.crescimento_yoy > 0) nota += redistribuido.crescimento_yoy * 0.5;
 
-  if (!isNaN(dados.margem_bruta)) {
-    if (dados.margem_bruta >= 60) nota += redistribuido.margem_bruta;
-    else if (dados.margem_bruta >= 40) nota += redistribuido.margem_bruta * 0.7;
-    else if (dados.margem_bruta >= 20) nota += redistribuido.margem_bruta * 0.5;
-  }
+  if (dados.margem_bruta >= 60) nota += redistribuido.margem_bruta;
+  else if (dados.margem_bruta >= 40) nota += redistribuido.margem_bruta * 0.7;
+  else if (dados.margem_bruta >= 20) nota += redistribuido.margem_bruta * 0.5;
 
-  if (!isNaN(dados.sm)) {
-    if (dados.sm <= 20) nota += redistribuido.sm;
-    else if (dados.sm <= 40) nota += redistribuido.sm * 0.7;
-  }
+  if (dados.sm <= 20) nota += redistribuido.sm;
+  else if (dados.sm <= 40) nota += redistribuido.sm * 0.7;
 
-  if (!isNaN(dados.sga)) {
-    if (dados.sga <= 25) nota += redistribuido.sga;
-    else if (dados.sga <= 35) nota += redistribuido.sga * 0.7;
-  }
+  if (dados.sga <= 25) nota += redistribuido.sga;
+  else if (dados.sga <= 35) nota += redistribuido.sga * 0.7;
 
-  if (typeof dados.consistencia_crescimento === 'string') {
-    if (dados.consistencia_crescimento === 'Crescimento positivo') nota += redistribuido.consistencia_crescimento;
-    else if (dados.consistencia_crescimento === 'Declínio acentuado') nota += redistribuido.consistencia_crescimento * 0.3;
-  }
+  if (dados.consistencia_crescimento === 'Crescimento positivo') nota += redistribuido.consistencia_crescimento;
+  else if (dados.consistencia_crescimento === 'Declínio acentuado') nota += redistribuido.consistencia_crescimento * 0.3;
 
-  if (!isNaN(dados.ebitda) && dados.ebitda > 0) nota += redistribuido.ebitda;
-  if (!isNaN(dados.receita) && dados.receita > 100) nota += redistribuido.receita;
+  if (dados.ebitda > 0) nota += redistribuido.ebitda;
+  if (dados.receita > 100) nota += redistribuido.receita;
 
   return Math.round(Math.min(nota, 100));
 }
@@ -114,7 +99,7 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
 
   console.log("Enviando para Airtable:", data);
 
-  await fetch("https://api.airtable.com/v0/appaq7tR3vt9vrN6y/Empresas", {
+  const response = await fetch("https://api.airtable.com/v0/appaq7tR3vt9vrN6y/Empresas", {
     method: 'POST',
     headers: {
       Authorization: "Bearer patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6",
@@ -123,7 +108,13 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
     body: JSON.stringify(data)
   });
 
-  buscarEmpresas().then(empresas => carregarTopEmpresas(empresas));
+  if (!response.ok) {
+    const erro = await response.json();
+    console.error("Erro ao enviar para Airtable:", erro);
+  }
+
+  const empresas = await buscarEmpresas();
+  carregarTopEmpresas(empresas);
   e.target.reset();
 });
 
@@ -145,7 +136,7 @@ function carregarTopEmpresas(empresas) {
       Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões
     `;
     card.style.cursor = 'pointer';
-    card.onclick = () => window.location.href = `empresa.html?id= ${emp.id}`;
+    card.onclick = () => window.location.href = \`empresa.html?id=${emp.id}\`;
     listaTop.appendChild(card);
   });
 }
