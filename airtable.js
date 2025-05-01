@@ -4,7 +4,7 @@ const apiKey = 'patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a839653525999
 
 const airtableURL = `https://api.airtable.com/v0/${baseId}/${tableName}`;
 const headers = {
-  Authorization: apiKey,
+  Authorization: `Bearer ${apiKey}`,
   'Content-Type': 'application/json'
 };
 
