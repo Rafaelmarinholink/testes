@@ -1,3 +1,49 @@
+// PESOS do rating (ajustável)
+const pesos = {
+  crescimento_yoy: 15,
+  margem_bruta: 15,
+  sm: 15,
+  sga: 10,
+  consistencia_crescimento: 10,
+  ebitda: 15,
+  receita: 20
+};
+
+// Função de cálculo de rating com redistribuição
+function calcularRating(dados) {
+  let nota = 0;
+  const preenchidos = Object.keys(pesos).filter(key => dados[key] !== null && dados[key] !== '' && dados[key] !== undefined);
+  const pesoTotal = preenchidos.reduce((acc, key) => acc + pesos[key], 0);
+
+  const redistribuido = {};
+  preenchidos.forEach(key => {
+    redistribuido[key] = (pesos[key] / pesoTotal) * 100;
+  });
+
+  if (dados.crescimento_yoy >= 20) nota += redistribuido.crescimento_yoy;
+  else if (dados.crescimento_yoy >= 5) nota += redistribuido.crescimento_yoy * 0.7;
+  else if (dados.crescimento_yoy >= 0) nota += redistribuido.crescimento_yoy * 0.5;
+
+  if (dados.margem_bruta >= 60) nota += redistribuido.margem_bruta;
+  else if (dados.margem_bruta >= 40) nota += redistribuido.margem_bruta * 0.7;
+  else if (dados.margem_bruta >= 20) nota += redistribuido.margem_bruta * 0.5;
+
+  if (dados.sm <= 20) nota += redistribuido.sm;
+  else if (dados.sm <= 40) nota += redistribuido.sm * 0.7;
+
+  if (dados.sga <= 25) nota += redistribuido.sga;
+  else if (dados.sga <= 35) nota += redistribuido.sga * 0.7;
+
+  if (dados.consistencia_crescimento === 'Alta') nota += redistribuido.consistencia_crescimento;
+  else if (dados.consistencia_crescimento === 'Média') nota += redistribuido.consistencia_crescimento * 0.6;
+
+  if (dados.ebitda > 0) nota += redistribuido.ebitda;
+  if (dados.receita > 100) nota += redistribuido.receita;
+
+  return Math.round(Math.min(nota, 100));
+}
+
+// SUBMISSÃO do formulário
 import { buscarEmpresas } from './airtable.js';
 
 document.getElementById('empresa-form').addEventListener('submit', async (e) => {
@@ -5,7 +51,6 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
 
   const campos = document.querySelectorAll('#empresa-form input[required], #empresa-form select[required]');
   let valido = true;
-
   campos.forEach(campo => {
     if (!campo.value.trim()) {
       campo.classList.add('error');
@@ -27,10 +72,9 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
     margem_bruta: parseFloat(document.getElementById('margem_bruta').value),
     sm: parseFloat(document.getElementById('sm').value),
     sga: parseFloat(document.getElementById('sga').value),
-    consistencia_crescimento: document.getElementById('consistencia').value,
-    receita: parseFloat(document.getElementById('receita').value),
+    consistencia_crescimento: document.getElementById('consistencia_crescimento').value,
     ebitda: parseFloat(document.getElementById('ebitda').value),
-    valuation: parseFloat(document.getElementById('valuation').value),
+    receita: parseFloat(document.getElementById('receita').value)
   };
 
   const ratingCalculado = calcularRating(dados);
@@ -41,14 +85,16 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
       "Ticker": document.getElementById('ticker').value,
       "Receita Anual (USD)": dados.receita,
       "EBITDA (USD)": dados.ebitda,
-      "Valuation (USD)": dados.valuation,
-      "Crescimento YoY": dados.crescimento_yoy,
-      "Margem Bruta (%)": dados.margem_bruta,
-      "S&M (%)": dados.sm,
-      "SG&A (%)": dados.sga,
-      "Consistência Crescimento YoY": dados.consistencia_crescimento,
+      "Valuation (USD)": parseFloat(document.getElementById('valuation').value),
+      "Margem EBITDA": '', // campo de fórmula na Airtable
+      "EV/EBITDA": '',     // campo de fórmula na Airtable
       "Notas": document.getElementById('notas').value,
-      "Rating": ratingCalculado
+      "Rating": ratingCalculado,
+      "Crescimento YoY": dados.crescimento_yoy,
+      "Margem bruta": dados.margem_bruta,
+      "S&M": dados.sm,
+      "SG&A": dados.sga,
+      "Consistência Crescimento YoY": dados.consistencia_crescimento
     }
   };
 
@@ -78,53 +124,7 @@ function carregarTopEmpresas(empresas) {
       Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões
     `;
     card.style.cursor = 'pointer';
-    card.onclick = () => window.location.href = `empresa.html?id=${emp.id}\`;
+    card.onclick = () => window.location.href = `empresa.html?id=${emp.id}`;
     listaTop.appendChild(card);
   });
-}
-
-buscarEmpresas().then(empresas => carregarTopEmpresas(empresas));
-
-function calcularRating(dados) {
-  let nota = 0;
-  let pesos = {
-    crescimento_yoy: 20,
-    margem_bruta: 20,
-    sm: 10,
-    sga: 10,
-    consistencia_crescimento: 20,
-    ebitda: 10,
-    receita: 10
-  };
-
-  const preenchidos = Object.keys(pesos).filter(key => dados[key] !== null && dados[key] !== undefined && dados[key] !== '');
-  const pesoTotal = preenchidos.reduce((acc, key) => acc + pesos[key], 0);
-
-  const redistribuido = {};
-  preenchidos.forEach(key => {
-    redistribuido[key] = (pesos[key] / pesoTotal) * 100;
-  });
-
-  if (dados.crescimento_yoy >= 20) nota += redistribuido.crescimento_yoy;
-  else if (dados.crescimento_yoy >= 5) nota += redistribuido.crescimento_yoy * 0.7;
-  else if (dados.crescimento_yoy >= 0) nota += redistribuido.crescimento_yoy * 0.5;
-
-  if (dados.margem_bruta >= 60) nota += redistribuido.margem_bruta;
-  else if (dados.margem_bruta >= 40) nota += redistribuido.margem_bruta * 0.7;
-  else if (dados.margem_bruta >= 20) nota += redistribuido.margem_bruta * 0.5;
-
-  if (dados.sm <= 20) nota += redistribuido.sm;
-  else if (dados.sm <= 40) nota += redistribuido.sm * 0.7;
-
-  if (dados.sga <= 25) nota += redistribuido.sga;
-  else if (dados.sga <= 35) nota += redistribuido.sga * 0.7;
-
-  if (dados.consistencia_crescimento === 'Alta') nota += redistribuido.consistencia_crescimento;
-  else if (dados.consistencia_crescimento === 'Média') nota += redistribuido.consistencia_crescimento * 0.6;
-
-  if (dados.ebitda > 0) nota += redistribuido.ebitda;
-
-  if (dados.receita > 100) nota += redistribuido.receita;
-
-  return Math.round(Math.min(nota, 100));
 }
