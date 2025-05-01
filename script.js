@@ -12,7 +12,7 @@ function calcularRating(dados) {
   };
 
   const preenchidos = Object.keys(pesos).filter(key =>
-    dados[key] !== null && dados[key] !== '' && dados[key] !== 'N/A' && !isNaN(dados[key])
+    dados[key] !== null && dados[key] !== '' && !isNaN(dados[key]) && dados[key] !== 'N/A'
   );
   const pesoTotal = preenchidos.reduce((acc, key) => acc + pesos[key], 0);
 
@@ -68,6 +68,7 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
     document.getElementById('popupErro').style.display = 'none';
   }
 
+  // Coletar dados
   const dados = {
     crescimento_yoy: parseFloat(document.getElementById('crescimento_yoy').value),
     margem_bruta: parseFloat(document.getElementById('margem_bruta').value),
@@ -97,6 +98,10 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
     }
   };
 
+  // Testar visualmente se está correto
+  console.log("Enviando para Airtable:", data);
+
+  // Envio para Airtable
   await fetch("https://api.airtable.com/v0/appaq7tR3vt9vrN6y/Empresas", {
     method: 'POST',
     headers: {
