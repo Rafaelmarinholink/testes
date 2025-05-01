@@ -3,35 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Análise da Empresa | Saber Capital</title>
+  <title>Comparar Empresas | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    .grid-indicadores {
+    .comparar-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
     }
-    .indicador {
-      background-color: #1e3a5f;
-      padding: 1rem;
-      border-radius: 6px;
-      color: #fff;
-    }
-    .rating-gauge {
-      max-width: 320px;
-      margin: 2rem auto;
-    }
-    .diagnostico, .notas, .aprovacao {
+    .empresa-box {
       background-color: #1a365d;
-      color: #fff;
       padding: 1rem;
       border-radius: 8px;
-      margin-top: 1.5rem;
+      color: white;
     }
-    .btn {
-      margin-right: 0.5rem;
+    .empresa-box h3 {
+      margin-bottom: 1rem;
+    }
+    .indicador {
+      margin-bottom: 0.5rem;
+    }
+    .barra-rating {
+      height: 16px;
+      border-radius: 8px;
+      background: #3b82f6;
+      margin-bottom: 1rem;
+    }
+    .botao-central {
+      margin-top: 2rem;
+      text-align: center;
     }
   </style>
 </head>
@@ -43,25 +44,11 @@
         <h1 class="logo-text">SABER<br>CAPITAL</h1>
       </div>
 
-      <h2 class="subtitle" id="nomeEmpresa">Análise Financeira</h2>
+      <h2 class="subtitle">Comparar Empresas</h2>
+      <div class="comparar-grid" id="compararEmpresas"></div>
 
-      <div class="grid-indicadores" id="indicadores"></div>
-
-      <div class="rating-gauge">
-        <canvas id="gaugeChart"></canvas>
-      </div>
-
-      <div class="aprovacao" id="aprovacao"></div>
-      <div class="diagnostico" id="diagnostico"></div>
-
-      <div class="notas">
-        <h3>Notas</h3>
-        <p id="notas"></p>
-      </div>
-
-      <div style="margin-top:2rem;">
-        <button class="btn" onclick="window.location.href='index.html'">← Voltar à Lista</button>
-        <button class="btn" id="btnComparar">Comparar com outra empresa</button>
+      <div class="botao-central">
+        <button class="btn" onclick="window.location.href='index.html'">← Voltar à Página Inicial</button>
       </div>
     </div>
   </div>
@@ -69,116 +56,74 @@
   <script type="module">
     import { buscarEmpresas } from './airtable.js';
 
-    const formatarMilhoes = v => v ? `R$ ${parseFloat(v).toFixed(1)} Milhões` : '-';
-    const formatarPercentual = v => v ? `${(parseFloat(v) * 100).toFixed(1)}%` : '-';
-    const formatarMultiplo = v => v ? `${parseFloat(v).toFixed(2)}x` : '-';
-
     const urlParams = new URLSearchParams(window.location.search);
     const idEmpresa = urlParams.get('id');
 
-    function gerarAprovacao(rating) {
-      if (rating >= 75) return "Status: Elegível para investimento";
-      if (rating >= 50) return "Status: Exige análise complementar";
-      return "Status: Não recomendado neste estágio";
+    function formatar(v, tipo = 'real') {
+      if (v === undefined || v === null) return '-';
+      if (tipo === 'real') return `R$ ${parseFloat(v).toFixed(1)}M`;
+      if (tipo === 'percentual') return `${(parseFloat(v) * 100).toFixed(1)}%`;
+      if (tipo === 'multiplo') return `${parseFloat(v).toFixed(2)}x`;
+      return v;
     }
 
-    function gerarAnalise(empresa) {
-      const frases = [];
+    function gerarBox(empresa) {
+      const indicadores = [
+        { label: 'Receita Anual', valor: formatar(empresa.receita) },
+        { label: 'EBITDA', valor: formatar(empresa.ebitda) },
+        { label: 'Valuation', valor: formatar(empresa.valuation) },
+        { label: 'Margem EBITDA', valor: formatar(empresa.margem_ebitda, 'percentual') },
+        { label: 'EV/EBITDA', valor: formatar(empresa.ev_ebitda, 'multiplo') },
+        { label: 'Crescimento YoY', valor: formatar(empresa.crescimento_yoy, 'percentual') },
+        { label: 'Margem Bruta', valor: formatar(empresa.margem_bruta, 'percentual') },
+        { label: 'S&M', valor: formatar(empresa.sm, 'percentual') },
+        { label: 'SG&A', valor: formatar(empresa.sga, 'percentual') },
+        { label: 'Consistência Crescimento YoY', valor: empresa.consistencia_yoy || '-' },
+        { label: 'Rating', valor: `${empresa.rating ?? 'N/A'} / 100` }
+      ];
 
-      if (empresa.crescimento_yoy >= 0.2)
-        frases.push("apresenta crescimento expressivo ano a ano");
-      else if (empresa.crescimento_yoy >= 0.05)
-        frases.push("demonstra crescimento moderado e consistente");
-      else if (empresa.crescimento_yoy < 0)
-        frases.push("registra retração no crescimento, o que pode indicar desafios estruturais");
-
-      if (empresa.margem_bruta >= 0.6)
-        frases.push("mantém excelente margem bruta, evidenciando alta eficiência operacional");
-      else if (empresa.margem_bruta >= 0.4)
-        frases.push("opera com boa margem bruta, com oportunidades de melhoria em custos diretos");
-      else
-        frases.push("enfrenta margens brutas comprimidas, exigindo revisão estratégica da entrega de valor");
-
-      if (empresa.sm >= 0.4)
-        frases.push("apresenta gastos elevados com marketing e vendas (S&M), o que pode indicar dependência significativa de aquisição paga");
-
-      if (empresa.sga >= 0.3)
-        frases.push("registra despesas administrativas (SG&A) acima do ideal, sugerindo ineficiências operacionais");
-
-      if (empresa.ebitda > 0)
-        frases.push("gera caixa operacional positivo, o que sustenta sua viabilidade no curto e médio prazo");
-      else
-        frases.push("enfrenta desafios na geração de caixa, demandando maior controle sobre estrutura de custos");
-
-      if (empresa.consistencia_yoy === "Crescimento positivo")
-        frases.push("exibe consistência em sua evolução histórica, o que contribui para previsibilidade futura");
-      else if (empresa.consistencia_yoy === "Declínio acentuado")
-        frases.push("aponta um declínio recente preocupante no histórico de desempenho");
-
-      return "A empresa " + frases.join(", ") + ".";
+      const div = document.createElement('div');
+      div.className = 'empresa-box';
+      div.innerHTML = `
+        <h3>${empresa.nome}</h3>
+        <div class="barra-rating" style="width:${empresa.rating ?? 0}%"></div>
+        ${indicadores.map(ind => `
+          <div class="indicador"><strong>${ind.label}:</strong> ${ind.valor}</div>
+        `).join('')}
+      `;
+      return div;
     }
 
     buscarEmpresas().then(empresas => {
-      const empresa = empresas.find(e => e.id === idEmpresa);
-      if (!empresa) return;
+      const empresaA = empresas.find(e => e.id === idEmpresa);
+      const outras = empresas.filter(e => e.id !== idEmpresa);
+      if (!empresaA) return;
 
-      document.getElementById('nomeEmpresa').textContent = empresa.nome;
+      const container = document.getElementById('compararEmpresas');
+      const empresaBoxA = gerarBox(empresaA);
 
-      const campos = [
-        { label: 'Receita Anual', valor: formatarMilhoes(empresa.receita) },
-        { label: 'EBITDA', valor: formatarMilhoes(empresa.ebitda) },
-        { label: 'Valuation', valor: formatarMilhoes(empresa.valuation) },
-        { label: 'Margem EBITDA', valor: formatarPercentual(empresa.margem_ebitda) },
-        { label: 'EV/EBITDA', valor: formatarMultiplo(empresa.ev_ebitda) },
-        { label: 'Crescimento YoY', valor: formatarPercentual(empresa.crescimento_yoy) },
-        { label: 'Margem Bruta', valor: formatarPercentual(empresa.margem_bruta) },
-        { label: 'S&M', valor: formatarPercentual(empresa.sm) },
-        { label: 'SG&A', valor: formatarPercentual(empresa.sga) },
-        { label: 'Consistência Crescimento YoY', valor: empresa.consistencia_yoy ?? '-' }
-      ];
+      const empresaBoxB = document.createElement('div');
+      empresaBoxB.className = 'empresa-box';
+      empresaBoxB.innerHTML = `
+        <h3>Escolha empresa para comparar</h3>
+        <select id="seletorB" style="width:100%; padding:0.5rem; margin-bottom:1rem;">
+          <option value="">Selecione</option>
+          ${outras.map(e => `<option value="${e.id}">${e.nome}</option>`).join('')}
+        </select>
+        <div id="empresaBinfo"></div>
+      `;
 
-      const grid = document.getElementById('indicadores');
-      campos.forEach(c => {
-        const div = document.createElement('div');
-        div.className = 'indicador';
-        div.innerHTML = `<strong>${c.label}</strong><br>${c.valor}`;
-        grid.appendChild(div);
-      });
+      container.appendChild(empresaBoxA);
+      container.appendChild(empresaBoxB);
 
-      const rating = empresa.rating ?? 0;
-      document.getElementById('aprovacao').textContent = gerarAprovacao(rating);
-      document.getElementById('diagnostico').textContent = gerarAnalise(empresa);
-      document.getElementById('notas').textContent = empresa.notas || 'Nenhuma nota registrada.';
-
-      document.getElementById('btnComparar').addEventListener('click', () => {
-        window.location.href = `comparar.html?id=${empresa.id}`;
-      });
-
-      new Chart(document.getElementById('gaugeChart'), {
-        type: 'doughnut',
-        data: {
-          labels: ['Rating'],
-          datasets: [{
-            data: [rating, 100 - rating],
-            backgroundColor: ['#3b82f6', '#1e293b'],
-            borderWidth: 0
-          }]
-        },
-        options: {
-          rotation: -90,
-          circumference: 180,
-          cutout: '70%',
-          plugins: {
-            legend: { display: false },
-            tooltip: { enabled: false },
-            title: {
-              display: true,
-              text: `${rating} / 100`,
-              color: '#fff',
-              font: { size: 24, weight: 'bold' },
-              padding: 10
-            }
-          }
+      document.getElementById('seletorB').addEventListener('change', e => {
+        const empresaB = empresas.find(emp => emp.id === e.target.value);
+        const infoDiv = document.getElementById('empresaBinfo');
+        if (empresaB) {
+          const box = gerarBox(empresaB);
+          infoDiv.innerHTML = box.innerHTML;
+        } else {
+          infoDiv.innerHTML = '';
         }
       });
     });
