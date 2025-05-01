@@ -5,76 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Comparar Empresas | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    .comparacao-grid {
-      display: grid;
-      grid-template-columns: 1fr 40px 1fr;
-      gap: 2rem;
-      align-items: start;
-    }
-    .empresa-box {
-      background-color: #1a365d;
-      padding: 1.5rem;
-      border-radius: 8px;
-      color: #fff;
-    }
-    .search-box {
+    .logo-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
       margin-bottom: 1rem;
-      width: 100%;
-      padding: 0.5rem;
-      background-color: #1e3a5f;
-      border: none;
-      color: #fff;
-      border-radius: 5px;
-    }
-    .empresa-lista {
-      max-height: 200px;
-      overflow-y: auto;
-      background-color: #2c5282;
-      border-radius: 6px;
-      padding: 0.5rem;
-      margin-bottom: 1rem;
-    }
-    .empresa-lista div {
-      padding: 0.4rem;
       cursor: pointer;
-      border-bottom: 1px solid #ffffff22;
     }
-    .empresa-lista div:hover {
-      background-color: #63b3ed;
-      color: #0b1f3a;
+    .logo-text {
+      font-family: 'Archivo Black', sans-serif;
+      color: white;
+      font-size: 1.8rem;
     }
-    .btn-inverter {
+    .logo-img {
+      height: 65px;
+      width: auto;
+    }
+    .grid-comparacao {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .card-empresa {
+      background-color: #1e3a5f;
+      padding: 1rem;
+      border-radius: 8px;
+      color: white;
+      flex: 1;
+      min-width: 300px;
+    }
+    .indicador {
+      margin-bottom: 0.6rem;
+    }
+    .btn {
+      padding: 0.75rem 1.2rem;
+      font-size: 1rem;
       background-color: #ffffff;
       color: #0b1f3a;
-      font-weight: bold;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
       border: none;
+      border-radius: 5px;
+      font-weight: bold;
       cursor: pointer;
-    }
-    .grafico-coluna {
-      display: flex;
-      gap: 0.5rem;
-      align-items: flex-end;
-      height: 120px;
-      margin-top: 1rem;
-    }
-    .barra {
-      flex: 1;
-      text-align: center;
-      background-color: #63b3ed;
-      border-radius: 4px 4px 0 0;
-      color: #000;
-      font-size: 0.75rem;
-    }
-    .grafico-label {
-      margin-top: 0.25rem;
-      font-size: 0.8rem;
-      color: #ccc;
-      text-align: center;
+      margin-right: 1rem;
     }
   </style>
 </head>
@@ -88,128 +64,58 @@
 
       <h2 class="subtitle">Comparar Empresas</h2>
 
-      <div class="comparacao-grid">
-        <div class="empresa-box" id="empresa1Box"></div>
+      <div class="grid-comparacao" id="comparacao"></div>
 
-        <div style="display: flex; align-items: center; justify-content: center;">
-          <button class="btn-inverter" id="inverterBtn">⇄</button>
-        </div>
-
-        <div class="empresa-box" id="empresa2Box">
-          <input type="text" id="buscaEmpresa2" class="search-box" placeholder="Buscar empresa..." />
-          <div class="empresa-lista" id="listaEmpresas2"></div>
-          <div id="empresa2Card"></div>
-          <button id="novaComparacao" class="btn" style="display:none; margin-top: 1rem;">+ Nova Comparação</button>
-        </div>
+      <div>
+        <button class="btn" onclick="window.location.href='index.html'">← Nova Comparação</button>
+        <button class="btn" onclick="inverterEmpresas()">Inverter Empresas</button>
       </div>
-
-      <button class="btn" onclick="window.location.href='index.html'" style="margin-top:2rem;">← Voltar</button>
     </div>
   </div>
 
   <script type="module">
     import { buscarEmpresas } from './airtable.js';
 
-    const empresa1Box = document.getElementById('empresa1Box');
-    const empresa2Card = document.getElementById('empresa2Card');
-    const listaEmpresas2 = document.getElementById('listaEmpresas2');
-    const buscaInput = document.getElementById('buscaEmpresa2');
-    const novaComparacao = document.getElementById('novaComparacao');
-    const inverterBtn = document.getElementById('inverterBtn');
-
     const urlParams = new URLSearchParams(window.location.search);
-    let empresa1Id = urlParams.get('id');
-    let todasEmpresas = [];
+    const id1 = urlParams.get('id');
+    const id2 = urlParams.get('id2');
 
-    function formatar(valor, tipo = 'milhoes') {
-      if (valor === undefined || valor === null || valor === 'N/A') return '-';
-      if (tipo === 'porcentagem') return `${(valor * 100).toFixed(1).replace('.', ',')}%`;
-      if (tipo === 'multiplo') return `${valor.toFixed(2).replace('.', ',')}x`;
-      return `R$ ${Number(valor).toLocaleString('pt-BR')} Milhões`;
+    let empresas = [];
+    let empresaA = null;
+    let empresaB = null;
+
+    function inverterEmpresas() {
+      window.location.href = `comparar.html?id=${id2}&id2=${id1}`;
     }
 
-    function gerarHTMLComGrafico(empresa) {
-      const margem = (empresa.receita > 0 && empresa.ebitda > 0)
-        ? empresa.ebitda / empresa.receita
-        : 0;
-      const dados = [
-        { titulo: 'Receita', valor: empresa.receita, tipo: 'milhoes' },
-        { titulo: 'EBITDA', valor: empresa.ebitda, tipo: 'milhoes' },
-        { titulo: 'Valuation', valor: empresa.valuation, tipo: 'milhoes' },
-        { titulo: 'Margem EBITDA', valor: margem, tipo: 'porcentagem' }
-      ];
-
-      const max = Math.max(...dados.map(d => d.valor || 1));
-      let graficos = '<div class="grafico-coluna">';
-      dados.forEach(d => {
-        const altura = (d.valor / max) * 100;
-        graficos += `
-          <div style="flex:1;">
-            <div class="barra" style="height:${altura}%">${formatar(d.valor, d.tipo)}</div>
-            <div class="grafico-label">${d.titulo}</div>
-          </div>
-        `;
-      });
-      graficos += '</div>';
-
-      const saudavel = empresa.rating >= 70
-        ? '🟢 Empresa sólida financeiramente.'
-        : empresa.rating >= 50
-        ? '🟡 Indicadores medianos. Avaliar com cautela.'
-        : '🔴 Baixo desempenho. Risco elevado.';
-
-      return `
+    function criarCard(empresa) {
+      const div = document.createElement('div');
+      div.className = 'card-empresa';
+      div.innerHTML = `
         <h3>${empresa.nome}</h3>
-        <p><strong>Rating:</strong> ${empresa.rating ?? 'N/A'} / 100</p>
-        ${graficos}
-        <p style="margin-top: 1rem;"><em>${saudavel}</em></p>
+        <div class="indicador">Receita: R$ ${Number(empresa.receita).toLocaleString('pt-BR')}M</div>
+        <div class="indicador">EBITDA: R$ ${Number(empresa.ebitda).toLocaleString('pt-BR')}M</div>
+        <div class="indicador">Valuation: R$ ${Number(empresa.valuation).toLocaleString('pt-BR')}M</div>
+        <div class="indicador">Margem EBITDA: ${(empresa.margem_ebitda * 100).toFixed(1)}%</div>
+        <div class="indicador">EV/EBITDA: ${empresa.ev_ebitda?.toFixed(2)}x</div>
+        <div class="indicador">Crescimento YoY: ${(empresa.crescimento_yoy * 100).toFixed(1)}%</div>
+        <div class="indicador">Margem Bruta: ${(empresa.margem_bruta * 100).toFixed(1)}%</div>
+        <div class="indicador">S&M: ${(empresa.sm * 100).toFixed(1)}%</div>
+        <div class="indicador">SG&A: ${(empresa.sga * 100).toFixed(1)}%</div>
+        <div class="indicador">Consistência: ${empresa.consistencia_yoy}</div>
+        <div class="indicador">Rating: ${empresa.rating}</div>
       `;
+      return div;
     }
 
-    function resetComparacao() {
-      buscaInput.style.display = "block";
-      listaEmpresas2.style.display = "block";
-      empresa2Card.innerHTML = "";
-      novaComparacao.style.display = "none";
-    }
+    buscarEmpresas().then(lista => {
+      empresas = lista;
+      empresaA = empresas.find(e => e.id === id1);
+      empresaB = empresas.find(e => e.id === id2);
 
-    buscarEmpresas().then(empresas => {
-      todasEmpresas = empresas;
-
-      let empresa1 = todasEmpresas.find(e => e.id === empresa1Id);
-      empresa1Box.innerHTML = gerarHTMLComGrafico(empresa1);
-
-      const restantes = todasEmpresas.filter(e => e.id !== empresa1Id);
-
-      const renderizarLista = (lista) => {
-        listaEmpresas2.innerHTML = '';
-        lista.forEach(e => {
-          const item = document.createElement('div');
-          item.textContent = e.nome;
-          item.onclick = () => {
-            empresa2Card.innerHTML = gerarHTMLComGrafico(e);
-            buscaInput.style.display = "none";
-            listaEmpresas2.style.display = "none";
-            novaComparacao.style.display = "block";
-          };
-          listaEmpresas2.appendChild(item);
-        });
-      };
-
-      renderizarLista(restantes);
-
-      buscaInput.addEventListener('input', () => {
-        const filtro = buscaInput.value.toLowerCase();
-        const filtradas = restantes.filter(e => e.nome.toLowerCase().includes(filtro));
-        renderizarLista(filtradas);
-      });
-
-      novaComparacao.onclick = () => resetComparacao();
-
-      inverterBtn.onclick = () => {
-        const novaEmpresa = todasEmpresas.find(e => e.id !== empresa1Id);
-        window.location.href = `comparar.html?id=${novaEmpresa.id}`;
-      };
+      const comparacaoDiv = document.getElementById('comparacao');
+      if (empresaA) comparacaoDiv.appendChild(criarCard(empresaA));
+      if (empresaB) comparacaoDiv.appendChild(criarCard(empresaB));
     });
   </script>
 </body>
