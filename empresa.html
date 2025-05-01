@@ -76,40 +76,6 @@
       window.location.href = `comparar.html?id=${idEmpresa}`;
     }
 
-    function classificarAprovacao(rating) {
-      if (rating >= 70) return { status: "Aprovado", cor: "#22c55e" };
-      if (rating >= 50) return { status: "Em Avaliação", cor: "#eab308" };
-      return { status: "Não Aprovado", cor: "#ef4444" };
-    }
-
-    function gerarAnalise(empresa) {
-      const insights = [];
-
-      if (empresa.crescimento_yoy > 0) insights.push("crescimento consistente ano a ano");
-      else if (empresa.crescimento_yoy < 0) insights.push("queda de receita recente");
-
-      if (empresa.margem_bruta >= 0.6) insights.push("excelente margem bruta");
-      else if (empresa.margem_bruta >= 0.4) insights.push("boa margem operacional");
-      else insights.push("margem bruta abaixo da média do setor");
-
-      if (empresa.sm > 0.4) insights.push("gastos elevados com marketing e vendas");
-      if (empresa.sga > 0.35) insights.push("despesas administrativas acima do ideal");
-
-      if (empresa.ebitda > 0) insights.push("geração de caixa operacional positiva");
-      else insights.push("EBITDA negativo impactando sustentabilidade financeira");
-
-      if (empresa.consistencia_yoy === "Crescimento positivo") {
-        insights.push("trajetória de crescimento saudável");
-      } else if (empresa.consistencia_yoy === "Declínio acentuado") {
-        insights.push("histórico recente de declínio acentuado");
-
-      }
-
-      return insights.length > 0
-        ? "A empresa apresenta " + insights.join(", ") + "."
-        : "Análise qualitativa indisponível por falta de dados.";
-    }
-
     buscarEmpresas().then(empresas => {
       const empresa = empresas.find(e => e.id === idEmpresa);
       if (!empresa) return;
@@ -122,7 +88,7 @@
         { label: 'Valuation', valor: formatarMilhoes(empresa.valuation) },
         { label: 'Margem EBITDA', valor: formatarPercentual(empresa.margem_ebitda) },
         { label: 'EV/EBITDA', valor: formatarMultiplo(empresa.ev_ebitda) },
-        { label: 'Crescimento YoY', valor: formatarPercentual(empresa.crescimento_yoy) },
+        { label: 'Crescimento YoY', valor: `${parseFloat(empresa.crescimento_yoy * 100).toFixed(1)}%` },
         { label: 'Margem Bruta', valor: formatarPercentual(empresa.margem_bruta) },
         { label: 'S&M', valor: formatarPercentual(empresa.sm) },
         { label: 'SG&A', valor: formatarPercentual(empresa.sga) },
@@ -137,14 +103,19 @@
         grid.appendChild(div);
       });
 
-      const rating = empresa.rating ?? 0;
-      const aprovacao = classificarAprovacao(rating);
-      const diagnostico = document.getElementById('diagnostico');
+      const diagnostico = [];
+      if (empresa.crescimento_yoy > 0.15) diagnostico.push("crescimento consistente ano a ano");
+      if (empresa.margem_bruta > 0.6) diagnostico.push("excelente margem bruta");
+      if (empresa.sm > 0.4) diagnostico.push("gastos elevados com marketing e vendas");
+      if (empresa.sga > 0.3) diagnostico.push("despesas administrativas acima do ideal");
+      if (empresa.ebitda > 0) diagnostico.push("gera caixa operacional positivo");
+      if (empresa.consistencia_yoy?.toLowerCase().includes("positivo")) diagnostico.push("trajetória de crescimento saudável");
 
-      diagnostico.innerHTML = `
-        <strong style="color:${aprovacao.cor};">${aprovacao.status}</strong><br><br>
-        ${gerarAnalise(empresa)}
-      `;
+      document.getElementById('diagnostico').textContent =
+        diagnostico.length > 0
+          ? `A empresa ${diagnostico.join(", ")}.
+             Os dados indicam um panorama ${empresa.rating >= 70 ? "positivo" : empresa.rating >= 50 ? "razoável, mas com pontos de atenção" : "de alerta sobre a performance financeira"}.`
+          : "Diagnóstico não disponível para esta empresa.";
 
       document.getElementById('notas').textContent = empresa.notas || 'Nenhuma nota registrada.';
 
@@ -153,7 +124,7 @@
         data: {
           labels: ['Rating'],
           datasets: [{
-            data: [rating, 100 - rating],
+            data: [empresa.rating ?? 0, 100 - (empresa.rating ?? 0)],
             backgroundColor: ['#3b82f6', '#1e293b'],
             borderWidth: 0
           }]
@@ -167,7 +138,7 @@
             tooltip: { enabled: false },
             title: {
               display: true,
-              text: `${rating} / 100`,
+              text: `${empresa.rating ?? 0} / 100`,
               color: '#fff',
               font: { size: 24, weight: 'bold' },
               padding: 10
