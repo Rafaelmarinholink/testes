@@ -7,6 +7,52 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <style>
+    .popup-erro {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #ef4444;
+      color: white;
+      padding: 1.5rem 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 1000;
+    }
+    .popup-erro button {
+      background-color: transparent;
+      color: white;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      position: absolute;
+      top: 0.5rem;
+      right: 0.75rem;
+    }
+    input.error, textarea.error {
+      border: 2px solid #ef4444 !important;
+    }
+    .logo-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 1rem;
+      cursor: pointer;
+    }
+    .logo-text {
+      font-family: 'Archivo Black', sans-serif;
+      color: white;
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+    }
+    .logo-img {
+      height: 65px;
+      width: auto;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -30,16 +76,14 @@
         <div class="form-group"><label>Receita Anual (milhões de USD)</label><input type="number" id="receita" required /></div>
         <div class="form-group"><label>EBITDA (milhões de USD)</label><input type="number" id="ebitda" required /></div>
         <div class="form-group"><label>Valuation (milhões de USD)</label><input type="number" id="valuation" required /></div>
-        <div class="form-group"><label>Crescimento YoY (%)</label><input type="number" id="crescimento_yoy" required /></div>
-        <div class="form-group"><label>Retenção / NRR (%)</label><input type="number" id="nrr" required /></div>
-        <div class="form-group"><label>LTV (USD)</label><input type="number" id="ltv" required /></div>
-        <div class="form-group"><label>Taxa de Churn (%)</label><input type="number" id="churn" required /></div>
-        <div class="form-group"><label>Margem de Contribuição (%)</label><input type="number" id="margem_contribuicao" required /></div>
-        <div class="form-group"><label>Margem Bruta (%)</label><input type="number" id="margem_bruta" required /></div>
-        <div class="form-group"><label>S&M (USD)</label><input type="number" id="sm" required /></div>
-        <div class="form-group"><label>SG&A (USD)</label><input type="number" id="sga" required /></div>
-        <div class="form-group"><label>Consistência Crescimento YoY</label><input type="text" id="consistencia" required /></div>
+        <div class="form-group"><label>Margem EBITDA (%)</label><input type="number" id="margem_ebitda" required /></div>
+        <div class="form-group"><label>EV/EBITDA</label><input type="number" id="ev_ebitda" required /></div>
         <div class="form-group"><label>Notas (opcional)</label><textarea id="notas"></textarea></div>
+        <div class="form-group"><label>Crescimento YoY (%)</label><input type="number" id="crescimento_yoy" required /></div>
+        <div class="form-group"><label>Margem Bruta (%)</label><input type="number" id="margem_bruta" required /></div>
+        <div class="form-group"><label>S&M (milhões de USD)</label><input type="number" id="sm" required /></div>
+        <div class="form-group"><label>SG&A (milhões de USD)</label><input type="number" id="sga" required /></div>
+        <div class="form-group"><label>Consistência Crescimento YoY</label><input type="text" id="consistencia" required /></div>
         <button type="submit" class="btn">Cadastrar Empresa</button>
       </form>
     </div>
@@ -47,7 +91,7 @@
     <div class="card">
       <h2>Top 3 Empresas por Rating</h2>
       <div id="top-empresas" class="empresa-lista"></div>
-      <button class="btn" onclick="window.location.href='empresas.html'">Visualizar Todas as Empresas</button>
+      <button onclick="window.location.href='empresas.html'">Visualizar Todas as Empresas</button>
     </div>
   </div>
 
