@@ -11,7 +11,9 @@ function calcularRating(dados) {
     receita: 10
   };
 
-  const preenchidos = Object.keys(pesos).filter(key => dados[key] !== null && dados[key] !== '' && !isNaN(dados[key]) && dados[key] !== 'N/A');
+  const preenchidos = Object.keys(pesos).filter(key =>
+    dados[key] !== null && dados[key] !== '' && dados[key] !== 'N/A' && !isNaN(dados[key])
+  );
   const pesoTotal = preenchidos.reduce((acc, key) => acc + pesos[key], 0);
 
   const redistribuido = {};
@@ -98,7 +100,7 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
   await fetch("https://api.airtable.com/v0/appaq7tR3vt9vrN6y/Empresas", {
     method: 'POST',
     headers: {
-      Authorization: "patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6",
+      Authorization: "Bearer patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6",
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(data)
