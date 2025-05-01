@@ -145,7 +145,7 @@ function carregarTopEmpresas(empresas) {
       Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões
     `;
     card.style.cursor = 'pointer';
-    card.onclick = () => window.location.href = \`empresa.html?id=\${emp.id}\`;
+    card.onclick = () => window.location.href = `empresa.html?id= ${emp.id}`;
     listaTop.appendChild(card);
   });
 }
