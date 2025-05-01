@@ -4,28 +4,20 @@ body {
   font-family: 'Segoe UI', sans-serif;
   background-color: #0b1f3a;
   color: #f4f4f4;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
 }
 
 .container {
+  width: 100%;
   max-width: 700px;
-  margin: 3rem auto;
   padding: 2rem;
+  margin-top: 3rem;
   background-color: #102c4c;
   border-radius: 10px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-}
-
-header {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 2rem;
-}
-
-.header-container {
-  display: flex;
-  justify-content: center;
-  width: 100%;
 }
 
 .logo-wrapper {
@@ -33,7 +25,8 @@ header {
   justify-content: center;
   align-items: center;
   gap: 12px;
-  text-align: center;
+  margin-bottom: 1.5rem;
+  cursor: pointer;
 }
 
 .logo-img {
@@ -46,7 +39,8 @@ header {
   color: white;
   font-size: 1.8rem;
   letter-spacing: 1px;
-  line-height: 1;
+  line-height: 1.2;
+  text-align: center;
 }
 
 .subtitle {
@@ -91,7 +85,8 @@ textarea:focus {
   outline: 2px solid #63b3ed;
 }
 
-button.btn, .btn {
+button.btn,
+.btn {
   padding: 0.75rem;
   font-size: 1rem;
   background-color: #ffffff;
@@ -103,8 +98,13 @@ button.btn, .btn {
   transition: background 0.3s ease;
 }
 
-button:hover, .btn:hover {
+button:hover,
+.btn:hover {
   background-color: #e2e8f0;
+}
+
+.empresa-lista {
+  margin-top: 1rem;
 }
 
 .empresa-card {
@@ -122,9 +122,11 @@ button:hover, .btn:hover {
 
 .popup-erro {
   display: none;
+  z-index: 1000;
 }
 
-input.error, textarea.error {
+input.error,
+textarea.error {
   border: 2px solid #ef4444 !important;
 }
 
