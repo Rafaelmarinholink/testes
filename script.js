@@ -1,5 +1,49 @@
 import { buscarEmpresas } from './airtable.js';
 
+function calcularRating(dados) {
+  const pesos = {
+    crescimento_yoy: 20,
+    margem_bruta: 15,
+    sm: 15,
+    sga: 15,
+    consistencia_crescimento: 15,
+    ebitda: 10,
+    receita: 10
+  };
+
+  const preenchidos = Object.keys(pesos).filter(key => dados[key] !== null && dados[key] !== '' && !isNaN(dados[key]) && dados[key] !== 'N/A');
+  const pesoTotal = preenchidos.reduce((acc, key) => acc + pesos[key], 0);
+
+  const redistribuido = {};
+  preenchidos.forEach(key => {
+    redistribuido[key] = (pesos[key] / pesoTotal) * 100;
+  });
+
+  let nota = 0;
+
+  if (dados.crescimento_yoy >= 20) nota += redistribuido.crescimento_yoy;
+  else if (dados.crescimento_yoy >= 5) nota += redistribuido.crescimento_yoy * 0.7;
+  else if (dados.crescimento_yoy > 0) nota += redistribuido.crescimento_yoy * 0.5;
+
+  if (dados.margem_bruta >= 60) nota += redistribuido.margem_bruta;
+  else if (dados.margem_bruta >= 40) nota += redistribuido.margem_bruta * 0.7;
+  else if (dados.margem_bruta >= 20) nota += redistribuido.margem_bruta * 0.5;
+
+  if (dados.sm <= 20) nota += redistribuido.sm;
+  else if (dados.sm <= 40) nota += redistribuido.sm * 0.7;
+
+  if (dados.sga <= 25) nota += redistribuido.sga;
+  else if (dados.sga <= 35) nota += redistribuido.sga * 0.7;
+
+  if (dados.consistencia_crescimento === 'Crescimento positivo') nota += redistribuido.consistencia_crescimento;
+  else if (dados.consistencia_crescimento === 'Declínio acentuado') nota += redistribuido.consistencia_crescimento * 0.3;
+
+  if (dados.ebitda > 0) nota += redistribuido.ebitda;
+  if (dados.receita > 100) nota += redistribuido.receita;
+
+  return Math.round(Math.min(nota, 100));
+}
+
 document.getElementById('empresa-form').addEventListener('submit', async (e) => {
   e.preventDefault();
 
