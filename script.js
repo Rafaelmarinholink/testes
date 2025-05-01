@@ -11,9 +11,18 @@ function calcularRating(dados) {
     receita: 10
   };
 
-  const preenchidos = Object.keys(pesos).filter(key =>
-    dados[key] !== null && dados[key] !== '' && !isNaN(dados[key]) && dados[key] !== 'N/A'
+  // Separar os numéricos dos textuais
+  const camposNumericos = ['crescimento_yoy', 'margem_bruta', 'sm', 'sga', 'ebitda', 'receita'];
+  const camposTextuais = ['consistencia_crescimento'];
+
+  const preenchidos = camposNumericos.filter(key =>
+    dados[key] !== null && dados[key] !== '' && !isNaN(dados[key])
   );
+
+  if (dados.consistencia_crescimento === 'Crescimento positivo' || dados.consistencia_crescimento === 'Declínio acentuado') {
+    preenchidos.push('consistencia_crescimento');
+  }
+
   const pesoTotal = preenchidos.reduce((acc, key) => acc + pesos[key], 0);
 
   const redistribuido = {};
@@ -23,25 +32,35 @@ function calcularRating(dados) {
 
   let nota = 0;
 
-  if (dados.crescimento_yoy >= 20) nota += redistribuido.crescimento_yoy;
-  else if (dados.crescimento_yoy >= 5) nota += redistribuido.crescimento_yoy * 0.7;
-  else if (dados.crescimento_yoy > 0) nota += redistribuido.crescimento_yoy * 0.5;
+  if ('crescimento_yoy' in redistribuido) {
+    if (dados.crescimento_yoy >= 20) nota += redistribuido.crescimento_yoy;
+    else if (dados.crescimento_yoy >= 5) nota += redistribuido.crescimento_yoy * 0.7;
+    else if (dados.crescimento_yoy > 0) nota += redistribuido.crescimento_yoy * 0.5;
+  }
 
-  if (dados.margem_bruta >= 60) nota += redistribuido.margem_bruta;
-  else if (dados.margem_bruta >= 40) nota += redistribuido.margem_bruta * 0.7;
-  else if (dados.margem_bruta >= 20) nota += redistribuido.margem_bruta * 0.5;
+  if ('margem_bruta' in redistribuido) {
+    if (dados.margem_bruta >= 60) nota += redistribuido.margem_bruta;
+    else if (dados.margem_bruta >= 40) nota += redistribuido.margem_bruta * 0.7;
+    else if (dados.margem_bruta >= 20) nota += redistribuido.margem_bruta * 0.5;
+  }
 
-  if (dados.sm <= 20) nota += redistribuido.sm;
-  else if (dados.sm <= 40) nota += redistribuido.sm * 0.7;
+  if ('sm' in redistribuido) {
+    if (dados.sm <= 20) nota += redistribuido.sm;
+    else if (dados.sm <= 40) nota += redistribuido.sm * 0.7;
+  }
 
-  if (dados.sga <= 25) nota += redistribuido.sga;
-  else if (dados.sga <= 35) nota += redistribuido.sga * 0.7;
+  if ('sga' in redistribuido) {
+    if (dados.sga <= 25) nota += redistribuido.sga;
+    else if (dados.sga <= 35) nota += redistribuido.sga * 0.7;
+  }
 
-  if (dados.consistencia_crescimento === 'Crescimento positivo') nota += redistribuido.consistencia_crescimento;
-  else if (dados.consistencia_crescimento === 'Declínio acentuado') nota += redistribuido.consistencia_crescimento * 0.3;
+  if ('consistencia_crescimento' in redistribuido) {
+    if (dados.consistencia_crescimento === 'Crescimento positivo') nota += redistribuido.consistencia_crescimento;
+    else if (dados.consistencia_crescimento === 'Declínio acentuado') nota += redistribuido.consistencia_crescimento * 0.3;
+  }
 
-  if (dados.ebitda > 0) nota += redistribuido.ebitda;
-  if (dados.receita > 100) nota += redistribuido.receita;
+  if ('ebitda' in redistribuido && dados.ebitda > 0) nota += redistribuido.ebitda;
+  if ('receita' in redistribuido && dados.receita > 100) nota += redistribuido.receita;
 
   return Math.round(Math.min(nota, 100));
 }
