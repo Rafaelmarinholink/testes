@@ -41,20 +41,15 @@
       </div>
 
       <h2 class="subtitle" id="nomeEmpresa">Análise Financeira</h2>
-
       <div class="grid-indicadores" id="indicadores"></div>
-
       <div class="rating-gauge">
         <canvas id="gaugeChart"></canvas>
       </div>
-
       <div class="diagnostico" id="diagnostico"></div>
-
       <div class="notas">
         <h3>Notas</h3>
         <p id="notas"></p>
       </div>
-
       <div style="margin-top:2rem;">
         <button class="btn" onclick="window.location.href='index.html'">Voltar à Lista</button>
         <button class="btn" onclick="comparar()">Comparar com outra empresa</button>
@@ -68,12 +63,61 @@
     const formatarMilhoes = v => v ? `R$ ${parseFloat(v).toFixed(1)} Milhões` : '-';
     const formatarPercentual = v => v ? `${(parseFloat(v) * 100).toFixed(1)}%` : '-';
     const formatarMultiplo = v => v ? `${parseFloat(v).toFixed(2)}x` : '-';
-
     const urlParams = new URLSearchParams(window.location.search);
     const idEmpresa = urlParams.get('id');
 
     function comparar() {
       window.location.href = `comparar.html?id=${idEmpresa}`;
+    }
+
+    function gerarDiagnostico(empresa) {
+      const insights = [];
+
+      if (empresa.crescimento_yoy < 0) {
+        insights.push("O crescimento YoY é negativo, indicando um momento de retração que exige atenção para estratégias de reativação da demanda ou reposicionamento.");
+      } else if (empresa.crescimento_yoy > 0) {
+        insights.push("O crescimento YoY é positivo, o que reflete um bom ritmo de expansão.");
+      }
+
+      if (empresa.margem_bruta >= 0.6) {
+        insights.push("A margem bruta é sólida, refletindo forte eficiência operacional na entrega do serviço.");
+      } else if (empresa.margem_bruta < 0.4) {
+        insights.push("A margem bruta está abaixo do ideal, indicando possíveis ineficiências operacionais.");
+      }
+
+      if (empresa.sm > 0.4) {
+        insights.push("Os gastos com S&M são elevados, o que pode sinalizar dependência de marketing para aquisição de clientes.");
+      }
+
+      if (empresa.sga > 0.35) {
+        insights.push("Os gastos com SG&A estão altos, indicando possíveis ineficiências administrativas.");
+      }
+
+      if (empresa.ebitda > 0) {
+        insights.push("O EBITDA positivo demonstra que a empresa gera caixa operacional, mesmo com desafios.");
+      } else {
+        insights.push("O EBITDA negativo sinaliza dificuldades na geração de caixa operacional.");
+      }
+
+      if (empresa.consistencia_yoy === "Crescimento positivo") {
+        insights.push("O histórico da empresa revela consistência no crescimento, o que é um indicativo positivo.");
+      } else if (empresa.consistencia_yoy === "Declínio acentuado") {
+        insights.push("A consistência no crescimento é preocupante, com histórico de declínio acentuado.");
+      }
+
+      const rating = empresa.rating ?? 0;
+      let resumo = "";
+      if (rating >= 75) {
+        resumo = "A empresa apresenta excelente desempenho financeiro, com fundamentos sólidos e indicadores robustos.";
+      } else if (rating >= 60) {
+        resumo = "A empresa demonstra boa saúde financeira, mas há pontos que podem ser otimizados para melhorar seu desempenho.";
+      } else if (rating >= 40) {
+        resumo = "A empresa pode enfrentar desafios de rentabilidade ou crescimento sustentado. É recomendável uma análise mais detalhada.";
+      } else {
+        resumo = "Atenção: diversos indicadores apontam fragilidade financeira. A análise deve considerar riscos elevados.";
+      }
+
+      return resumo + " " + insights.join(" ");
     }
 
     buscarEmpresas().then(empresas => {
@@ -103,19 +147,7 @@
         grid.appendChild(div);
       });
 
-      // Diagnóstico baseado em rating
-      const rating = empresa.rating ?? 0;
-      const diagnostico = document.getElementById('diagnostico');
-      if (rating >= 75) {
-        diagnostico.textContent = "A empresa apresenta excelente desempenho financeiro, com fundamentos sólidos e indicadores robustos.";
-      } else if (rating >= 60) {
-        diagnostico.textContent = "A empresa demonstra boa saúde financeira, mas há pontos que podem ser otimizados para melhorar seu desempenho.";
-      } else if (rating >= 40) {
-        diagnostico.textContent = "A empresa pode enfrentar desafios de rentabilidade ou crescimento sustentado. É recomendável uma análise mais detalhada.";
-      } else {
-        diagnostico.textContent = "Atenção: diversos indicadores apontam fragilidade financeira. A análise deve considerar riscos elevados.";
-      }
-
+      document.getElementById('diagnostico').textContent = gerarDiagnostico(empresa);
       document.getElementById('notas').textContent = empresa.notas || 'Nenhuma nota registrada.';
 
       new Chart(document.getElementById('gaugeChart'), {
@@ -123,7 +155,7 @@
         data: {
           labels: ['Rating'],
           datasets: [{
-            data: [rating, 100 - rating],
+            data: [empresa.rating ?? 0, 100 - (empresa.rating ?? 0)],
             backgroundColor: ['#3b82f6', '#1e293b'],
             borderWidth: 0
           }]
@@ -137,7 +169,7 @@
             tooltip: { enabled: false },
             title: {
               display: true,
-              text: `${rating} / 100`,
+              text: `${empresa.rating ?? 0} / 100`,
               color: '#fff',
               font: { size: 24, weight: 'bold' },
               padding: 10
