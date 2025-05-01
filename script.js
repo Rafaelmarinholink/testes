@@ -3,7 +3,7 @@ import { buscarEmpresas } from './airtable.js';
 document.getElementById('empresa-form').addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const campos = document.querySelectorAll('#empresa-form input[required], #empresa-form textarea[required]');
+  const campos = document.querySelectorAll('#empresa-form input[required], #empresa-form select[required]');
   let valido = true;
 
   campos.forEach(campo => {
@@ -24,13 +24,13 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
 
   const dados = {
     crescimento_yoy: parseFloat(document.getElementById('crescimento_yoy').value),
-    nrr: parseFloat(document.getElementById('nrr').value),
-    ltv: parseFloat(document.getElementById('ltv').value),
     margem_bruta: parseFloat(document.getElementById('margem_bruta').value),
     sm: parseFloat(document.getElementById('sm').value),
     sga: parseFloat(document.getElementById('sga').value),
-    consistencia_yoy: document.getElementById('consistencia_yoy').value,
-    receita: parseFloat(document.getElementById('receita').value)
+    consistencia_crescimento: document.getElementById('consistencia').value,
+    receita: parseFloat(document.getElementById('receita').value),
+    ebitda: parseFloat(document.getElementById('ebitda').value),
+    valuation: parseFloat(document.getElementById('valuation').value),
   };
 
   const ratingCalculado = calcularRating(dados);
@@ -40,17 +40,15 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
       "Nome da Empresa": document.getElementById('nome').value,
       "Ticker": document.getElementById('ticker').value,
       "Receita Anual (USD)": dados.receita,
-      "EBITDA (USD)": parseFloat(document.getElementById('ebitda').value),
-      "Valuation (USD)": parseFloat(document.getElementById('valuation').value),
-      "Margem EBITDA": parseFloat(document.getElementById('margem_ebitda').value),
-      "EV/EBITDA": parseFloat(document.getElementById('ev_ebitda').value),
-      "Notas": document.getElementById('notas').value,
-      "Rating": ratingCalculado,
+      "EBITDA (USD)": dados.ebitda,
+      "Valuation (USD)": dados.valuation,
       "Crescimento YoY": dados.crescimento_yoy,
-      "Margem Bruta": dados.margem_bruta,
-      "S&M": dados.sm,
-      "SG&A": dados.sga,
-      "Consistência Crescimento YoY": dados.consistencia_yoy
+      "Margem Bruta (%)": dados.margem_bruta,
+      "S&M (%)": dados.sm,
+      "SG&A (%)": dados.sga,
+      "Consistência Crescimento YoY": dados.consistencia_crescimento,
+      "Notas": document.getElementById('notas').value,
+      "Rating": ratingCalculado
     }
   };
 
@@ -68,14 +66,9 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
 });
 
 function carregarTopEmpresas(empresas) {
-  const top3 = empresas
-    .filter(e => typeof e.rating === 'number' && !isNaN(e.rating))
-    .sort((a, b) => b.rating - a.rating)
-    .slice(0, 3);
-
+  const top3 = empresas.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)).slice(0, 3);
   const listaTop = document.getElementById('top-empresas');
   listaTop.innerHTML = '';
-
   top3.forEach(emp => {
     const card = document.createElement('div');
     card.className = 'empresa-card';
@@ -85,9 +78,53 @@ function carregarTopEmpresas(empresas) {
       Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões
     `;
     card.style.cursor = 'pointer';
-    card.onclick = () => window.location.href = `empresa.html?id=${emp.id}`;
+    card.onclick = () => window.location.href = \`empresa.html?id=\${emp.id}\`;
     listaTop.appendChild(card);
   });
 }
 
 buscarEmpresas().then(empresas => carregarTopEmpresas(empresas));
+
+function calcularRating(dados) {
+  let nota = 0;
+  let pesos = {
+    crescimento_yoy: 20,
+    margem_bruta: 20,
+    sm: 10,
+    sga: 10,
+    consistencia_crescimento: 20,
+    ebitda: 10,
+    receita: 10
+  };
+
+  const preenchidos = Object.keys(pesos).filter(key => dados[key] !== null && dados[key] !== undefined && dados[key] !== '');
+  const pesoTotal = preenchidos.reduce((acc, key) => acc + pesos[key], 0);
+
+  const redistribuido = {};
+  preenchidos.forEach(key => {
+    redistribuido[key] = (pesos[key] / pesoTotal) * 100;
+  });
+
+  if (dados.crescimento_yoy >= 20) nota += redistribuido.crescimento_yoy;
+  else if (dados.crescimento_yoy >= 5) nota += redistribuido.crescimento_yoy * 0.7;
+  else if (dados.crescimento_yoy >= 0) nota += redistribuido.crescimento_yoy * 0.5;
+
+  if (dados.margem_bruta >= 60) nota += redistribuido.margem_bruta;
+  else if (dados.margem_bruta >= 40) nota += redistribuido.margem_bruta * 0.7;
+  else if (dados.margem_bruta >= 20) nota += redistribuido.margem_bruta * 0.5;
+
+  if (dados.sm <= 20) nota += redistribuido.sm;
+  else if (dados.sm <= 40) nota += redistribuido.sm * 0.7;
+
+  if (dados.sga <= 25) nota += redistribuido.sga;
+  else if (dados.sga <= 35) nota += redistribuido.sga * 0.7;
+
+  if (dados.consistencia_crescimento === 'Alta') nota += redistribuido.consistencia_crescimento;
+  else if (dados.consistencia_crescimento === 'Média') nota += redistribuido.consistencia_crescimento * 0.6;
+
+  if (dados.ebitda > 0) nota += redistribuido.ebitda;
+
+  if (dados.receita > 100) nota += redistribuido.receita;
+
+  return Math.round(Math.min(nota, 100));
+}
