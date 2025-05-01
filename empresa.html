@@ -80,7 +80,8 @@
     function comparar() {
       window.location.href = `comparar.html?id=${idEmpresa}`;
     }
-
+window.comparar = comparar;
+    
     function gerarAprovacao(rating) {
       if (rating >= 75) return "Status: Elegível para investimento";
       if (rating >= 50) return "Status: Exige análise complementar";
