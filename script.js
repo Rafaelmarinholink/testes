@@ -98,7 +98,7 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
   await fetch("https://api.airtable.com/v0/appaq7tR3vt9vrN6y/Empresas", {
     method: 'POST',
     headers: {
-      Authorization: "Bearer SUA_API_KEY",
+      Authorization: "patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6",
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(data)
