@@ -206,9 +206,36 @@
               color: '#fff',
               font: { size: 24, weight: 'bold' },
               padding: 10
+            },
+            ponteiro: {
+              rating: rating
             }
           }
-        }
+        },
+        plugins: [{
+          id: 'ponteiro',
+          afterDraw(chart, args, options) {
+            const { ctx } = chart;
+            const meta = chart.getDatasetMeta(0);
+            if (!meta || !meta.data[0]) return;
+
+            const centerX = meta.data[0].x;
+            const centerY = meta.data[0].y;
+            const angle = (-Math.PI / 1) + (Math.PI * (options.rating / 100));
+            const length = 70;
+
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(angle);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, -length);
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+            ctx.restore();
+          }
+        }]
       });
     });
   </script>
