@@ -1,7 +1,5 @@
 import { buscarEmpresas } from './airtable.js';
 
-import { buscarEmpresas } from './airtable.js';
-
 function calcularRating(dados) {
   const pesos = {
     crescimento_yoy: 10,
