@@ -212,17 +212,19 @@
             }
           }
         },
-       plugins: [{
+      plugins: [{
   id: 'ponteiro',
-  afterDraw(chart, args, options) {
+  afterDraw(chart) {
     const { ctx } = chart;
+    const rating = chart.options.plugins.ponteiroRating ?? 0;
+
     const meta = chart.getDatasetMeta(0);
     if (!meta || !meta.data[0]) return;
 
     const centerX = meta.data[0].x;
     const centerY = meta.data[0].y;
-    const angle = Math.PI * (options.rating / 100) - Math.PI;
-    const length = 100; // Agora o ponteiro chega até a borda
+    const angle = Math.PI * (rating / 100) - Math.PI;
+    const length = 100;
 
     ctx.save();
     ctx.translate(centerX, centerY);
