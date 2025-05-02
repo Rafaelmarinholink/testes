@@ -4,152 +4,143 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Comparar Empresas | Saber Capital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <style>
-    .comparacao-container {
-      display: flex;
-      gap: 2rem;
-      flex-wrap: wrap;
+    .comparacao-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 40px 1fr;
+      gap: 1rem;
       margin-top: 2rem;
+      align-items: flex-start;
     }
     .empresa-card {
       background-color: #1a365d;
-      padding: 1.5rem;
+      padding: 1rem;
       border-radius: 8px;
       color: white;
-      flex: 1 1 45%;
-    }
-    .grid-kpis {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 0.5rem;
-      margin-top: 1rem;
     }
     .kpi {
       background-color: #102c4c;
       padding: 0.5rem;
       border-radius: 5px;
+      margin-bottom: 0.5rem;
     }
-    .actions {
+    .botoes {
       margin-top: 2rem;
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
+      text-align: center;
     }
-    .search-box {
-      margin-top: 1rem;
+    .comparativo {
+      margin-top: 2rem;
+      background-color: #1e3a5f;
+      padding: 1rem;
+      border-radius: 8px;
+      color: white;
+    }
+    .centro {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .centro button {
+      margin: 0.5rem 0;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="card">
-      <div class="logo-wrapper" onclick="window.location.href='index.html'" style="cursor:pointer;">
+      <div class="logo-wrapper" onclick="window.location.href='index.html'">
         <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
         <h1 class="logo-text">SABER<br>CAPITAL</h1>
       </div>
-
-      <h2 class="subtitle">Comparação Entre Empresas</h2>
-
-      <div id="selecionarEmpresa2" class="search-box">
-        <label for="empresa2">Selecione a segunda empresa para comparar:</label>
-        <input type="text" id="empresa2" placeholder="Digite o nome da empresa..." />
-        <ul id="listaSugestoes"></ul>
-      </div>
-
-      <div class="comparacao-container" id="comparacao"></div>
-
-      <div class="actions" id="botoesAcao" style="display:none;">
+      <h2 class="subtitle">Comparar Empresas</h2>
+      <div class="comparacao-wrapper" id="comparacao"></div>
+      <div class="comparativo" id="textoComparativo"></div>
+      <div class="botoes">
         <button class="btn" onclick="novaComparacao()">Nova Comparação</button>
         <button class="btn" onclick="inverterEmpresas()">Inverter Empresas</button>
       </div>
     </div>
   </div>
-
   <script type="module">
     import { buscarEmpresas } from './airtable.js';
-
     const urlParams = new URLSearchParams(window.location.search);
     let empresa1Id = urlParams.get('id');
     let empresa2Id = null;
     let empresas = [];
 
-    let empresa1 = null;
-    let empresa2 = null;
-
-    const comparacao = document.getElementById('comparacao');
-    const listaSugestoes = document.getElementById('listaSugestoes');
-    const inputEmpresa2 = document.getElementById('empresa2');
-
-    function formatarValor(v, tipo = '') {
-      if (v === undefined || v === null || v === '') return '-';
+    function formatar(v, tipo = '') {
+      if (v === undefined || v === null) return '-';
       if (tipo === 'milhoes') return `R$ ${Number(v).toLocaleString('pt-BR')} Milhões`;
       if (tipo === 'percentual') return `${(v * 100).toFixed(1)}%`;
       if (tipo === 'multiplo') return `${Number(v).toFixed(2)}x`;
       return v;
     }
 
-    function criarCard(empresa, titulo) {
+    function gerarTextoComparativo(e1, e2) {
+      const destaque = [];
+      if (e1.rating > e2.rating) destaque.push(`${e1.nome} possui maior rating geral.`);
+      else if (e2.rating > e1.rating) destaque.push(`${e2.nome} se destaca com maior rating.`);
+
+      if (e1.ebitda > e2.ebitda) destaque.push(`${e1.nome} gera mais EBITDA.`);
+      else if (e2.ebitda > e1.ebitda) destaque.push(`${e2.nome} tem vantagem em geração de caixa.`);
+
+      if (e1.crescimento_yoy > e2.crescimento_yoy) destaque.push(`${e1.nome} apresenta maior crescimento YoY.`);
+      else if (e2.crescimento_yoy > e1.crescimento_yoy) destaque.push(`${e2.nome} cresce mais rapidamente.`);
+
+      return destaque.join(' ');
+    }
+
+    function criarCard(emp) {
       return `
         <div class="empresa-card">
-          <h3>${titulo}</h3>
-          <div class="grid-kpis">
-            <div class="kpi"><strong>Nome:</strong> ${empresa.nome}</div>
-            <div class="kpi"><strong>Rating:</strong> ${empresa.rating ?? '-'}</div>
-            <div class="kpi"><strong>Receita:</strong> ${formatarValor(empresa.receita, 'milhoes')}</div>
-            <div class="kpi"><strong>EBITDA:</strong> ${formatarValor(empresa.ebitda, 'milhoes')}</div>
-            <div class="kpi"><strong>Valuation:</strong> ${formatarValor(empresa.valuation, 'milhoes')}</div>
-            <div class="kpi"><strong>Margem EBITDA:</strong> ${formatarValor(empresa.margem_ebitda, 'percentual')}</div>
-            <div class="kpi"><strong>EV/EBITDA:</strong> ${formatarValor(empresa.ev_ebitda, 'multiplo')}</div>
-            <div class="kpi"><strong>Crescimento YoY:</strong> ${formatarValor(empresa.crescimento_yoy, 'percentual')}</div>
-            <div class="kpi"><strong>Margem Bruta:</strong> ${formatarValor(empresa.margem_bruta, 'percentual')}</div>
-            <div class="kpi"><strong>S&M:</strong> ${formatarValor(empresa.sm, 'percentual')}</div>
-            <div class="kpi"><strong>SG&A:</strong> ${formatarValor(empresa.sga, 'percentual')}</div>
-            <div class="kpi"><strong>Consistência Crescimento:</strong> ${empresa.consistencia_yoy ?? '-'}</div>
-          </div>
+          <h3><strong>${emp.nome}</strong></h3>
+          <div class="kpi">Rating: ${emp.rating ?? '-'}</div>
+          <div class="kpi">Receita: ${formatar(emp.receita, 'milhoes')}</div>
+          <div class="kpi">EBITDA: ${formatar(emp.ebitda, 'milhoes')}</div>
+          <div class="kpi">Valuation: ${formatar(emp.valuation, 'milhoes')}</div>
+          <div class="kpi">Margem EBITDA: ${formatar(emp.margem_ebitda, 'percentual')}</div>
+          <div class="kpi">EV/EBITDA: ${formatar(emp.ev_ebitda, 'multiplo')}</div>
+          <div class="kpi">Crescimento YoY: ${formatar(emp.crescimento_yoy, 'percentual')}</div>
+          <div class="kpi">Margem Bruta: ${formatar(emp.margem_bruta, 'percentual')}</div>
+          <div class="kpi">S&M: ${formatar(emp.sm, 'percentual')}</div>
+          <div class="kpi">SG&A: ${formatar(emp.sga, 'percentual')}</div>
+          <div class="kpi">Consistência: ${emp.consistencia_yoy}</div>
         </div>
       `;
     }
 
-    function renderizarComparacao() {
-      comparacao.innerHTML = '';
-      comparacao.innerHTML += criarCard(empresa1, "Empresa 1");
-      comparacao.innerHTML += criarCard(empresa2, "Empresa 2");
-      document.getElementById('botoesAcao').style.display = 'flex';
-      document.getElementById('selecionarEmpresa2').style.display = 'none';
+    function renderizarComparacao(emp1, emp2) {
+      const comparacao = document.getElementById('comparacao');
+      comparacao.innerHTML = `
+        ${criarCard(emp1)}
+        <div class="centro">
+          <button onclick="inverterEmpresas()">🔁</button>
+        </div>
+        ${criarCard(emp2)}
+      `;
+      document.getElementById('textoComparativo').textContent = gerarTextoComparativo(emp1, emp2);
     }
 
-    function novaComparacao() {
-      window.location.href = `comparar.html?id=${empresa1Id}`;
-    }
+    window.novaComparacao = () => {
+      window.location.href = 'empresas.html';
+    };
 
-    function inverterEmpresas() {
+    window.inverterEmpresas = () => {
       window.location.href = `comparar.html?id=${empresa2Id}`;
-    }
+    };
 
-    inputEmpresa2.addEventListener('input', () => {
-      const texto = inputEmpresa2.value.toLowerCase();
-      const sugestoes = empresas.filter(emp => emp.id !== empresa1Id && emp.nome.toLowerCase().includes(texto));
-
-      listaSugestoes.innerHTML = '';
-      sugestoes.forEach(emp => {
-        const li = document.createElement('li');
-        li.textContent = emp.nome;
-        li.style.cursor = 'pointer';
-        li.style.padding = '0.4rem';
-        li.style.color = '#fff';
-        li.addEventListener('click', () => {
-          empresa2Id = emp.id;
-          empresa2 = emp;
-          renderizarComparacao();
-        });
-        listaSugestoes.appendChild(li);
-      });
-    });
-
-    buscarEmpresas().then(res => {
-      empresas = res;
-      empresa1 = empresas.find(e => e.id === empresa1Id);
+    buscarEmpresas().then(lista => {
+      empresas = lista;
+      const e1 = empresas.find(e => e.id === empresa1Id);
+      const restantes = empresas.filter(e => e.id !== empresa1Id);
+      const e2 = restantes.length > 0 ? restantes[0] : null;
+      if (e1 && e2) {
+        empresa2Id = e2.id;
+        renderizarComparacao(e1, e2);
+      }
     });
   </script>
 </body>
