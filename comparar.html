@@ -5,34 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Comparar Empresas | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    .comparar-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+    .comparacao-container {
+      display: flex;
       gap: 2rem;
+      flex-wrap: wrap;
+      margin-top: 2rem;
     }
-    .empresa-box {
+    .empresa-card {
       background-color: #1a365d;
-      padding: 1rem;
+      padding: 1.5rem;
       border-radius: 8px;
       color: white;
+      flex: 1 1 45%;
     }
-    .empresa-box h3 {
-      margin-bottom: 1rem;
+    .grid-kpis {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+      margin-top: 1rem;
     }
-    .indicador {
-      margin-bottom: 0.5rem;
+    .kpi {
+      background-color: #102c4c;
+      padding: 0.5rem;
+      border-radius: 5px;
     }
-    .barra-rating {
-      height: 16px;
-      border-radius: 8px;
-      background: #3b82f6;
-      margin-bottom: 1rem;
-    }
-    .botao-central {
+    .actions {
       margin-top: 2rem;
-      text-align: center;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .search-box {
+      margin-top: 1rem;
     }
   </style>
 </head>
@@ -44,11 +49,19 @@
         <h1 class="logo-text">SABER<br>CAPITAL</h1>
       </div>
 
-      <h2 class="subtitle">Comparar Empresas</h2>
-      <div class="comparar-grid" id="compararEmpresas"></div>
+      <h2 class="subtitle">Comparação Entre Empresas</h2>
 
-      <div class="botao-central">
-        <button class="btn" onclick="window.location.href='index.html'">← Voltar à Página Inicial</button>
+      <div id="selecionarEmpresa2" class="search-box">
+        <label for="empresa2">Selecione a segunda empresa para comparar:</label>
+        <input type="text" id="empresa2" placeholder="Digite o nome da empresa..." />
+        <ul id="listaSugestoes"></ul>
+      </div>
+
+      <div class="comparacao-container" id="comparacao"></div>
+
+      <div class="actions" id="botoesAcao" style="display:none;">
+        <button class="btn" onclick="novaComparacao()">Nova Comparação</button>
+        <button class="btn" onclick="inverterEmpresas()">Inverter Empresas</button>
       </div>
     </div>
   </div>
@@ -57,75 +70,86 @@
     import { buscarEmpresas } from './airtable.js';
 
     const urlParams = new URLSearchParams(window.location.search);
-    const idEmpresa = urlParams.get('id');
+    let empresa1Id = urlParams.get('id');
+    let empresa2Id = null;
+    let empresas = [];
 
-    function formatar(v, tipo = 'real') {
-      if (v === undefined || v === null) return '-';
-      if (tipo === 'real') return `R$ ${parseFloat(v).toFixed(1)}M`;
-      if (tipo === 'percentual') return `${(parseFloat(v) * 100).toFixed(1)}%`;
-      if (tipo === 'multiplo') return `${parseFloat(v).toFixed(2)}x`;
+    let empresa1 = null;
+    let empresa2 = null;
+
+    const comparacao = document.getElementById('comparacao');
+    const listaSugestoes = document.getElementById('listaSugestoes');
+    const inputEmpresa2 = document.getElementById('empresa2');
+
+    function formatarValor(v, tipo = '') {
+      if (v === undefined || v === null || v === '') return '-';
+      if (tipo === 'milhoes') return `R$ ${Number(v).toLocaleString('pt-BR')} Milhões`;
+      if (tipo === 'percentual') return `${(v * 100).toFixed(1)}%`;
+      if (tipo === 'multiplo') return `${Number(v).toFixed(2)}x`;
       return v;
     }
 
-    function gerarBox(empresa) {
-      const indicadores = [
-        { label: 'Receita Anual', valor: formatar(empresa.receita) },
-        { label: 'EBITDA', valor: formatar(empresa.ebitda) },
-        { label: 'Valuation', valor: formatar(empresa.valuation) },
-        { label: 'Margem EBITDA', valor: formatar(empresa.margem_ebitda, 'percentual') },
-        { label: 'EV/EBITDA', valor: formatar(empresa.ev_ebitda, 'multiplo') },
-        { label: 'Crescimento YoY', valor: formatar(empresa.crescimento_yoy, 'percentual') },
-        { label: 'Margem Bruta', valor: formatar(empresa.margem_bruta, 'percentual') },
-        { label: 'S&M', valor: formatar(empresa.sm, 'percentual') },
-        { label: 'SG&A', valor: formatar(empresa.sga, 'percentual') },
-        { label: 'Consistência Crescimento YoY', valor: empresa.consistencia_yoy || '-' },
-        { label: 'Rating', valor: `${empresa.rating ?? 'N/A'} / 100` }
-      ];
-
-      const div = document.createElement('div');
-      div.className = 'empresa-box';
-      div.innerHTML = `
-        <h3>${empresa.nome}</h3>
-        <div class="barra-rating" style="width:${empresa.rating ?? 0}%"></div>
-        ${indicadores.map(ind => `
-          <div class="indicador"><strong>${ind.label}:</strong> ${ind.valor}</div>
-        `).join('')}
+    function criarCard(empresa, titulo) {
+      return `
+        <div class="empresa-card">
+          <h3>${titulo}</h3>
+          <div class="grid-kpis">
+            <div class="kpi"><strong>Nome:</strong> ${empresa.nome}</div>
+            <div class="kpi"><strong>Rating:</strong> ${empresa.rating ?? '-'}</div>
+            <div class="kpi"><strong>Receita:</strong> ${formatarValor(empresa.receita, 'milhoes')}</div>
+            <div class="kpi"><strong>EBITDA:</strong> ${formatarValor(empresa.ebitda, 'milhoes')}</div>
+            <div class="kpi"><strong>Valuation:</strong> ${formatarValor(empresa.valuation, 'milhoes')}</div>
+            <div class="kpi"><strong>Margem EBITDA:</strong> ${formatarValor(empresa.margem_ebitda, 'percentual')}</div>
+            <div class="kpi"><strong>EV/EBITDA:</strong> ${formatarValor(empresa.ev_ebitda, 'multiplo')}</div>
+            <div class="kpi"><strong>Crescimento YoY:</strong> ${formatarValor(empresa.crescimento_yoy, 'percentual')}</div>
+            <div class="kpi"><strong>Margem Bruta:</strong> ${formatarValor(empresa.margem_bruta, 'percentual')}</div>
+            <div class="kpi"><strong>S&M:</strong> ${formatarValor(empresa.sm, 'percentual')}</div>
+            <div class="kpi"><strong>SG&A:</strong> ${formatarValor(empresa.sga, 'percentual')}</div>
+            <div class="kpi"><strong>Consistência Crescimento:</strong> ${empresa.consistencia_yoy ?? '-'}</div>
+          </div>
+        </div>
       `;
-      return div;
     }
 
-    buscarEmpresas().then(empresas => {
-      const empresaA = empresas.find(e => e.id === idEmpresa);
-      const outras = empresas.filter(e => e.id !== idEmpresa);
-      if (!empresaA) return;
+    function renderizarComparacao() {
+      comparacao.innerHTML = '';
+      comparacao.innerHTML += criarCard(empresa1, "Empresa 1");
+      comparacao.innerHTML += criarCard(empresa2, "Empresa 2");
+      document.getElementById('botoesAcao').style.display = 'flex';
+      document.getElementById('selecionarEmpresa2').style.display = 'none';
+    }
 
-      const container = document.getElementById('compararEmpresas');
-      const empresaBoxA = gerarBox(empresaA);
+    function novaComparacao() {
+      window.location.href = `comparar.html?id=${empresa1Id}`;
+    }
 
-      const empresaBoxB = document.createElement('div');
-      empresaBoxB.className = 'empresa-box';
-      empresaBoxB.innerHTML = `
-        <h3>Escolha empresa para comparar</h3>
-        <select id="seletorB" style="width:100%; padding:0.5rem; margin-bottom:1rem;">
-          <option value="">Selecione</option>
-          ${outras.map(e => `<option value="${e.id}">${e.nome}</option>`).join('')}
-        </select>
-        <div id="empresaBinfo"></div>
-      `;
+    function inverterEmpresas() {
+      window.location.href = `comparar.html?id=${empresa2Id}`;
+    }
 
-      container.appendChild(empresaBoxA);
-      container.appendChild(empresaBoxB);
+    inputEmpresa2.addEventListener('input', () => {
+      const texto = inputEmpresa2.value.toLowerCase();
+      const sugestoes = empresas.filter(emp => emp.id !== empresa1Id && emp.nome.toLowerCase().includes(texto));
 
-      document.getElementById('seletorB').addEventListener('change', e => {
-        const empresaB = empresas.find(emp => emp.id === e.target.value);
-        const infoDiv = document.getElementById('empresaBinfo');
-        if (empresaB) {
-          const box = gerarBox(empresaB);
-          infoDiv.innerHTML = box.innerHTML;
-        } else {
-          infoDiv.innerHTML = '';
-        }
+      listaSugestoes.innerHTML = '';
+      sugestoes.forEach(emp => {
+        const li = document.createElement('li');
+        li.textContent = emp.nome;
+        li.style.cursor = 'pointer';
+        li.style.padding = '0.4rem';
+        li.style.color = '#fff';
+        li.addEventListener('click', () => {
+          empresa2Id = emp.id;
+          empresa2 = emp;
+          renderizarComparacao();
+        });
+        listaSugestoes.appendChild(li);
       });
+    });
+
+    buscarEmpresas().then(res => {
+      empresas = res;
+      empresa1 = empresas.find(e => e.id === empresa1Id);
     });
   </script>
 </body>
