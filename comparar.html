@@ -46,6 +46,31 @@
     .centro button {
       margin: 0.5rem 0;
     }
+    .search-box {
+      margin-top: 2rem;
+      text-align: center;
+    }
+    .search-box input {
+      padding: 0.5rem;
+      width: 100%;
+      max-width: 400px;
+      background-color: #1e3a5f;
+      border: none;
+      border-radius: 6px;
+      color: white;
+    }
+    .search-results {
+      margin-top: 1rem;
+      list-style: none;
+      padding: 0;
+    }
+    .search-results li {
+      background-color: #2c5282;
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -56,6 +81,11 @@
         <h1 class="logo-text">SABER<br>CAPITAL</h1>
       </div>
       <h2 class="subtitle">Comparar Empresas</h2>
+      <div id="empresa1Card"></div>
+      <div class="search-box">
+        <input type="text" id="searchEmpresa2" placeholder="Digite o nome da segunda empresa..." />
+        <ul id="resultadosBusca" class="search-results"></ul>
+      </div>
       <div class="comparacao-wrapper" id="comparacao"></div>
       <div class="comparativo" id="textoComparativo"></div>
       <div class="botoes">
@@ -70,6 +100,7 @@
     let empresa1Id = urlParams.get('id');
     let empresa2Id = null;
     let empresas = [];
+    let empresa1 = null;
 
     function formatar(v, tipo = '') {
       if (v === undefined || v === null) return '-';
@@ -113,8 +144,7 @@
     }
 
     function renderizarComparacao(emp1, emp2) {
-      const comparacao = document.getElementById('comparacao');
-      comparacao.innerHTML = `
+      document.getElementById('comparacao').innerHTML = `
         ${criarCard(emp1)}
         <div class="centro">
           <button onclick="inverterEmpresas()">🔁</button>
@@ -134,13 +164,27 @@
 
     buscarEmpresas().then(lista => {
       empresas = lista;
-      const e1 = empresas.find(e => e.id === empresa1Id);
-      const restantes = empresas.filter(e => e.id !== empresa1Id);
-      const e2 = restantes.length > 0 ? restantes[0] : null;
-      if (e1 && e2) {
-        empresa2Id = e2.id;
-        renderizarComparacao(e1, e2);
-      }
+      empresa1 = empresas.find(e => e.id === empresa1Id);
+      document.getElementById('empresa1Card').innerHTML = criarCard(empresa1);
+
+      const input = document.getElementById('searchEmpresa2');
+      const ul = document.getElementById('resultadosBusca');
+
+      input.addEventListener('input', () => {
+        const termo = input.value.toLowerCase();
+        const resultados = empresas.filter(e => e.id !== empresa1Id && e.nome.toLowerCase().includes(termo));
+        ul.innerHTML = '';
+        resultados.forEach(emp => {
+          const li = document.createElement('li');
+          li.textContent = emp.nome;
+          li.onclick = () => {
+            empresa2Id = emp.id;
+            renderizarComparacao(empresa1, emp);
+            document.querySelector('.search-box').style.display = 'none';
+          };
+          ul.appendChild(li);
+        });
+      });
     });
   </script>
 </body>
