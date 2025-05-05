@@ -147,7 +147,9 @@ function carregarTopEmpresas(empresas) {
     card.innerHTML = `
       <strong>${emp.nome}</strong><br>
       Rating: ${emp.rating ?? 'N/A'}<br>
-      Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões
+      Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões<br>
+      <button class="btn-mini" onclick="window.location.href='empresa.html?id=${emp.id}'">Ver Análise</button>
+      <button class="btn-mini" onclick="window.location.href='due_diligence.html?id=${emp.id}'">Ver Due Diligence</button>
     `;
     card.style.cursor = 'pointer';
     card.onclick = () => window.location.href = `empresa.html?id=${emp.id}`;
