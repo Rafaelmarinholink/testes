@@ -172,3 +172,19 @@ textarea.error {
     font-size: 1.5rem;
   }
 }
+/* ... (seus estilos anteriores) ... */
+
+.btn-mini {
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.btn-mini:hover {
+  background-color: #2563eb;
+}
