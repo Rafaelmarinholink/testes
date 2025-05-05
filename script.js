@@ -141,20 +141,44 @@ function carregarTopEmpresas(empresas) {
   const listaTop = document.getElementById('top-empresas');
   listaTop.innerHTML = '';
 
-  top3.forEach(emp => {
-    const card = document.createElement('div');
-    card.className = 'empresa-card';
-    card.innerHTML = `
-      <strong>${emp.nome}</strong><br>
-      Rating: ${emp.rating ?? 'N/A'}<br>
-      Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões<br>
-      <button class="btn-mini" onclick="window.location.href='empresa.html?id=${emp.id}'">Ver Análise</button>
-      <button class="btn-mini" onclick="window.location.href='due_diligence.html?id=${emp.id}'">Ver Due Diligence</button>
-    `;
-    card.style.cursor = 'pointer';
-    card.onclick = () => window.location.href = `empresa.html?id=${emp.id}`;
-    listaTop.appendChild(card);
-  });
-}
+ top3.forEach(async emp => {
+  const statusDD = await buscarStatusDD(emp.id);
+  let cor = '#ccc';
+  if (statusDD === 'Alto') cor = '#ef4444';
+  else if (statusDD === 'Médio') cor = '#facc15';
+  else if (statusDD === 'Baixo') cor = '#22c55e';
+
+  const card = document.createElement('div');
+  card.className = 'empresa-card';
+  card.innerHTML = `
+    <strong>${emp.nome}</strong><br>
+    Rating: ${emp.rating ?? 'N/A'}<br>
+    Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões<br>
+    <span style="color:${cor}; font-weight:bold">Due Diligence: ${statusDD}</span><br>
+    <button class="btn-mini" onclick="window.location.href='empresa.html?id=${emp.id}'">Ver Análise</button>
+    <button class="btn-mini" onclick="window.location.href='due_diligence.html?id=${emp.id}'">Ver Due Diligence</button>
+  `;
+  card.style.cursor = 'pointer';
+  card.onclick = () => window.location.href = `empresa.html?id=${emp.id}`;
+  listaTop.appendChild(card);
+});
 
 buscarEmpresas().then(empresas => carregarTopEmpresas(empresas));
+async function buscarStatusDD(empresaId) {
+  const baseId = 'appaq7tR3vt9vrN6y';
+  const tableDD = 'Due Diligence';
+  const headers = {
+    Authorization: "Bearer patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6"
+  };
+
+  const url = `https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=FIND("${empresaId}", ARRAYJOIN({Empresa DD}))`;
+  const res = await fetch(url, { headers });
+  const data = await res.json();
+
+  const riscos = data.records.map(r => r.fields["Classificação de risco"]);
+  if (riscos.includes("Alto")) return "Alto";
+  if (riscos.includes("Médio")) return "Médio";
+  if (riscos.length > 0) return "Baixo";
+  return "Nenhum";
+}
+
