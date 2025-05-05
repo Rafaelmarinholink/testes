@@ -8,7 +8,6 @@ const headers = {
   'Content-Type': 'application/json'
 };
 
-// Carregar empresas no <select>
 async function carregarEmpresas() {
   const res = await fetch(`https://api.airtable.com/v0/${baseId}/${tableEmpresas}`, { headers });
   const data = await res.json();
@@ -22,17 +21,34 @@ async function carregarEmpresas() {
   });
 }
 
-// Salvar nova análise
 async function salvarAnalise() {
+  const fileInput = document.getElementById('evidencia');
+  let evidencia = [];
+
+  if (fileInput.files.length > 0) {
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const uploadRes = await fetch('https://api.airtable.com/v0/attachments', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${apiKey}` },
+      body: formData
+    });
+
+    const uploadData = await uploadRes.json();
+    evidencia = [{ url: uploadData.url }];
+  }
+
   const dados = {
     fields: {
-      "Empresa": [document.getElementById('empresa').value],
-      "Tipo de Diligência": document.getElementById('tipo').value,
-      "Item Analisado": document.getElementById('item').value,
-      "Status": document.getElementById('status').value,
-      "Risco": document.getElementById('risco').value,
-      "Comentário": document.getElementById('comentario').value,
-      "Evidência": document.getElementById('evidencia').value
+      "Empresa DD": [document.getElementById('empresa').value],
+      "Tipo de Diligencia": document.getElementById('tipo').value,
+      "item analisado": document.getElementById('item').value,
+      "Status da análise": document.getElementById('status').value,
+      "Classificação de risco": document.getElementById('risco').value,
+      "Comentarios": document.getElementById('comentario').value,
+      "Evidência": evidencia
     }
   };
 
@@ -45,9 +61,8 @@ async function salvarAnalise() {
   listarAnalises(document.getElementById('empresa').value);
 }
 
-// Listar análises para empresa
 async function listarAnalises(idEmpresa) {
-  const res = await fetch(`https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=FIND("${idEmpresa}", ARRAYJOIN({Empresa}))`, { headers });
+  const res = await fetch(`https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=FIND("${idEmpresa}", ARRAYJOIN({Empresa DD}))`, { headers });
   const data = await res.json();
   const lista = document.getElementById('lista-dd');
   lista.innerHTML = '';
@@ -56,22 +71,18 @@ async function listarAnalises(idEmpresa) {
     const item = document.createElement('div');
     item.className = 'analise-item';
     item.innerHTML = `
-      <strong>${record.fields["Tipo de Diligência"]}</strong> - ${record.fields["Item Analisado"]}
-      <br>Status: <b>${record.fields["Status"]}</b> | Risco: <b>${record.fields["Risco"]}</b>
-      <br><em>${record.fields["Comentário"] ?? ''}</em>
-      <br>${record.fields["Evidência"] ? `<a href="${record.fields["Evidência"]}" target="_blank">Ver Evidência</a>` : ''}
+      <strong>${record.fields["Tipo de Diligencia"]}</strong> - ${record.fields["item analisado"]}
+      <br>Status: <b>${record.fields["Status da análise"]}</b> | Risco: <b>${record.fields["Classificação de risco"]}</b>
+      <br><em>${record.fields["Comentarios"] ?? ''}</em>
+      <br>${record.fields["Evidência"]?.[0]?.url ? `<a href="${record.fields["Evidência"][0].url}" target="_blank">Ver Evidência</a>` : ''}
       <hr>
     `;
     lista.appendChild(item);
   });
 }
 
-// Eventos
 document.getElementById('empresa').addEventListener('change', (e) => {
   listarAnalises(e.target.value);
 });
-
 document.getElementById('salvar-dd').addEventListener('click', salvarAnalise);
-
-// Inicial
 carregarEmpresas();
