@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Due Diligence | Saber Capital</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <img src="logo.png" alt="Logo Saber Capital" class="logo" />
+      <h1>Due Diligence</h1>
+    </header>
+
+    <section class="form-section">
+      <h2>Cadastro de Análise</h2>
+      <select id="empresaSelect" required>
+        <option value="">Selecione uma empresa</option>
+      </select>
+
+      <select id="tipo" required>
+        <option value="">Tipo de diligência</option>
+        <option>Financeira</option>
+        <option>Jurídica</option>
+        <option>Contábil</option>
+        <option>Operacional</option>
+        <option>Ambiental</option>
+      </select>
+
+      <input type="text" id="item" placeholder="Item analisado" required />
+
+      <select id="status" required>
+        <option value="">Status da análise</option>
+        <option>Pendente</option>
+        <option>Em andamento</option>
+        <option>Concluída</option>
+        <option>Com Risco</option>
+      </select>
+
+      <select id="risco" required>
+        <option value="">Classificação de risco</option>
+        <option>Baixo</option>
+        <option>Médio</option>
+        <option>Alto</option>
+      </select>
+
+      <textarea id="comentario" placeholder="Comentários e recomendações"></textarea>
+      <input type="url" id="evidencia" placeholder="Link da evidência (opcional)" />
+
+      <button id="salvarDD">Salvar Análise</button>
+    </section>
+
+    <section class="lista-dd">
+      <h2>Análises Cadastradas</h2>
+      <div id="listaDD"></div>
+    </section>
+  </div>
+
+  <script src="due_diligence.js"></script>
+</body>
+</html>
