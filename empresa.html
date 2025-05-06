@@ -111,7 +111,6 @@
     const formatarMultiplo = v => v ? `${parseFloat(v).toFixed(2)}x` : '-';
 
     const urlParams = new URLSearchParams(window.location.search);
-    const idEmpresa = urlParams.get('id');
 
     function comparar() {
       window.location.href = `comparar.html?id=${idEmpresa}`;
