@@ -1,4 +1,4 @@
-// due_diligence.js atualizado com suporte a upload de arquivo
+// due_diligence.js atualizado com upload real via /api/upload
 
 const apiKey = 'patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6';
 const baseId = 'appaq7tR3vt9vrN6y';
@@ -8,6 +8,9 @@ const tableDD = 'Due Diligence';
 const headers = {
   Authorization: `Bearer ${apiKey}`
 };
+
+const urlParams = new URLSearchParams(window.location.search);
+const empresaSelecionada = urlParams.get('id');
 
 // Carregar empresas no <select>
 async function carregarEmpresas() {
@@ -19,52 +22,32 @@ async function carregarEmpresas() {
     const opt = document.createElement('option');
     opt.value = record.id;
     opt.textContent = record.fields["Nome da Empresa"];
-    select.appendChild(opt);
-  });
-}
-const urlParams = new URLSearchParams(window.location.search);
-const empresaSelecionada = urlParams.get('id');
-
-async function carregarEmpresas() {
-  const res = await fetch(`https://api.airtable.com/v0/${baseId}/${tableEmpresas}`, { headers });
-  const data = await res.json();
-  const select = document.getElementById('empresa');
-
-  data.records.forEach(record => {
-    const opt = document.createElement('option');
-    opt.value = record.id;
-    opt.textContent = record.fields["Nome da Empresa"];
     if (empresaSelecionada && record.id === empresaSelecionada) {
       opt.selected = true;
-      listarAnalises(record.id); // já lista as análises dessa empresa
+      listarAnalises(record.id);
     }
     select.appendChild(opt);
   });
 }
 
-// Enviar arquivo e retornar array de attachment
-async function uploadArquivo(arquivo) {
-  const formData = new FormData();
-  formData.append('file', arquivo);
-
-  const res = await fetch('https://upload.airtable.com/v0/' + baseId + '/' + tableDD, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`
-    },
-    body: formData
-  });
-
-  const data = await res.json();
-  return data && data["id"] ? [{ url: data.url, filename: arquivo.name }] : [];
-}
-
-// Salvar nova análise
+// Salvar nova análise com upload real para /api/upload
 async function salvarAnalise() {
   const arquivo = document.getElementById('evidencia').files[0];
   let evidencia = [];
+
   if (arquivo) {
-    evidencia = [{ url: URL.createObjectURL(arquivo), filename: arquivo.name }];
+    const formData = new FormData();
+    formData.append('file', arquivo);
+
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData
+    });
+
+    const result = await res.json();
+    if (result.url) {
+      evidencia = [{ url: result.url, filename: arquivo.name }];
+    }
   }
 
   const dados = {
@@ -93,7 +76,7 @@ async function salvarAnalise() {
 
 // Listar análises para empresa
 async function listarAnalises(idEmpresa) {
-  const res = await fetch(`https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=FIND(\"${idEmpresa}\", ARRAYJOIN({Empresa DD}))`, { headers });
+  const res = await fetch(`https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=FIND("${idEmpresa}", ARRAYJOIN({Empresa DD}))`, { headers });
   const data = await res.json();
   const lista = document.getElementById('lista-dd');
   lista.innerHTML = '';
