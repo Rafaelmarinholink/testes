@@ -16,7 +16,7 @@ function calcularRating(dados) {
     dados[key] !== null && dados[key] !== '' && !isNaN(dados[key])
   );
 
-  if (dados.consistencia_crescimento === 'Crescimento positivo' || dados.consistencia_crescimento === 'Declínio acentuado') {
+  if (['Crescimento positivo', 'Declínio acentuado'].includes(dados.consistencia_crescimento)) {
     preenchidos.push('consistencia_crescimento');
   }
 
@@ -132,40 +132,6 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
   e.target.reset();
 });
 
-function carregarTopEmpresas(empresas) {
-  const top3 = empresas
-    .filter(emp => emp.rating !== undefined && emp.rating !== null)
-    .sort((a, b) => b.rating - a.rating)
-    .slice(0, 3);
-
-  const listaTop = document.getElementById('top-empresas');
-  listaTop.innerHTML = '';
-
- top3.forEach(async emp => {
-  const statusDD = await buscarStatusDD(emp.id);
-  let cor = '#ccc';
-  if (statusDD === 'Alto') cor = '#ef4444';
-  else if (statusDD === 'Médio') cor = '#facc15';
-  else if (statusDD === 'Baixo') cor = '#22c55e';
-
-  const card = document.createElement('div');
-  card.className = 'empresa-card';
-  card.innerHTML = `
-    <strong>${emp.nome}</strong><br>
-    Rating: ${emp.rating ?? 'N/A'}<br>
-    Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões<br>
-    <span style="color:${cor}; font-weight:bold">Due Diligence: ${statusDD}</span><br>
-    <button class="btn-mini" onclick="window.location.href='empresa.html?id=${emp.id}'">Ver Análise</button>
-    <button class="btn-mini" onclick="window.location.href='due_diligence.html?id=${emp.id}'">Ver Due Diligence</button>
-  `;
-  card.style.cursor = 'pointer';
-  card.onclick = () => window.location.href = `empresa.html?id=${emp.id}`;
-    listaTop.appendChild(card);
-  });
-} // ← ESSA CHAVE estava faltando aqui
-
-buscarEmpresas().then(empresas => carregarTopEmpresas(empresas));
-
 async function buscarStatusDD(empresaId) {
   const baseId = 'appaq7tR3vt9vrN6y';
   const tableDD = 'Due Diligence';
@@ -184,3 +150,36 @@ async function buscarStatusDD(empresaId) {
   return "Nenhum";
 }
 
+function carregarTopEmpresas(empresas) {
+  const top3 = empresas
+    .filter(emp => emp.rating !== undefined && emp.rating !== null)
+    .sort((a, b) => b.rating - a.rating)
+    .slice(0, 3);
+
+  const listaTop = document.getElementById('top-empresas');
+  listaTop.innerHTML = '';
+
+  top3.forEach(async emp => {
+    const statusDD = await buscarStatusDD(emp.id);
+    let cor = '#ccc';
+    if (statusDD === 'Alto') cor = '#ef4444';
+    else if (statusDD === 'Médio') cor = '#facc15';
+    else if (statusDD === 'Baixo') cor = '#22c55e';
+
+    const card = document.createElement('div');
+    card.className = 'empresa-card';
+    card.innerHTML = `
+      <strong>${emp.nome}</strong><br>
+      Rating: ${emp.rating ?? 'N/A'}<br>
+      Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões<br>
+      <div class="badge-due" style="background-color:${cor}33; color:${cor};">Due Diligence: ${statusDD}</div>
+      <div class="botao-duplo">
+        <button onclick="window.location.href='empresa.html?id=${emp.id}'">Ver Análise</button>
+        <button onclick="window.location.href='due_diligence.html?id=${emp.id}'">Due Diligence</button>
+      </div>
+    `;
+    listaTop.appendChild(card);
+  });
+}
+
+buscarEmpresas().then(empresas => carregarTopEmpresas(empresas));
