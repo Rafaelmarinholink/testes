@@ -10,31 +10,35 @@ cloudinary.config({
 
 export const config = {
   api: {
-    bodyParser: false
-  }
+    bodyParser: false,
+  },
 };
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).end('Method Not Allowed');
+export default function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Método não permitido' });
+  }
 
-  const form = new formidable.IncomingForm();
+  const form = formidable();
 
   form.parse(req, async (err, fields, files) => {
-    if (err) return res.status(500).json({ error: 'Erro ao fazer upload' });
+    if (err) {
+      console.error('Erro no parse do form:', err);
+      return res.status(500).json({ error: 'Erro ao processar o formulário' });
+    }
 
-    const file = files.file[0]; // suporta múltiplos arquivos
+    const file = files.file[0]; // Formidable v3 retorna um array
 
     try {
-      const result = await cloudinary.uploader.upload(file.filepath, {
-        folder: 'saber-capital'
-      });
-
-      res.status(200).json({
+      const result = await cloudinary.uploader.upload(file.filepath);
+      return res.status(200).json({
         url: result.secure_url,
-        filename: file.originalFilename
+        filename: file.originalFilename,
       });
-    } catch (error) {
-      res.status(500).json({ error: 'Falha ao enviar ao Cloudinary' });
+    } catch (uploadErr) {
+      console.error('Erro ao fazer upload:', uploadErr);
+      return res.status(500).json({ error: 'Erro ao enviar para o Cloudinary' });
     }
   });
 }
+
