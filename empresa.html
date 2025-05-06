@@ -58,16 +58,6 @@
       background-color: rgba(239, 68, 68, 0.2);
       color: #ef4444;
     }
-    .dd-section {
-      margin-top: 2rem;
-    }
-    .analise-item {
-      background-color: #1a365d;
-      margin-bottom: 1rem;
-      padding: 1rem;
-      border-radius: 8px;
-      color: #fff;
-    }
   </style>
 </head>
 <body>
@@ -80,6 +70,7 @@
 
       <h2 class="subtitle" id="nomeEmpresa">Análise Financeira</h2>
       <div id="statusBadge" style="text-align:center;"></div>
+      <div id="dd-status" style="text-align:center; margin-top:1rem;"></div>
 
       <div class="grid-indicadores" id="indicadores"></div>
 
@@ -92,11 +83,6 @@
       <div class="notas">
         <h3>Notas</h3>
         <p id="notas"></p>
-      </div>
-
-      <div class="dd-section">
-        <h2>Due Diligence</h2>
-        <div id="lista-dd-empresa"></div>
       </div>
 
       <div style="margin-top:2rem;">
@@ -165,34 +151,22 @@
       return "A empresa " + frases.join(", ") + ".";
     }
 
-    async function carregarDueDiligenceDaEmpresa(idEmpresa) {
-      const res = await fetch(`https://api.airtable.com/v0/appaq7tR3vt9vrN6y/Due%20Diligence?filterByFormula=FIND(\"${idEmpresa}\", ARRAYJOIN({Empresa DD}))`, {
-        headers: {
-          Authorization: "Bearer patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6",
-          'Content-Type': 'application/json'
-        }
-      });
+    async function buscarStatusDD(id) {
+      const baseId = 'appaq7tR3vt9vrN6y';
+      const table = 'Due Diligence';
+      const headers = {
+        Authorization: "Bearer patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6"
+      };
 
+      const url = `https://api.airtable.com/v0/${baseId}/${table}?filterByFormula=FIND(\"${id}\", ARRAYJOIN({Empresa DD}))`;
+      const res = await fetch(url, { headers });
       const data = await res.json();
-      const container = document.getElementById('lista-dd-empresa');
-      container.innerHTML = '';
 
-      if (!data.records.length) {
-        container.innerHTML = '<p>Nenhuma análise registrada.</p>';
-        return;
-      }
-
-      data.records.forEach(record => {
-        const div = document.createElement('div');
-        div.className = 'analise-item';
-        div.innerHTML = `
-          <strong>${record.fields["Tipo de Diligencia"]}</strong> - ${record.fields["item analisado"]}
-          <br>Status: <b>${record.fields["Status da análise"]}</b> | Risco: <b>${record.fields["Classificação de risco"]}</b>
-          <br><em>${record.fields["Comentarios"] ?? ''}</em>
-          <br>${record.fields["Evidência"]?.[0]?.url ? `<a href="${record.fields["Evidência"][0].url}" target="_blank">Ver Evidência</a>` : ''}
-        `;
-        container.appendChild(div);
-      });
+      const riscos = data.records.map(r => r.fields["Classificação de risco"]);
+      if (riscos.includes("Alto")) return "Alto";
+      if (riscos.includes("Médio")) return "Médio";
+      if (riscos.length > 0) return "Baixo";
+      return "Nenhum";
     }
 
     buscarEmpresas().then(empresas => {
@@ -203,6 +177,18 @@
 
       document.getElementById('nomeEmpresa').textContent = empresa.nome;
       document.getElementById('statusBadge').innerHTML = gerarStatusBadge(rating);
+
+      buscarStatusDD(empresa.id).then(risco => {
+        const cores = { "Alto": "#ef4444", "Médio": "#facc15", "Baixo": "#22c55e", "Nenhum": "#94a3b8" };
+        const cor = cores[risco] || "#ccc";
+
+        document.getElementById('dd-status').innerHTML = `
+          <div style="font-weight:bold; color:${cor}; margin-bottom:0.5rem;">
+            Due Diligence: ${risco}
+          </div>
+          <button class="btn" onclick="window.location.href='due_diligence.html?id=${empresa.id}'">Ver Due Diligence</button>
+        `;
+      });
 
       const campos = [
         { label: 'Receita Anual', valor: formatarMilhoes(empresa.receita) },
@@ -255,8 +241,6 @@
           }
         }
       });
-
-      carregarDueDiligenceDaEmpresa(idEmpresa);
     });
   </script>
 </body>
