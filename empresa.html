@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-const idEmpresa = new URLSearchParams(window.location.search).get('id');
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
@@ -104,6 +103,7 @@ const idEmpresa = new URLSearchParams(window.location.search).get('id');
   </div>
 
   <script type="module">
+    const idEmpresa = new URLSearchParams(window.location.search).get('id');
     import { buscarEmpresas } from './airtable.js';
 
     const formatarMilhoes = v => v ? `R$ ${parseFloat(v).toFixed(1)} Milhões` : '-';
