@@ -22,6 +22,25 @@ async function carregarEmpresas() {
     select.appendChild(opt);
   });
 }
+const urlParams = new URLSearchParams(window.location.search);
+const empresaSelecionada = urlParams.get('id');
+
+async function carregarEmpresas() {
+  const res = await fetch(`https://api.airtable.com/v0/${baseId}/${tableEmpresas}`, { headers });
+  const data = await res.json();
+  const select = document.getElementById('empresa');
+
+  data.records.forEach(record => {
+    const opt = document.createElement('option');
+    opt.value = record.id;
+    opt.textContent = record.fields["Nome da Empresa"];
+    if (empresaSelecionada && record.id === empresaSelecionada) {
+      opt.selected = true;
+      listarAnalises(record.id); // já lista as análises dessa empresa
+    }
+    select.appendChild(opt);
+  });
+}
 
 // Enviar arquivo e retornar array de attachment
 async function uploadArquivo(arquivo) {
