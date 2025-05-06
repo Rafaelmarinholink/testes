@@ -70,7 +70,8 @@
 
       <h2 class="subtitle" id="nomeEmpresa">Análise Financeira</h2>
       <div id="statusBadge" style="text-align:center;"></div>
-      <div id="dd-status" style="text-align:center; margin-top:1rem;"></div>
+
+      <div id="ddLink" style="text-align:center; margin-bottom: 1rem;"></div>
 
       <div class="grid-indicadores" id="indicadores"></div>
 
@@ -151,14 +152,14 @@
       return "A empresa " + frases.join(", ") + ".";
     }
 
-    async function buscarStatusDD(id) {
+    async function buscarStatusDD(empresaId) {
       const baseId = 'appaq7tR3vt9vrN6y';
-      const table = 'Due Diligence';
+      const tableDD = 'Due Diligence';
       const headers = {
         Authorization: "Bearer patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6"
       };
 
-      const url = `https://api.airtable.com/v0/${baseId}/${table}?filterByFormula=FIND(\"${id}\", ARRAYJOIN({Empresa DD}))`;
+      const url = `https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=FIND(\"${empresaId}\", ARRAYJOIN({Empresa DD}))`;
       const res = await fetch(url, { headers });
       const data = await res.json();
 
@@ -169,7 +170,7 @@
       return "Nenhum";
     }
 
-    buscarEmpresas().then(empresas => {
+    buscarEmpresas().then(async empresas => {
       const empresa = empresas.find(e => e.id === idEmpresa);
       if (!empresa) return;
 
@@ -178,17 +179,13 @@
       document.getElementById('nomeEmpresa').textContent = empresa.nome;
       document.getElementById('statusBadge').innerHTML = gerarStatusBadge(rating);
 
-      buscarStatusDD(empresa.id).then(risco => {
-        const cores = { "Alto": "#ef4444", "Médio": "#facc15", "Baixo": "#22c55e", "Nenhum": "#94a3b8" };
-        const cor = cores[risco] || "#ccc";
-
-        document.getElementById('dd-status').innerHTML = `
-          <div style="font-weight:bold; color:${cor}; margin-bottom:0.5rem;">
-            Due Diligence: ${risco}
-          </div>
-          <button class="btn" onclick="window.location.href='due_diligence.html?id=${empresa.id}'">Ver Due Diligence</button>
-        `;
-      });
+      const statusDD = await buscarStatusDD(idEmpresa);
+      const ddLink = document.getElementById('ddLink');
+      ddLink.innerHTML = `<a href="due_diligence.html?id=${idEmpresa}" title="Ver Due Diligence"
+        style="display:inline-block; padding:0.4rem 1rem; border-radius:20px;
+        background:#3b82f6; color:white; font-weight:bold; text-decoration:none;">
+        Due Diligence: ${statusDD}
+      </a>`;
 
       const campos = [
         { label: 'Receita Anual', valor: formatarMilhoes(empresa.receita) },
