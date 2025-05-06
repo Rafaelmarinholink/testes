@@ -23,12 +23,17 @@
       max-width: 320px;
       margin: 2rem auto;
     }
-    .diagnostico, .notas {
+    .diagnostico, .notas, .dd-analises {
       background-color: #1a365d;
       color: #fff;
       padding: 1rem;
       border-radius: 8px;
       margin-top: 1.5rem;
+    }
+    .dd-item {
+      border-bottom: 1px solid #2c5282;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
     }
     .btn {
       margin-right: 0.5rem;
@@ -71,8 +76,6 @@
       <h2 class="subtitle" id="nomeEmpresa">Análise Financeira</h2>
       <div id="statusBadge" style="text-align:center;"></div>
 
-      <div id="ddLink" style="text-align:center; margin-bottom: 1rem;"></div>
-
       <div class="grid-indicadores" id="indicadores"></div>
 
       <div class="rating-gauge">
@@ -84,6 +87,11 @@
       <div class="notas">
         <h3>Notas</h3>
         <p id="notas"></p>
+      </div>
+
+      <div class="dd-analises">
+        <h3>Due Diligence</h3>
+        <div id="dd-analises"></div>
       </div>
 
       <div style="margin-top:2rem;">
@@ -152,25 +160,35 @@
       return "A empresa " + frases.join(", ") + ".";
     }
 
-    async function buscarStatusDD(empresaId) {
-      const baseId = 'appaq7tR3vt9vrN6y';
-      const tableDD = 'Due Diligence';
-      const headers = {
-        Authorization: "Bearer patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6"
-      };
-
-      const url = `https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=FIND(\"${empresaId}\", ARRAYJOIN({Empresa DD}))`;
-      const res = await fetch(url, { headers });
+    async function carregarAnalisesDD(idEmpresa) {
+      const url = `https://api.airtable.com/v0/appaq7tR3vt9vrN6y/Due%20Diligence?filterByFormula=FIND(\"${idEmpresa}\", ARRAYJOIN({Empresa DD}))`;
+      const res = await fetch(url, {
+        headers: {
+          Authorization: "Bearer patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6"
+        }
+      });
       const data = await res.json();
 
-      const riscos = data.records.map(r => r.fields["Classificação de risco"]);
-      if (riscos.includes("Alto")) return "Alto";
-      if (riscos.includes("Médio")) return "Médio";
-      if (riscos.length > 0) return "Baixo";
-      return "Nenhum";
+      const container = document.getElementById('dd-analises');
+      if (data.records.length === 0) {
+        container.innerHTML = '<p>Nenhuma análise de due diligence registrada.</p>';
+        return;
+      }
+
+      data.records.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'dd-item';
+        div.innerHTML = `
+          <strong>${r.fields["Tipo de Diligencia"]}</strong> - ${r.fields["item analisado"]}<br>
+          Status: <b>${r.fields["Status da análise"]}</b> | Risco: <b>${r.fields["Classificação de risco"]}</b><br>
+          <em>${r.fields["Comentarios"] ?? ''}</em><br>
+          ${r.fields["Evidência"] ? `<a href="${r.fields["Evidência"][0].url}" target="_blank">Ver Evidência</a>` : ''}
+        `;
+        container.appendChild(div);
+      });
     }
 
-    buscarEmpresas().then(async empresas => {
+    buscarEmpresas().then(empresas => {
       const empresa = empresas.find(e => e.id === idEmpresa);
       if (!empresa) return;
 
@@ -178,14 +196,6 @@
 
       document.getElementById('nomeEmpresa').textContent = empresa.nome;
       document.getElementById('statusBadge').innerHTML = gerarStatusBadge(rating);
-
-      const statusDD = await buscarStatusDD(idEmpresa);
-      const ddLink = document.getElementById('ddLink');
-      ddLink.innerHTML = `<a href="due_diligence.html?id=${idEmpresa}" title="Ver Due Diligence"
-        style="display:inline-block; padding:0.4rem 1rem; border-radius:20px;
-        background:#3b82f6; color:white; font-weight:bold; text-decoration:none;">
-        Due Diligence: ${statusDD}
-      </a>`;
 
       const campos = [
         { label: 'Receita Anual', valor: formatarMilhoes(empresa.receita) },
@@ -238,6 +248,8 @@
           }
         }
       });
+
+      carregarAnalisesDD(idEmpresa);
     });
   </script>
 </body>
