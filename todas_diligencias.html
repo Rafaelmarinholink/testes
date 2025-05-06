@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Due Diligence | Todas as Análises</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .analise-card {
+      background-color: #1a365d;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .analise-card strong {
+      color: #63b3ed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="logo-wrapper" onclick="window.location.href='index.html'">
+        <img src="logo bg removed.png" class="logo-img">
+        <h1 class="logo-text">SABER<br>CAPITAL</h1>
+      </div>
+
+      <h2 class="subtitle">Todas as Análises de Due Diligence</h2>
+
+      <div class="filters">
+        <input type="text" id="buscaEmpresa" placeholder="Buscar por empresa...">
+        <select id="filtroTipo">
+          <option value="">Tipo</option>
+          <option>Financeira</option>
+          <option>Jurídica</option>
+          <option>Contábil</option>
+          <option>Operacional</option>
+          <option>Ambiental</option>
+          <option>Tecnológica</option>
+          <option>Trabalhista</option>
+          <option>Regulatória</option>
+          <option>Governança</option>
+          <option>Segurança da Informação</option>
+        </select>
+        <select id="filtroStatus">
+          <option value="">Status</option>
+          <option>Pendente</option>
+          <option>Em andamento</option>
+          <option>Concluída</option>
+          <option>Com Risco</option>
+        </select>
+        <select id="filtroRisco">
+          <option value="">Risco</option>
+          <option>Baixo</option>
+          <option>Médio</option>
+          <option>Alto</option>
+        </select>
+      </div>
+
+      <div id="listaTodasDD"></div>
+    </div>
+  </div>
+
+  <script type="module" src="todas_diligencias.js"></script>
+</body>
+</html>
