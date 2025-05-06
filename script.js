@@ -160,10 +160,12 @@ function carregarTopEmpresas(empresas) {
   `;
   card.style.cursor = 'pointer';
   card.onclick = () => window.location.href = `empresa.html?id=${emp.id}`;
-  listaTop.appendChild(card);
-});
+    listaTop.appendChild(card);
+  });
+} // ← ESSA CHAVE estava faltando aqui
 
 buscarEmpresas().then(empresas => carregarTopEmpresas(empresas));
+
 async function buscarStatusDD(empresaId) {
   const baseId = 'appaq7tR3vt9vrN6y';
   const tableDD = 'Due Diligence';
