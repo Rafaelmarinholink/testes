@@ -1,13 +1,15 @@
+// due_diligence.js atualizado com suporte a upload de arquivo
+
 const apiKey = 'patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6';
 const baseId = 'appaq7tR3vt9vrN6y';
 const tableEmpresas = 'Empresas';
 const tableDD = 'Due Diligence';
 
 const headers = {
-  Authorization: `Bearer ${apiKey}`,
-  'Content-Type': 'application/json'
+  Authorization: `Bearer ${apiKey}`
 };
 
+// Carregar empresas no <select>
 async function carregarEmpresas() {
   const res = await fetch(`https://api.airtable.com/v0/${baseId}/${tableEmpresas}`, { headers });
   const data = await res.json();
@@ -21,23 +23,29 @@ async function carregarEmpresas() {
   });
 }
 
+// Enviar arquivo e retornar array de attachment
+async function uploadArquivo(arquivo) {
+  const formData = new FormData();
+  formData.append('file', arquivo);
+
+  const res = await fetch('https://upload.airtable.com/v0/' + baseId + '/' + tableDD, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`
+    },
+    body: formData
+  });
+
+  const data = await res.json();
+  return data && data["id"] ? [{ url: data.url, filename: arquivo.name }] : [];
+}
+
+// Salvar nova análise
 async function salvarAnalise() {
-  const fileInput = document.getElementById('evidencia');
+  const arquivo = document.getElementById('evidencia').files[0];
   let evidencia = [];
-
-  if (fileInput.files.length > 0) {
-    const file = fileInput.files[0];
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const uploadRes = await fetch('https://api.airtable.com/v0/attachments', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${apiKey}` },
-      body: formData
-    });
-
-    const uploadData = await uploadRes.json();
-    evidencia = [{ url: uploadData.url }];
+  if (arquivo) {
+    evidencia = [{ url: URL.createObjectURL(arquivo), filename: arquivo.name }];
   }
 
   const dados = {
@@ -54,15 +62,19 @@ async function salvarAnalise() {
 
   await fetch(`https://api.airtable.com/v0/${baseId}/${tableDD}`, {
     method: 'POST',
-    headers,
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
     body: JSON.stringify(dados)
   });
 
   listarAnalises(document.getElementById('empresa').value);
 }
 
+// Listar análises para empresa
 async function listarAnalises(idEmpresa) {
-  const res = await fetch(`https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=FIND("${idEmpresa}", ARRAYJOIN({Empresa DD}))`, { headers });
+  const res = await fetch(`https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=FIND(\"${idEmpresa}\", ARRAYJOIN({Empresa DD}))`, { headers });
   const data = await res.json();
   const lista = document.getElementById('lista-dd');
   lista.innerHTML = '';
@@ -71,18 +83,22 @@ async function listarAnalises(idEmpresa) {
     const item = document.createElement('div');
     item.className = 'analise-item';
     item.innerHTML = `
-      <strong>${record.fields["Tipo de Diligencia"]}</strong> - ${record.fields["item analisado"]}
-      <br>Status: <b>${record.fields["Status da análise"]}</b> | Risco: <b>${record.fields["Classificação de risco"]}</b>
-      <br><em>${record.fields["Comentarios"] ?? ''}</em>
-      <br>${record.fields["Evidência"]?.[0]?.url ? `<a href="${record.fields["Evidência"][0].url}" target="_blank">Ver Evidência</a>` : ''}
+      <strong>${record.fields["Tipo de Diligencia"]}</strong> - ${record.fields["item analisado"]}<br>
+      Status: <b>${record.fields["Status da análise"]}</b> | Risco: <b>${record.fields["Classificação de risco"]}</b><br>
+      <em>${record.fields["Comentarios"] ?? ''}</em><br>
+      ${record.fields["Evidência"] ? `<a href="${record.fields["Evidência"][0].url}" target="_blank">Ver Evidência</a>` : ''}
       <hr>
     `;
     lista.appendChild(item);
   });
 }
 
+// Eventos
 document.getElementById('empresa').addEventListener('change', (e) => {
   listarAnalises(e.target.value);
 });
+
 document.getElementById('salvar-dd').addEventListener('click', salvarAnalise);
+
+// Inicial
 carregarEmpresas();
