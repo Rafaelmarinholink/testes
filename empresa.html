@@ -97,13 +97,17 @@
       <div style="margin-top:2rem;">
         <button class="btn" onclick="window.location.href='index.html'">← Voltar à Lista</button>
         <button class="btn" onclick="comparar()">Comparar com outra empresa</button>
-        <button class="btn" onclick="window.location.href='due_diligence.html?id=' + idEmpresa">Adicionar Due Diligence</button>
+        <button id="btnAddDD" class="btn">Adicionar Due Diligence</button>
       </div>
     </div>
   </div>
 
   <script type="module">
     const idEmpresa = new URLSearchParams(window.location.search).get('id');
+    document.querySelector('#btnAddDD').onclick = () => {
+  window.location.href = `due_diligence.html?id=${idEmpresa}`;
+};
+
     import { buscarEmpresas } from './airtable.js';
 
     const formatarMilhoes = v => v ? `R$ ${parseFloat(v).toFixed(1)} Milhões` : '-';
