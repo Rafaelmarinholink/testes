@@ -1,72 +1,86 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Due Diligence | Todas as Análises</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Todas as Diligências | Saber Capital</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-    .analise-card {
+    .analise-item {
       background-color: #1a365d;
-      border-radius: 8px;
-      padding: 1rem;
       margin-bottom: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
     }
-    .analise-card strong {
-      color: #63b3ed;
+    label {
+      font-weight: bold;
+      margin-top: 1rem;
+      display: block;
+    }
+    select {
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      background-color: #1e3a5f;
+      color: white;
+      border: none;
+      border-radius: 5px;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="card">
-      <div class="logo-wrapper" onclick="window.location.href='index.html'">
-        <img src="logo bg removed.png" class="logo-img">
+      <div class="logo-wrapper" onclick="window.location.href='index.html'" style="cursor:pointer;">
+        <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
         <h1 class="logo-text">SABER<br>CAPITAL</h1>
       </div>
 
       <h2 class="subtitle">Todas as Análises de Due Diligence</h2>
 
-      <div class="filters">
-        <input type="text" id="buscaEmpresa" placeholder="Buscar por empresa...">
-        <select id="filtroTipo">
-          <option value="">Tipo</option>
-          <option>Financeira</option>
-          <option>Jurídica</option>
-          <option>Contábil</option>
-          <option>Operacional</option>
-          <option>Ambiental</option>
-          <option>Tecnológica</option>
-          <option>Trabalhista</option>
-          <option>Regulatória</option>
-          <option>Governança</option>
-          <option>Segurança da Informação</option>
-        </select>
-        <select id="filtroStatus">
-          <option value="">Status</option>
-          <option>Pendente</option>
-          <option>Em andamento</option>
-          <option>Concluída</option>
-          <option>Com Risco</option>
-        </select>
-        <select id="filtroRisco">
-          <option value="">Risco</option>
-          <option>Baixo</option>
-          <option>Médio</option>
-          <option>Alto</option>
-        </select>
-      </div>
+      <label for="filtroEmpresa">Filtrar por Empresa</label>
+      <select id="filtroEmpresa">
+        <option value="">Todas</option>
+      </select>
 
-      <div id="listaTodasDD"></div>
+      <label for="filtroTipo">Filtrar por Tipo de Diligência</label>
+      <select id="filtroTipo">
+        <option value="">Todos</option>
+        <option value="Financeira">Financeira</option>
+        <option value="Jurídica">Jurídica</option>
+        <option value="Contábil">Contábil</option>
+        <option value="Operacional">Operacional</option>
+        <option value="Ambiental">Ambiental</option>
+        <option value="Tecnológica">Tecnológica</option>
+        <option value="Trabalhista">Trabalhista</option>
+        <option value="Regulatória">Regulatória</option>
+        <option value="Governança">Governança</option>
+        <option value="Segurança da Informação">Segurança da Informação</option>
+      </select>
+
+      <label for="filtroStatus">Filtrar por Status da Análise</label>
+      <select id="filtroStatus">
+        <option value="">Todos</option>
+        <option value="Pendente">Pendente</option>
+        <option value="Em andamento">Em andamento</option>
+        <option value="Concluída">Concluída</option>
+        <option value="Com Risco">Com Risco</option>
+      </select>
+
+      <label for="filtroRisco">Filtrar por Classificação de Risco</label>
+      <select id="filtroRisco">
+        <option value="">Todos</option>
+        <option value="Baixo">Baixo</option>
+        <option value="Médio">Médio</option>
+        <option value="Alto">Alto</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <h2 class="subtitle">Resultados</h2>
+      <div id="listaDD"></div>
     </div>
   </div>
 
-  <script type="module" src="todas_diligencias.js"></script>
+  <script src="todas_diligencias.js"></script>
 </body>
 </html>
