@@ -1,70 +1,84 @@
-const apiKey = 'SUA_API_KEY'; // Substitua pela sua chave real
 const baseId = 'appaq7tR3vt9vrN6y';
-const tableDD = 'Due Diligence';
+const table = 'Due Diligence';
+const apiKey = 'patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6';
 
-const headers = {
-  Authorization: `Bearer ${apiKey}`,
-  'Content-Type': 'application/json'
-};
-
-// Elementos de filtro
-const filtros = {
-  empresa: document.getElementById('filtroEmpresa'),
-  tipo: document.getElementById('filtroTipo'),
-  status: document.getElementById('filtroStatus'),
-  risco: document.getElementById('filtroRisco'),
-};
-const lista = document.getElementById('listaDD');
-
-// Carregar empresas no filtro
-async function carregarEmpresasFiltro() {
-  const res = await fetch(`https://api.airtable.com/v0/${baseId}/Empresas`, { headers });
+async function buscarDiligencias() {
+  const res = await fetch(`https://api.airtable.com/v0/${baseId}/${table}?pageSize=100`, {
+    headers: {
+      Authorization: `Bearer ${apiKey}`
+    }
+  });
   const data = await res.json();
-  data.records.forEach(emp => {
-    const opt = document.createElement('option');
-    opt.value = emp.id;
-    opt.textContent = emp.fields["Nome da Empresa"];
-    filtros.empresa.appendChild(opt);
+  return data.records;
+}
+
+function aplicarFiltros(dados) {
+  const empresa = document.getElementById('filtroEmpresa').value;
+  const tipo = document.getElementById('filtroTipo').value;
+  const status = document.getElementById('filtroStatus').value;
+  const risco = document.getElementById('filtroRisco').value;
+
+  return dados.filter(r => {
+    const f = r.fields;
+    return (!empresa || f['Empresa DD']?.includes(empresa)) &&
+           (!tipo || f['Tipo de Diligencia'] === tipo) &&
+           (!status || f['Status da análise'] === status) &&
+           (!risco || f['Classificação de risco'] === risco);
   });
 }
 
-// Buscar e listar diligências com filtros
-async function buscarDiligencias() {
-  let filtroFormula = [];
-
-  if (filtros.empresa.value) filtroFormula.push(`FIND("${filtros.empresa.value}", ARRAYJOIN({Empresa DD}))`);
-  if (filtros.tipo.value) filtroFormula.push(`{Tipo de Diligencia} = '${filtros.tipo.value}'`);
-  if (filtros.status.value) filtroFormula.push(`{Status da análise} = '${filtros.status.value}'`);
-  if (filtros.risco.value) filtroFormula.push(`{Classificação de risco} = '${filtros.risco.value}'`);
-
-  const formula = filtroFormula.length ? `AND(${filtroFormula.join(',')})` : '';
-  const url = `https://api.airtable.com/v0/${baseId}/${tableDD}?pageSize=100${formula ? '&filterByFormula=' + encodeURIComponent(formula) : ''}`;
-
-  const res = await fetch(url, { headers });
-  const data = await res.json();
-
+function renderizarLista(dados) {
+  const lista = document.getElementById('listaDD');
   lista.innerHTML = '';
-  if (!data.records.length) {
+
+  if (dados.length === 0) {
     lista.innerHTML = '<p>Nenhuma análise encontrada.</p>';
     return;
   }
 
-  data.records.forEach(record => {
+  dados.forEach(r => {
+    const f = r.fields;
     const div = document.createElement('div');
     div.className = 'analise-item';
     div.innerHTML = `
-      <strong>${record.fields["Tipo de Diligencia"]}</strong> - ${record.fields["item analisado"]}
-      <br>Status: <b>${record.fields["Status da análise"]}</b> | Risco: <b>${record.fields["Classificação de risco"]}</b>
-      <br><em>${record.fields["Comentarios"] ?? ''}</em>
-      <br>${record.fields["Evidência"] ? `<a href="${record.fields["Evidência"][0].url}" target="_blank">Ver Evidência</a>` : ''}
-      <hr>
+      <strong>${f["Tipo de Diligencia"]}</strong> - ${f["item analisado"]}<br>
+      Empresa: <a href="empresa.html?id=${f["Empresa DD"]}">${f["Empresa DD_Nome"] || 'Ver empresa'}</a><br>
+      Status: <b>${f["Status da análise"]}</b> | Risco: <b>${f["Classificação de risco"]}</b><br>
+      <em>${f["Comentarios"] ?? ''}</em><br>
+      ${f["Evidência"] ? `<a href="${f["Evidência"][0].url}" target="_blank">Ver Evidência</a>` : ''}
     `;
     lista.appendChild(div);
   });
 }
 
-// Eventos
-Object.values(filtros).forEach(el => el.addEventListener('change', buscarDiligencias));
+function atualizarLista(dados) {
+  const filtrados = aplicarFiltros(dados);
+  renderizarLista(filtrados);
+}
 
-// Inicialização
-carregarEmpresasFiltro().then(buscarDiligencias);
+function preencherDropdownEmpresas(dados) {
+  const select = document.getElementById('filtroEmpresa');
+  const nomes = new Set();
+
+  dados.forEach(r => {
+    if (r.fields["Empresa DD_Nome"]) {
+      nomes.add(r.fields["Empresa DD"]);
+    }
+  });
+
+  [...nomes].forEach(id => {
+    const option = document.createElement('option');
+    option.value = id;
+    option.textContent = id;
+    select.appendChild(option);
+  });
+}
+
+buscarDiligencias().then(dados => {
+  preencherDropdownEmpresas(dados);
+  renderizarLista(dados);
+
+  ['filtroEmpresa', 'filtroTipo', 'filtroStatus', 'filtroRisco'].forEach(id =>
+    document.getElementById(id).addEventListener('change', () => atualizarLista(dados))
+  );
+});
