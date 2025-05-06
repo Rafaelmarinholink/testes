@@ -1,0 +1,190 @@
+/* Reset básico */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #0b1f3a;
+  color: #f4f4f4;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+/* Container central */
+.container {
+  width: 100%;
+  max-width: 700px;
+  padding: 2rem;
+  margin-top: 3rem;
+  background-color: #102c4c;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Cartões */
+.card {
+  background-color: #1a365d;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+}
+
+/* Subtítulo abaixo do logo */
+.subtitle {
+  font-size: 1rem;
+  text-align: center;
+  color: #cbd5e1;
+  margin-bottom: 2rem;
+}
+
+/* Logo */
+.logo-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+
+.logo-text {
+  font-family: 'Archivo Black', sans-serif;
+  color: white;
+  font-size: 1.8rem;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.logo-img {
+  height: 65px;
+  width: auto;
+}
+
+/* Formulários */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+  padding: 0.6rem;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  background-color: #1e3a5f;
+  color: #f4f4f4;
+  width: 100%;
+}
+
+input:focus,
+textarea:focus {
+  outline: 2px solid #63b3ed;
+}
+
+/* Botões */
+button.btn,
+.btn {
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  background-color: #ffffff;
+  color: #0b1f3a;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-right: 0.5rem;
+}
+
+button.btn:hover,
+.btn:hover {
+  background-color: #e2e8f0;
+}
+
+/* Lista de empresas */
+.empresa-card {
+  background-color: #2c5282;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.empresa-card:hover {
+  background-color: #63b3ed;
+  color: #0b1f3a;
+}
+
+/* Erros de validação */
+input.error,
+textarea.error {
+  border: 2px solid #ef4444 !important;
+}
+
+/* Toast / popup erro */
+.popup-erro {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ef4444;
+  color: white;
+  padding: 1.5rem 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  display: none;
+  z-index: 1000;
+}
+
+.popup-erro button {
+  background-color: transparent;
+  color: white;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+
+  .logo-img {
+    width: 60px;
+  }
+
+  .logo-text {
+    font-size: 1.5rem;
+  }
+}
+/* ... (seus estilos anteriores) ... */
+
+.btn-mini {
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.btn-mini:hover {
+  background-color: #2563eb;
+}

@@ -1,5 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
-import { IncomingForm } from 'formidable';
+import formidable from 'formidable';
 import fs from 'fs';
 
 cloudinary.config({
@@ -10,34 +10,31 @@ cloudinary.config({
 
 export const config = {
   api: {
-    bodyParser: false,
-  },
+    bodyParser: false
+  }
 };
 
-export default function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Método não permitido' });
-  }
+export default async function handler(req, res) {
+  if (req.method !== 'POST') return res.status(405).end('Method Not Allowed');
 
-  const form = new IncomingForm();
+  const form = new formidable.IncomingForm();
 
   form.parse(req, async (err, fields, files) => {
-    if (err) {
-      console.error('Erro no parse do form:', err);
-      return res.status(500).json({ error: 'Erro ao processar o formulário' });
-    }
+    if (err) return res.status(500).json({ error: 'Erro ao fazer upload' });
 
-    const file = files.file[0]; // usando array pois o formidable v3 retorna múltiplos
+    const file = files.file[0]; // suporta múltiplos arquivos
 
     try {
-      const result = await cloudinary.uploader.upload(file.filepath);
-      return res.status(200).json({
-        url: result.secure_url,
-        filename: file.originalFilename,
+      const result = await cloudinary.uploader.upload(file.filepath, {
+        folder: 'saber-capital'
       });
-    } catch (uploadErr) {
-      console.error('Erro ao fazer upload:', uploadErr);
-      return res.status(500).json({ error: 'Erro ao enviar para o Cloudinary' });
+
+      res.status(200).json({
+        url: result.secure_url,
+        filename: file.originalFilename
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Falha ao enviar ao Cloudinary' });
     }
   });
 }

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Due Diligence | Saber Capital</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .analise-item {
+      background-color: #1a365d;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    label {
+      font-weight: bold;
+      margin-top: 1rem;
+      display: block;
+    }
+    input, select, textarea {
+      margin-bottom: 1rem;
+      width: 100%;
+    }
+    .btn {
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="logo-wrapper" onclick="window.location.href='index.html'" style="cursor:pointer;">
+        <img src="logo bg removed.png" class="logo-img" />
+        <h1 class="logo-text">SABER<br>CAPITAL</h1>
+      </div>
+
+      <h2 class="subtitle">Módulo de Due Diligence</h2>
+
+      <label for="empresa">Empresa</label>
+      <select id="empresa">
+        <option value="">Selecione uma empresa...</option>
+      </select>
+
+      <label for="tipo">Tipo de Diligência</label>
+      <select id="tipo">
+        <option value="Financeira">Financeira</option>
+        <option value="Jurídica">Jurídica</option>
+        <option value="Contábil">Contábil</option>
+        <option value="Operacional">Operacional</option>
+        <option value="Ambiental">Ambiental</option>
+        <option value="Tecnológica">Tecnológica</option>
+        <option value="Trabalhista">Trabalhista</option>
+        <option value="Regulatória">Regulatória</option>
+        <option value="Governança">Governança</option>
+        <option value="Segurança da Informação">Segurança da Informação</option>
+      </select>
+
+      <label for="item">Item Analisado</label>
+      <input type="text" id="item"/>
+
+      <label for="status">Status</label>
+      <select id="status">
+        <option value="Pendente">Pendente</option>
+        <option value="Em andamento">Em andamento</option>
+        <option value="Concluída">Concluída</option>
+        <option value="Com Risco">Com Risco</option>
+      </select>
+
+      <label for="risco">Classificação de Risco</label>
+      <select id="risco">
+        <option value="Baixo">Baixo</option>
+        <option value="Médio">Médio</option>
+        <option value="Alto">Alto</option>
+      </select>
+
+      <label for="comentario">Comentários e Recomendações</label>
+      <textarea id="comentario" rows="3"></textarea>
+
+      <label for="evidencia">Evidência (arquivo)</label>
+      <input type="file" id="evidencia" />
+
+      <button class="btn" id="salvar-dd">Salvar Análise</button>
+    </div>
+
+    <div class="card">
+      <h2>Análises Cadastradas</h2>
+      <div id="lista-dd"></div>
+    </div>
+  </div>
+
+  <script src="due_diligence.js"></script>
+</body>
+</html>
