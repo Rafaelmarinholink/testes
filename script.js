@@ -134,7 +134,7 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
 
 async function buscarStatusDD(empresaId) {
   const baseId = 'appaq7tR3vt9vrN6y';
-  const tableDD = 'Due Diligence';
+  const tableDD = 'Empresas';
   const headers = {
     Authorization: "Bearer patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6"
   };
