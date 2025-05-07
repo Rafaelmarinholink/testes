@@ -22,18 +22,16 @@ async function carregarEmpresas() {
     opt.textContent = record.fields["Nome da Empresa"];
     if (empresaSelecionada && record.id === empresaSelecionada) {
       opt.selected = true;
-      listarAnalises(record.id); // já carrega DDs
     }
     select.appendChild(opt);
   });
 
-  // Se nenhum ID veio pela URL, carrega a primeira empresa da lista por padrão
-  if (!empresaSelecionada && data.records.length > 0) {
-    listarAnalises(data.records[0].id);
+  if (empresaSelecionada) {
+    listarAnalises(empresaSelecionada);
   }
 }
 
-// Salvar nova análise com upload real para /api/upload
+// Salvar nova análise com upload real
 async function salvarAnalise() {
   const arquivo = document.getElementById('evidencia').files[0];
   let evidencia = [];
@@ -48,26 +46,22 @@ async function salvarAnalise() {
     });
 
     const result = await res.json();
-    if (result && result.url) {
-      evidencia = [{ url: result.url, filename: result.filename }];
+    if (result.url) {
+      evidencia = [{ url: result.url }]; // apenas a URL!
     }
   }
 
-  const fields = {
-    "Empresa DD": [document.getElementById('empresa').value],
-    "Tipo de Diligencia": document.getElementById('tipo').value,
-    "item analisado": document.getElementById('item').value,
-    "Status da análise": document.getElementById('status').value,
-    "Classificação de risco": document.getElementById('risco').value,
-    "Comentarios": document.getElementById('comentario').value
+  const dados = {
+    fields: {
+      "Empresa DD": [document.getElementById('empresa').value],
+      "Tipo de Diligencia": document.getElementById('tipo').value,
+      "item analisado": document.getElementById('item').value,
+      "Status da análise": document.getElementById('status').value,
+      "Classificação de risco": document.getElementById('risco').value,
+      "Comentarios": document.getElementById('comentario').value,
+      "Evidência": evidencia
+    }
   };
-
-  if (evidencia.length > 0) {
-    fields["Evidência"] = evidencia;
-  }
-
-  const dados = { fields };
-  console.log("Payload para Airtable:", JSON.stringify(dados, null, 2));
 
   await fetch(`https://api.airtable.com/v0/${baseId}/${tableDD}`, {
     method: 'POST',
@@ -87,6 +81,11 @@ async function listarAnalises(idEmpresa) {
   const data = await res.json();
   const lista = document.getElementById('lista-dd');
   lista.innerHTML = '';
+
+  if (data.records.length === 0) {
+    lista.innerHTML = '<p>Nenhuma análise cadastrada.</p>';
+    return;
+  }
 
   data.records.forEach(record => {
     const item = document.createElement('div');
