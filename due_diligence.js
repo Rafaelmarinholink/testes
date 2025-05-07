@@ -30,17 +30,19 @@ async function carregarEmpresas() {
 
 // Salvar nova análise com link público
 async function salvarAnalise() {
+  const empresaId = document.getElementById('empresa').value;
   const urlEvidencia = document.getElementById('evidencia').value.trim();
+  const evidencia = urlEvidencia || '';
 
   const dados = {
     fields: {
-      "Empresa DD": [document.getElementById('empresa').value],
+      "Empresa DD": [empresaId],
       "Tipo de Diligencia": document.getElementById('tipo').value,
       "item analisado": document.getElementById('item').value,
       "Status da análise": document.getElementById('status').value,
       "Classificação de risco": document.getElementById('risco').value,
       "Comentarios": document.getElementById('comentario').value,
-      "Evidência": urlEvidencia
+      "Evidência": evidencia
     }
   };
 
@@ -55,7 +57,8 @@ async function salvarAnalise() {
 
   alert('Due Diligence cadastrada com sucesso!');
   document.getElementById('form-dd').reset();
-  listarAnalises(document.getElementById('empresa').value);
+
+  listarAnalises(empresaId);
 }
 
 // Listar análises para empresa
@@ -63,9 +66,7 @@ async function listarAnalises(idEmpresa) {
   const res = await fetch(`https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=FIND("${idEmpresa}", ARRAYJOIN({Empresa DD}))`, { headers });
   const data = await res.json();
   const lista = document.getElementById('lista-dd');
-  if (!lista) return;
-
-  lista.innerHTML = '';
+  if (lista) lista.innerHTML = '';
 
   data.records.forEach(record => {
     const item = document.createElement('div');
@@ -79,7 +80,7 @@ async function listarAnalises(idEmpresa) {
       ${link ? `<a href="${link}" target="_blank">Ver Evidência</a>` : ''}
       <hr>
     `;
-    lista.appendChild(item);
+    if (lista) lista.appendChild(item);
   });
 }
 
