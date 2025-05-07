@@ -30,7 +30,7 @@ async function carregarEmpresas() {
 
 // Salvar nova análise com URL simples
 async function salvarAnalise() {
-  const evidencia = document.getElementById('evidencia').value.trim() || null;
+  const evidencia = document.getElementById('evidencia').value.trim();
 
   const dados = {
     fields: {
@@ -40,7 +40,7 @@ async function salvarAnalise() {
       "Status da análise": document.getElementById('status').value,
       "Classificação de risco": document.getElementById('risco').value,
       "Comentarios": document.getElementById('comentario').value,
-      "Evidência": evidencia // aqui é STRING simples, não array
+      "Evidência": evidencia
     }
   };
 
@@ -52,6 +52,9 @@ async function salvarAnalise() {
     },
     body: JSON.stringify(dados)
   });
+
+  alert('Due Diligence cadastrada com sucesso!');
+  document.getElementById('form-dd').reset();
 
   listarAnalises(document.getElementById('empresa').value);
 }
