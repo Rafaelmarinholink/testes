@@ -132,10 +132,6 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
   e.target.reset();
 });
 
-carregarTopEmpresas(empresas);
-  e.target.reset();
-});
-
 async function buscarStatusDD(empresaId) {
   const baseId = 'appaq7tR3vt9vrN6y';
   const tableDD = 'Due Diligence';
@@ -147,20 +143,21 @@ async function buscarStatusDD(empresaId) {
   const res = await fetch(url, { headers });
   const data = await res.json();
 
-  const total = data.records.length;
-  const riscos = data.records.map(r => r.fields["Classificação de risco"]);
+  const registros = data.records;
+  const total = registros.length;
 
-  let status = "Sem DD";
-  if (riscos.includes("Alto")) status = "Alto";
-  else if (riscos.includes("Médio")) status = "Médio";
-  else if (riscos.includes("Baixo")) status = "Baixo";
+  const riscos = registros.map(r => r.fields["Classificação de risco"] || "").join(" ");
+  let risco = "Nenhum";
+  if (riscos.includes("Alto")) risco = "Alto";
+  else if (riscos.includes("Médio")) risco = "Médio";
+  else if (riscos.includes("Baixo")) risco = "Baixo";
 
   let quantidadeTexto = "Nenhum";
   if (total === 1) quantidadeTexto = "Uma diligência";
   else if (total === 2) quantidadeTexto = "Duas diligências";
   else if (total > 2) quantidadeTexto = `${total} diligências`;
 
-  return `${quantidadeTexto} – ${status}`;
+  return `${quantidadeTexto} – ${risco}`;
 }
 
 function carregarTopEmpresas(empresas) {
@@ -173,7 +170,12 @@ function carregarTopEmpresas(empresas) {
   listaTop.innerHTML = '';
 
   top3.forEach(async emp => {
-    const statusDD = await buscarStatusDD(emp.id);
+    const statusTexto = await buscarStatusDD(emp.id);
+
+    let cor = '#ccc';
+    if (statusTexto.includes('Alto')) cor = '#ef4444';
+    else if (statusTexto.includes('Médio')) cor = '#facc15';
+    else if (statusTexto.includes('Baixo')) cor = '#22c55e';
 
     const card = document.createElement('div');
     card.className = 'empresa-card';
@@ -181,7 +183,7 @@ function carregarTopEmpresas(empresas) {
       <strong>${emp.nome}</strong><br>
       Rating: ${emp.rating ?? 'N/A'}<br>
       Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões<br>
-      Due Diligence: ${statusDD}<br>
+      <div class="badge-due" style="background-color:${cor}33; color:${cor};">Due Diligence: ${statusTexto}</div>
       <div class="botao-duplo">
         <button onclick="window.location.href='empresa.html?id=${emp.id}'">Ver Análise</button>
         <button onclick="window.location.href='due_diligence.html?id=${emp.id}'">Due Diligence</button>
