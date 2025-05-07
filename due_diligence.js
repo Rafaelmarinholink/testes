@@ -31,7 +31,6 @@ async function carregarEmpresas() {
 // Salvar nova análise com link público
 async function salvarAnalise() {
   const urlEvidencia = document.getElementById('evidencia').value.trim();
-  const evidencia = urlEvidencia || '';
 
   const dados = {
     fields: {
@@ -41,7 +40,7 @@ async function salvarAnalise() {
       "Status da análise": document.getElementById('status').value,
       "Classificação de risco": document.getElementById('risco').value,
       "Comentarios": document.getElementById('comentario').value,
-      "Evidência": evidencia
+      "Evidência": urlEvidencia
     }
   };
 
@@ -65,6 +64,7 @@ async function listarAnalises(idEmpresa) {
   const data = await res.json();
   const lista = document.getElementById('lista-dd');
   if (!lista) return;
+
   lista.innerHTML = '';
 
   data.records.forEach(record => {
