@@ -132,7 +132,7 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
   e.target.reset();
 });
 
-async function buscarStatusDD(empresaId) {
+async function buscarStatusEDiligencias(empresaId) {
   const baseId = 'appaq7tR3vt9vrN6y';
   const tableDD = 'Due Diligence';
   const headers = {
@@ -142,23 +142,17 @@ async function buscarStatusDD(empresaId) {
   const url = `https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=FIND("${empresaId}", ARRAYJOIN({Empresa DD}))`;
   const res = await fetch(url, { headers });
   const data = await res.json();
-  const registros = data.records;
 
-  const quantidade = registros.length;
+  const total = data.records.length;
 
-  let status = "Sem DD";
-  const riscos = registros.map(r => r.fields["Classificação de risco"]);
-  const statusAnalisado = registros.map(r => r.fields["Status da análise"]);
+  let risco = 'Sem DD';
+  const riscos = data.records.map(r => r.fields["Classificação de risco"]);
 
-  if (riscos.includes("Alto") || statusAnalisado.includes("Com Risco")) {
-    status = "Crítico";
-  } else if (riscos.includes("Médio") || statusAnalisado.includes("Em andamento")) {
-    status = "Atenção";
-  } else if (statusAnalisado.includes("Concluída")) {
-    status = "OK";
-  }
+  if (riscos.includes("Alto") || riscos.includes("Com Risco")) risco = 'Alto';
+  else if (riscos.includes("Médio")) risco = 'Médio';
+  else if (riscos.includes("Baixo")) risco = 'Baixo';
 
-  return { status, quantidade };
+  return { total, risco };
 }
 
 function carregarTopEmpresas(empresas) {
@@ -171,17 +165,12 @@ function carregarTopEmpresas(empresas) {
   listaTop.innerHTML = '';
 
   top3.forEach(async emp => {
-    const dd = await buscarStatusDD(emp.id);
+    const { total, risco } = await buscarStatusEDiligencias(emp.id);
 
-    const textoQuantidade =
-      dd.quantidade === 0 ? "Nenhum" :
-      dd.quantidade === 1 ? "Uma diligência" :
-      `${dd.quantidade} diligências`;
-
-    let cor = '#ccc';
-    if (dd.status === 'Crítico') cor = '#ef4444';
-    else if (dd.status === 'Atenção') cor = '#facc15';
-    else if (dd.status === 'OK') cor = '#22c55e';
+    let statusTexto = "Nenhum";
+    if (total === 1) statusTexto = "Uma diligência";
+    else if (total === 2) statusTexto = "Duas diligências";
+    else if (total > 2) statusTexto = `${total} diligências`;
 
     const card = document.createElement('div');
     card.className = 'empresa-card';
@@ -189,9 +178,7 @@ function carregarTopEmpresas(empresas) {
       <strong>${emp.nome}</strong><br>
       Rating: ${emp.rating ?? 'N/A'}<br>
       Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões<br>
-      <div class="badge-due" style="background-color:${cor}33; color:${cor};">
-        Due Diligence: ${textoQuantidade} – ${dd.status}
-      </div>
+      Due Diligence: ${statusTexto} – ${risco}<br>
       <div class="botao-duplo">
         <button onclick="window.location.href='empresa.html?id=${emp.id}'">Ver Análise</button>
         <button onclick="window.location.href='due_diligence.html?id=${emp.id}'">Due Diligence</button>
