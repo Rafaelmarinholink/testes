@@ -3,38 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Módulo de Due Diligence | Saber Capital</title>
+  <title>Nova Due Diligence | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    .analise-item {
+    .formulario {
       background-color: #1a365d;
-      margin-bottom: 1rem;
-      padding: 1rem;
-      border-radius: 8px;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin-top: 2rem;
     }
     label {
       font-weight: bold;
-      margin-top: 1rem;
       display: block;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
     }
-    select, input, textarea {
-      margin-bottom: 1rem;
+    input, select, textarea {
+      width: 100%;
       padding: 0.5rem;
+      border-radius: 5px;
+      border: none;
       background-color: #1e3a5f;
       color: white;
+    }
+    .btn {
+      margin-top: 1.5rem;
+      padding: 0.6rem 1.2rem;
+      background-color: #3b82f6;
       border: none;
-      border-radius: 5px;
-      width: 100%;
-    }
-    textarea {
-      resize: vertical;
-    }
-    small {
-      color: #ccc;
-      display: block;
-      margin-top: -0.5rem;
-      margin-bottom: 1rem;
-      font-size: 0.8rem;
+      color: white;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -46,56 +46,56 @@
         <h1 class="logo-text">SABER<br>CAPITAL</h1>
       </div>
 
-      <h2 class="subtitle">Módulo de Due Diligence</h2>
+      <h2 class="subtitle">Nova Análise de Due Diligence</h2>
 
-      <label for="empresa">Empresa</label>
-      <select id="empresa"></select>
+      <form id="form-dd" class="formulario">
+        <label for="empresa">Empresa</label>
+        <select id="empresa" required></select>
 
-      <label for="tipo">Tipo de Diligência</label>
-      <select id="tipo">
-        <option>Financeira</option>
-        <option>Jurídica</option>
-        <option>Contábil</option>
-        <option>Operacional</option>
-        <option>Ambiental</option>
-        <option>Tecnológica</option>
-        <option>Trabalhista</option>
-        <option>Regulatória</option>
-        <option>Governança</option>
-        <option>Segurança da Informação</option>
-      </select>
+        <label for="tipo">Tipo de Diligência</label>
+        <select id="tipo" required>
+          <option value="">Selecione</option>
+          <option value="Financeira">Financeira</option>
+          <option value="Jurídica">Jurídica</option>
+          <option value="Contábil">Contábil</option>
+          <option value="Operacional">Operacional</option>
+          <option value="Ambiental">Ambiental</option>
+          <option value="Tecnológica">Tecnológica</option>
+          <option value="Trabalhista">Trabalhista</option>
+          <option value="Regulatória">Regulatória</option>
+          <option value="Governança">Governança</option>
+          <option value="Segurança da Informação">Segurança da Informação</option>
+        </select>
 
-      <label for="item">Item Analisado</label>
-      <input type="text" id="item" />
+        <label for="item">Item Analisado</label>
+        <input type="text" id="item" required>
 
-      <label for="status">Status</label>
-      <select id="status">
-        <option>Pendente</option>
-        <option>Em andamento</option>
-        <option>Concluída</option>
-        <option>Com Risco</option>
-      </select>
+        <label for="status">Status da Análise</label>
+        <select id="status" required>
+          <option value="">Selecione</option>
+          <option value="Pendente">Pendente</option>
+          <option value="Em andamento">Em andamento</option>
+          <option value="Concluída">Concluída</option>
+          <option value="Com Risco">Com Risco</option>
+        </select>
 
-      <label for="risco">Classificação de Risco</label>
-      <select id="risco">
-        <option>Baixo</option>
-        <option>Médio</option>
-        <option>Alto</option>
-      </select>
+        <label for="risco">Classificação de Risco</label>
+        <select id="risco" required>
+          <option value="">Selecione</option>
+          <option value="Baixo">Baixo</option>
+          <option value="Médio">Médio</option>
+          <option value="Alto">Alto</option>
+        </select>
 
-      <label for="comentario">Comentários e Recomendações</label>
-      <textarea id="comentario" rows="4"></textarea>
+        <label for="comentario">Comentários</label>
+        <textarea id="comentario" rows="3"></textarea>
 
-      <label for="evidencia">Evidência (URL)</label>
-      <input type="text" id="evidencia" placeholder="https://drive.google.com/..." />
-      <small>O link deve ser público, como um upload no Google Drive, Dropbox, etc.</small>
+        <label for="evidencia">Evidência (URL)</label>
+        <input type="url" id="evidencia" placeholder="Cole aqui o link público da evidência">
+        <small style="color:#ccc;">Use um link público (por exemplo, Drive, Dropbox, etc.)</small>
 
-      <button class="btn" id="salvar-dd">Salvar Análise</button>
-    </div>
-
-    <div class="card">
-      <h2 class="subtitle">Análises Cadastradas</h2>
-      <div id="lista-dd"></div>
+        <button type="button" class="btn" id="salvar-dd">Salvar</button>
+      </form>
     </div>
   </div>
 
