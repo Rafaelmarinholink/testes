@@ -27,7 +27,8 @@ async function carregarEmpresas() {
     select.appendChild(opt);
   });
 }
-// Salvar nova análise com link público
+
+// Salvar nova análise com link de evidência (URL pública)
 async function salvarAnalise() {
   const evidencia = document.getElementById('evidencia').value.trim();
 
@@ -55,15 +56,12 @@ async function salvarAnalise() {
   listarAnalises(document.getElementById('empresa').value);
 }
 
-  alert('Due Diligence cadastrada com sucesso!');
-  document.getElementById('form-dd').reset();
-
 // Listar análises para empresa
 async function listarAnalises(idEmpresa) {
   const res = await fetch(`https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=FIND("${idEmpresa}", ARRAYJOIN({Empresa DD}))`, { headers });
   const data = await res.json();
   const lista = document.getElementById('lista-dd');
-  if (lista) lista.innerHTML = '';
+  lista.innerHTML = '';
 
   data.records.forEach(record => {
     const item = document.createElement('div');
@@ -77,7 +75,7 @@ async function listarAnalises(idEmpresa) {
       ${link ? `<a href="${link}" target="_blank">Ver Evidência</a>` : ''}
       <hr>
     `;
-    if (lista) lista.appendChild(item);
+    lista.appendChild(item);
   });
 }
 
