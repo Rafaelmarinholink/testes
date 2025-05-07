@@ -30,8 +30,7 @@ async function carregarEmpresas() {
 
 // Salvar nova análise com link de evidência (URL pública)
 async function salvarAnalise() {
-  const urlEvidencia = document.getElementById('evidencia').value.trim();
-  const evidencia = urlEvidencia ? [urlEvidencia] : [];
+  const evidencia = document.getElementById('evidencia').value.trim();
 
   const dados = {
     fields: {
@@ -67,7 +66,7 @@ async function listarAnalises(idEmpresa) {
   data.records.forEach(record => {
     const item = document.createElement('div');
     item.className = 'analise-item';
-    const link = record.fields["Evidência"]?.[0];
+    const link = record.fields["Evidência"];
 
     item.innerHTML = `
       <strong>${record.fields["Tipo de Diligencia"]}</strong> - ${record.fields["item analisado"]}<br>
