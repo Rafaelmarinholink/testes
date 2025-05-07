@@ -31,9 +31,6 @@ async function carregarEmpresas() {
 // Salvar nova análise com link público
 async function salvarAnalise() {
   const empresaId = document.getElementById('empresa').value;
-  const urlEvidencia = document.getElementById('evidencia').value.trim();
-  const evidencia = urlEvidencia || '';
-
   const dados = {
     fields: {
       "Empresa DD": [empresaId],
