@@ -28,7 +28,7 @@ async function carregarEmpresas() {
   });
 }
 
-// Salvar nova análise com link de evidência (URL pública)
+// Salvar nova análise com URL simples
 async function salvarAnalise() {
   const evidencia = document.getElementById('evidencia').value.trim();
 
@@ -40,7 +40,7 @@ async function salvarAnalise() {
       "Status da análise": document.getElementById('status').value,
       "Classificação de risco": document.getElementById('risco').value,
       "Comentarios": document.getElementById('comentario').value,
-      "Evidência": evidencia
+      "Evidência": evidencia // aqui é STRING simples, não array
     }
   };
 
@@ -61,6 +61,7 @@ async function listarAnalises(idEmpresa) {
   const res = await fetch(`https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=FIND("${idEmpresa}", ARRAYJOIN({Empresa DD}))`, { headers });
   const data = await res.json();
   const lista = document.getElementById('lista-dd');
+  if (!lista) return; // prevenção de erro
   lista.innerHTML = '';
 
   data.records.forEach(record => {
