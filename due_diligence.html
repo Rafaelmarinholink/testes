@@ -36,6 +36,16 @@
       border-radius: 6px;
       cursor: pointer;
     }
+    #lista-dd {
+      margin-top: 2rem;
+      background-color: #1a365d;
+      padding: 1rem;
+      border-radius: 10px;
+      color: white;
+    }
+    .analise-item {
+      margin-bottom: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -96,6 +106,12 @@
 
         <button type="button" class="btn" id="salvar-dd">Salvar</button>
       </form>
+
+      <!-- Corrigido: container para listar análises -->
+      <div id="lista-dd">
+        <h3>Análises Cadastradas</h3>
+        <!-- Itens aparecerão aqui via JS -->
+      </div>
     </div>
   </div>
 
