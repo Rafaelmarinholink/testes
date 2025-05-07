@@ -142,12 +142,12 @@ async function buscarStatusDD(empresaId) {
   const url = `https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=FIND("${empresaId}", ARRAYJOIN({Empresa DD}))`;
   const res = await fetch(url, { headers });
   const data = await res.json();
+  const qtd = data.records.length;
 
-  const riscos = data.records.map(r => r.fields["Classificação de risco"]);
-  if (riscos.includes("Alto")) return "Alto";
-  if (riscos.includes("Médio")) return "Médio";
-  if (riscos.length > 0) return "Baixo";
-  return "Nenhum";
+  if (qtd === 0) return "Nenhum";
+  if (qtd === 1) return "Uma diligência";
+  if (qtd === 2) return "Duas diligências";
+  return `${qtd} diligências`;
 }
 
 function carregarTopEmpresas(empresas) {
@@ -161,10 +161,6 @@ function carregarTopEmpresas(empresas) {
 
   top3.forEach(async emp => {
     const statusDD = await buscarStatusDD(emp.id);
-    let cor = '#ccc';
-    if (statusDD === 'Alto') cor = '#ef4444';
-    else if (statusDD === 'Médio') cor = '#facc15';
-    else if (statusDD === 'Baixo') cor = '#22c55e';
 
     const card = document.createElement('div');
     card.className = 'empresa-card';
@@ -172,7 +168,7 @@ function carregarTopEmpresas(empresas) {
       <strong>${emp.nome}</strong><br>
       Rating: ${emp.rating ?? 'N/A'}<br>
       Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões<br>
-      <div class="badge-due" style="background-color:${cor}33; color:${cor};">Due Diligence: ${statusDD}</div>
+      <div class="badge-due">Due Diligence: ${statusDD}</div>
       <div class="botao-duplo">
         <button onclick="window.location.href='empresa.html?id=${emp.id}'">Ver Análise</button>
         <button onclick="window.location.href='due_diligence.html?id=${emp.id}'">Due Diligence</button>
