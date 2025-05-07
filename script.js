@@ -132,7 +132,7 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
   e.target.reset();
 });
 
-async function buscarStatusEDiligencias(empresaId) {
+async function buscarStatusDD(empresaId) {
   const baseId = 'appaq7tR3vt9vrN6y';
   const tableDD = 'Due Diligence';
   const headers = {
@@ -143,20 +143,12 @@ async function buscarStatusEDiligencias(empresaId) {
   const res = await fetch(url, { headers });
   const data = await res.json();
 
-  const riscos = data.records.map(r => r.fields["Classificação de risco"]);
   const total = data.records.length;
 
-  let textoDiligencia = "Nenhum";
-  if (total === 1) textoDiligencia = "Uma diligência";
-  else if (total === 2) textoDiligencia = "Duas diligências";
-  else if (total > 2) textoDiligencia = `${total} diligências`;
-
-  let cor = '#ccc';
-  if (riscos.includes("Alto")) cor = '#ef4444';
-  else if (riscos.includes("Médio")) cor = '#facc15';
-  else if (riscos.length > 0) cor = '#22c55e';
-
-  return { textoDiligencia, cor };
+  if (total === 0) return "Nenhuma diligência";
+  if (total === 1) return "Uma diligência";
+  if (total === 2) return "Duas diligências";
+  return `${total} diligências`;
 }
 
 function carregarTopEmpresas(empresas) {
@@ -169,15 +161,14 @@ function carregarTopEmpresas(empresas) {
   listaTop.innerHTML = '';
 
   top3.forEach(async emp => {
-    const { textoDiligencia, cor } = await buscarStatusEDiligencias(emp.id);
-
+    const statusDD = await buscarStatusDD(emp.id);
     const card = document.createElement('div');
     card.className = 'empresa-card';
     card.innerHTML = `
       <strong>${emp.nome}</strong><br>
       Rating: ${emp.rating ?? 'N/A'}<br>
       Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões<br>
-      <div class="badge-due" style="background-color:${cor}33; color:${cor};">Due Diligence: ${textoDiligencia}</div>
+      <div class="badge-due">${statusDD}</div>
       <div class="botao-duplo">
         <button onclick="window.location.href='empresa.html?id=${emp.id}'">Ver Análise</button>
         <button onclick="window.location.href='due_diligence.html?id=${emp.id}'">Due Diligence</button>
