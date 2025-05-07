@@ -27,13 +27,13 @@ async function carregarEmpresas() {
     select.appendChild(opt);
   });
 }
-
 // Salvar nova análise com link público
 async function salvarAnalise() {
-  const empresaId = document.getElementById('empresa').value;
+  const evidencia = document.getElementById('evidencia').value.trim();
+
   const dados = {
     fields: {
-      "Empresa DD": [empresaId],
+      "Empresa DD": [document.getElementById('empresa').value],
       "Tipo de Diligencia": document.getElementById('tipo').value,
       "item analisado": document.getElementById('item').value,
       "Status da análise": document.getElementById('status').value,
@@ -52,11 +52,11 @@ async function salvarAnalise() {
     body: JSON.stringify(dados)
   });
 
+  listarAnalises(document.getElementById('empresa').value);
+}
+
   alert('Due Diligence cadastrada com sucesso!');
   document.getElementById('form-dd').reset();
-
-  listarAnalises(empresaId);
-}
 
 // Listar análises para empresa
 async function listarAnalises(idEmpresa) {
