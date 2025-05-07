@@ -31,7 +31,7 @@ async function carregarEmpresas() {
 // Salvar nova análise com link público
 async function salvarAnalise() {
   const urlEvidencia = document.getElementById('evidencia').value.trim();
-  const evidencia = urlEvidencia ? [{ url: urlEvidencia }] : [];
+  const evidencia = urlEvidencia || '';
 
   const dados = {
     fields: {
@@ -56,7 +56,6 @@ async function salvarAnalise() {
 
   alert('Due Diligence cadastrada com sucesso!');
   document.getElementById('form-dd').reset();
-
   listarAnalises(document.getElementById('empresa').value);
 }
 
@@ -65,12 +64,13 @@ async function listarAnalises(idEmpresa) {
   const res = await fetch(`https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=FIND("${idEmpresa}", ARRAYJOIN({Empresa DD}))`, { headers });
   const data = await res.json();
   const lista = document.getElementById('lista-dd');
+  if (!lista) return;
   lista.innerHTML = '';
 
   data.records.forEach(record => {
     const item = document.createElement('div');
     item.className = 'analise-item';
-    const link = record.fields["Evidência"]?.[0]?.url;
+    const link = record.fields["Evidência"];
 
     item.innerHTML = `
       <strong>${record.fields["Tipo de Diligencia"]}</strong> - ${record.fields["item analisado"]}<br>
