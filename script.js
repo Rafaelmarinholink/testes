@@ -132,27 +132,31 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
   e.target.reset();
 });
 
-async function buscarStatusEDiligencias(empresaId) {
+async function buscarStatusDD(empresaId) {
   const baseId = 'appaq7tR3vt9vrN6y';
   const tableDD = 'Due Diligence';
   const headers = {
     Authorization: "Bearer patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6"
   };
 
-  const url = `https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=FIND("${empresaId}", ARRAYJOIN({Empresa DD}))`;
+  const url = `https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=ARRAYJOIN({Empresa DD}) = "${empresaId}"`;
   const res = await fetch(url, { headers });
   const data = await res.json();
 
   const total = data.records.length;
-
-  let risco = 'Sem DD';
   const riscos = data.records.map(r => r.fields["Classificação de risco"]);
 
-  if (riscos.includes("Alto") || riscos.includes("Com Risco")) risco = 'Alto';
-  else if (riscos.includes("Médio")) risco = 'Médio';
-  else if (riscos.includes("Baixo")) risco = 'Baixo';
+  let status = "Sem DD";
+  if (riscos.includes("Alto")) status = "Alto";
+  else if (riscos.includes("Médio")) status = "Médio";
+  else if (riscos.includes("Baixo")) status = "Baixo";
 
-  return { total, risco };
+  let quantidadeTexto = "Nenhum";
+  if (total === 1) quantidadeTexto = "Uma diligência";
+  else if (total === 2) quantidadeTexto = "Duas diligências";
+  else if (total > 2) quantidadeTexto = `${total} diligências`;
+
+  return `${quantidadeTexto} – ${status}`;
 }
 
 function carregarTopEmpresas(empresas) {
