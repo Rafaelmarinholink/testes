@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Due Diligence | Saber Capital</title>
+  <title>Módulo de Due Diligence | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
   <style>
     .analise-item {
@@ -26,6 +26,16 @@
       border-radius: 5px;
       width: 100%;
     }
+    textarea {
+      resize: vertical;
+    }
+    small {
+      color: #ccc;
+      display: block;
+      margin-top: -0.5rem;
+      margin-bottom: 1rem;
+      font-size: 0.8rem;
+    }
   </style>
 </head>
 <body>
@@ -36,52 +46,49 @@
         <h1 class="logo-text">SABER<br>CAPITAL</h1>
       </div>
 
-      <h2 class="subtitle">Nova Análise de Due Diligence</h2>
+      <h2 class="subtitle">Módulo de Due Diligence</h2>
 
       <label for="empresa">Empresa</label>
       <select id="empresa"></select>
 
       <label for="tipo">Tipo de Diligência</label>
       <select id="tipo">
-        <option value="">Selecione</option>
-        <option value="Financeira">Financeira</option>
-        <option value="Jurídica">Jurídica</option>
-        <option value="Contábil">Contábil</option>
-        <option value="Operacional">Operacional</option>
-        <option value="Ambiental">Ambiental</option>
-        <option value="Tecnológica">Tecnológica</option>
-        <option value="Trabalhista">Trabalhista</option>
-        <option value="Regulatória">Regulatória</option>
-        <option value="Governança">Governança</option>
-        <option value="Segurança da Informação">Segurança da Informação</option>
+        <option>Financeira</option>
+        <option>Jurídica</option>
+        <option>Contábil</option>
+        <option>Operacional</option>
+        <option>Ambiental</option>
+        <option>Tecnológica</option>
+        <option>Trabalhista</option>
+        <option>Regulatória</option>
+        <option>Governança</option>
+        <option>Segurança da Informação</option>
       </select>
 
       <label for="item">Item Analisado</label>
-      <input type="text" id="item" placeholder="Ex: Balanço patrimonial, passivo trabalhista..." />
+      <input type="text" id="item" />
 
-      <label for="status">Status da Análise</label>
+      <label for="status">Status</label>
       <select id="status">
-        <option value="">Selecione</option>
-        <option value="Pendente">Pendente</option>
-        <option value="Em andamento">Em andamento</option>
-        <option value="Concluída">Concluída</option>
-        <option value="Com Risco">Com Risco</option>
+        <option>Pendente</option>
+        <option>Em andamento</option>
+        <option>Concluída</option>
+        <option>Com Risco</option>
       </select>
 
       <label for="risco">Classificação de Risco</label>
       <select id="risco">
-        <option value="">Selecione</option>
-        <option value="Baixo">Baixo</option>
-        <option value="Médio">Médio</option>
-        <option value="Alto">Alto</option>
+        <option>Baixo</option>
+        <option>Médio</option>
+        <option>Alto</option>
       </select>
 
-      <label for="comentario">Comentários</label>
-      <textarea id="comentario" rows="3"></textarea>
+      <label for="comentario">Comentários e Recomendações</label>
+      <textarea id="comentario" rows="4"></textarea>
 
       <label for="evidencia">Evidência (URL)</label>
-      <input type="text" id="evidencia" placeholder="Ex: https://drive.google.com/..." />
-      <small style="color:#ccc">O link deve ser público. Ex: upload público no Google Drive, Dropbox, etc.</small>
+      <input type="text" id="evidencia" placeholder="https://drive.google.com/..." />
+      <small>O link deve ser público, como um upload no Google Drive, Dropbox, etc.</small>
 
       <button class="btn" id="salvar-dd">Salvar Análise</button>
     </div>
