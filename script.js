@@ -132,7 +132,7 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
   e.target.reset();
 });
 
-async function buscarStatusDD(empresaId) {
+async function buscarStatusEDiligencias(empresaId) {
   const baseId = 'appaq7tR3vt9vrN6y';
   const tableDD = 'Due Diligence';
   const headers = {
@@ -142,12 +142,21 @@ async function buscarStatusDD(empresaId) {
   const url = `https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=FIND("${empresaId}", ARRAYJOIN({Empresa DD}))`;
   const res = await fetch(url, { headers });
   const data = await res.json();
-  const qtd = data.records.length;
 
-  if (qtd === 0) return "Nenhum";
-  if (qtd === 1) return "Uma diligência";
-  if (qtd === 2) return "Duas diligências";
-  return `${qtd} diligências`;
+  const riscos = data.records.map(r => r.fields["Classificação de risco"]);
+  const total = data.records.length;
+
+  let textoDiligencia = "Nenhum";
+  if (total === 1) textoDiligencia = "Uma diligência";
+  else if (total === 2) textoDiligencia = "Duas diligências";
+  else if (total > 2) textoDiligencia = `${total} diligências`;
+
+  let cor = '#ccc';
+  if (riscos.includes("Alto")) cor = '#ef4444';
+  else if (riscos.includes("Médio")) cor = '#facc15';
+  else if (riscos.length > 0) cor = '#22c55e';
+
+  return { textoDiligencia, cor };
 }
 
 function carregarTopEmpresas(empresas) {
@@ -160,7 +169,7 @@ function carregarTopEmpresas(empresas) {
   listaTop.innerHTML = '';
 
   top3.forEach(async emp => {
-    const statusDD = await buscarStatusDD(emp.id);
+    const { textoDiligencia, cor } = await buscarStatusEDiligencias(emp.id);
 
     const card = document.createElement('div');
     card.className = 'empresa-card';
@@ -168,7 +177,7 @@ function carregarTopEmpresas(empresas) {
       <strong>${emp.nome}</strong><br>
       Rating: ${emp.rating ?? 'N/A'}<br>
       Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões<br>
-      <div class="badge-due">Due Diligence: ${statusDD}</div>
+      <div class="badge-due" style="background-color:${cor}33; color:${cor};">Due Diligence: ${textoDiligencia}</div>
       <div class="botao-duplo">
         <button onclick="window.location.href='empresa.html?id=${emp.id}'">Ver Análise</button>
         <button onclick="window.location.href='due_diligence.html?id=${emp.id}'">Due Diligence</button>
