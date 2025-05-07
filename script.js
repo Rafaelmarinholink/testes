@@ -142,13 +142,23 @@ async function buscarStatusDD(empresaId) {
   const url = `https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=FIND("${empresaId}", ARRAYJOIN({Empresa DD}))`;
   const res = await fetch(url, { headers });
   const data = await res.json();
+  const registros = data.records;
 
-  const total = data.records.length;
+  const quantidade = registros.length;
 
-  if (total === 0) return "Nenhuma diligência";
-  if (total === 1) return "Uma diligência";
-  if (total === 2) return "Duas diligências";
-  return `${total} diligências`;
+  let status = "Sem DD";
+  const riscos = registros.map(r => r.fields["Classificação de risco"]);
+  const statusAnalisado = registros.map(r => r.fields["Status da análise"]);
+
+  if (riscos.includes("Alto") || statusAnalisado.includes("Com Risco")) {
+    status = "Crítico";
+  } else if (riscos.includes("Médio") || statusAnalisado.includes("Em andamento")) {
+    status = "Atenção";
+  } else if (statusAnalisado.includes("Concluída")) {
+    status = "OK";
+  }
+
+  return { status, quantidade };
 }
 
 function carregarTopEmpresas(empresas) {
@@ -161,14 +171,27 @@ function carregarTopEmpresas(empresas) {
   listaTop.innerHTML = '';
 
   top3.forEach(async emp => {
-    const statusDD = await buscarStatusDD(emp.id);
+    const dd = await buscarStatusDD(emp.id);
+
+    const textoQuantidade =
+      dd.quantidade === 0 ? "Nenhum" :
+      dd.quantidade === 1 ? "Uma diligência" :
+      `${dd.quantidade} diligências`;
+
+    let cor = '#ccc';
+    if (dd.status === 'Crítico') cor = '#ef4444';
+    else if (dd.status === 'Atenção') cor = '#facc15';
+    else if (dd.status === 'OK') cor = '#22c55e';
+
     const card = document.createElement('div');
     card.className = 'empresa-card';
     card.innerHTML = `
       <strong>${emp.nome}</strong><br>
       Rating: ${emp.rating ?? 'N/A'}<br>
       Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões<br>
-      <div class="badge-due">${statusDD}</div>
+      <div class="badge-due" style="background-color:${cor}33; color:${cor};">
+        Due Diligence: ${textoQuantidade} – ${dd.status}
+      </div>
       <div class="botao-duplo">
         <button onclick="window.location.href='empresa.html?id=${emp.id}'">Ver Análise</button>
         <button onclick="window.location.href='due_diligence.html?id=${emp.id}'">Due Diligence</button>
