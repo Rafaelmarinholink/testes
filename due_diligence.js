@@ -30,7 +30,7 @@ async function carregarEmpresas() {
 
 // Salvar nova análise com URL simples
 async function salvarAnalise() {
-  const evidencia = document.getElementById('evidencia').value.trim();
+  const evidencia = document.getElementById('evidencia').value.trim() || null;
 
   const dados = {
     fields: {
