@@ -22,34 +22,16 @@ async function carregarEmpresas() {
     opt.textContent = record.fields["Nome da Empresa"];
     if (empresaSelecionada && record.id === empresaSelecionada) {
       opt.selected = true;
+      listarAnalises(record.id);
     }
     select.appendChild(opt);
   });
-
-  if (empresaSelecionada) {
-    listarAnalises(empresaSelecionada);
-  }
 }
 
-// Salvar nova análise com upload real
+// Salvar nova análise com link de evidência (URL pública)
 async function salvarAnalise() {
-  const arquivo = document.getElementById('evidencia').files[0];
-  let evidencia = [];
-
-  if (arquivo) {
-    const formData = new FormData();
-    formData.append('file', arquivo);
-
-    const res = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData
-    });
-
-    const result = await res.json();
-    if (result.url) {
-      evidencia = [{ url: result.url }]; // apenas a URL!
-    }
-  }
+  const urlEvidencia = document.getElementById('evidencia').value.trim();
+  const evidencia = urlEvidencia ? [urlEvidencia] : [];
 
   const dados = {
     fields: {
@@ -82,19 +64,16 @@ async function listarAnalises(idEmpresa) {
   const lista = document.getElementById('lista-dd');
   lista.innerHTML = '';
 
-  if (data.records.length === 0) {
-    lista.innerHTML = '<p>Nenhuma análise cadastrada.</p>';
-    return;
-  }
-
   data.records.forEach(record => {
     const item = document.createElement('div');
     item.className = 'analise-item';
+    const link = record.fields["Evidência"]?.[0];
+
     item.innerHTML = `
       <strong>${record.fields["Tipo de Diligencia"]}</strong> - ${record.fields["item analisado"]}<br>
       Status: <b>${record.fields["Status da análise"]}</b> | Risco: <b>${record.fields["Classificação de risco"]}</b><br>
       <em>${record.fields["Comentarios"] ?? ''}</em><br>
-      ${record.fields["Evidência"] ? `<a href="${record.fields["Evidência"][0].url}" target="_blank">Ver Evidência</a>` : ''}
+      ${link ? `<a href="${link}" target="_blank">Ver Evidência</a>` : ''}
       <hr>
     `;
     lista.appendChild(item);
