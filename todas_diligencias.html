@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Módulo de Due Diligence | Saber Capital</title>
+  <title>Todas as Diligências | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
   <style>
     .analise-item {
@@ -17,24 +17,13 @@
       margin-top: 1rem;
       display: block;
     }
-    select, input, textarea {
+    select {
       margin-bottom: 1rem;
       padding: 0.5rem;
       background-color: #1e3a5f;
       color: white;
       border: none;
       border-radius: 5px;
-      width: 100%;
-    }
-    textarea {
-      resize: vertical;
-    }
-    small {
-      color: #ccc;
-      display: block;
-      margin-top: -0.5rem;
-      margin-bottom: 1rem;
-      font-size: 0.8rem;
     }
   </style>
 </head>
@@ -46,59 +35,52 @@
         <h1 class="logo-text">SABER<br>CAPITAL</h1>
       </div>
 
-      <h2 class="subtitle">Módulo de Due Diligence</h2>
+      <h2 class="subtitle">Todas as Análises de Due Diligence</h2>
 
-      <label for="empresa">Empresa</label>
-      <select id="empresa"></select>
-
-      <label for="tipo">Tipo de Diligência</label>
-      <select id="tipo">
-        <option>Financeira</option>
-        <option>Jurídica</option>
-        <option>Contábil</option>
-        <option>Operacional</option>
-        <option>Ambiental</option>
-        <option>Tecnológica</option>
-        <option>Trabalhista</option>
-        <option>Regulatória</option>
-        <option>Governança</option>
-        <option>Segurança da Informação</option>
+      <label for="filtroEmpresa">Filtrar por Empresa</label>
+      <select id="filtroEmpresa">
+        <option value="">Todas</option>
       </select>
 
-      <label for="item">Item Analisado</label>
-      <input type="text" id="item" />
-
-      <label for="status">Status</label>
-      <select id="status">
-        <option>Pendente</option>
-        <option>Em andamento</option>
-        <option>Concluída</option>
-        <option>Com Risco</option>
+      <label for="filtroTipo">Filtrar por Tipo de Diligência</label>
+      <select id="filtroTipo">
+        <option value="">Todos</option>
+        <option value="Financeira">Financeira</option>
+        <option value="Jurídica">Jurídica</option>
+        <option value="Contábil">Contábil</option>
+        <option value="Operacional">Operacional</option>
+        <option value="Ambiental">Ambiental</option>
+        <option value="Tecnológica">Tecnológica</option>
+        <option value="Trabalhista">Trabalhista</option>
+        <option value="Regulatória">Regulatória</option>
+        <option value="Governança">Governança</option>
+        <option value="Segurança da Informação">Segurança da Informação</option>
       </select>
 
-      <label for="risco">Classificação de Risco</label>
-      <select id="risco">
-        <option>Baixo</option>
-        <option>Médio</option>
-        <option>Alto</option>
+      <label for="filtroStatus">Filtrar por Status da Análise</label>
+      <select id="filtroStatus">
+        <option value="">Todos</option>
+        <option value="Pendente">Pendente</option>
+        <option value="Em andamento">Em andamento</option>
+        <option value="Concluída">Concluída</option>
+        <option value="Com Risco">Com Risco</option>
       </select>
 
-      <label for="comentario">Comentários e Recomendações</label>
-      <textarea id="comentario" rows="4"></textarea>
-
-      <label for="evidencia">Evidência (URL)</label>
-      <input type="text" id="evidencia" placeholder="https://drive.google.com/..." />
-      <small>O link deve ser público, como um upload no Google Drive, Dropbox, etc.</small>
-
-      <button class="btn" id="salvar-dd">Salvar Análise</button>
+      <label for="filtroRisco">Filtrar por Classificação de Risco</label>
+      <select id="filtroRisco">
+        <option value="">Todos</option>
+        <option value="Baixo">Baixo</option>
+        <option value="Médio">Médio</option>
+        <option value="Alto">Alto</option>
+      </select>
     </div>
 
     <div class="card">
-      <h2 class="subtitle">Análises Cadastradas</h2>
-      <div id="lista-dd"></div>
+      <h2 class="subtitle">Resultados</h2>
+      <div id="listaDD"></div>
     </div>
   </div>
 
-  <script src="due_diligence.js"></script>
+  <script src="todas_diligencias.js"></script>
 </body>
 </html>
