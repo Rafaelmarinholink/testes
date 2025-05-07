@@ -169,12 +169,7 @@ function carregarTopEmpresas(empresas) {
   listaTop.innerHTML = '';
 
   top3.forEach(async emp => {
-    const { total, risco } = await buscarStatusEDiligencias(emp.id);
-
-    let statusTexto = "Nenhum";
-    if (total === 1) statusTexto = "Uma diligência";
-    else if (total === 2) statusTexto = "Duas diligências";
-    else if (total > 2) statusTexto = `${total} diligências`;
+    const statusDD = await buscarStatusDD(emp.id);
 
     const card = document.createElement('div');
     card.className = 'empresa-card';
@@ -182,7 +177,7 @@ function carregarTopEmpresas(empresas) {
       <strong>${emp.nome}</strong><br>
       Rating: ${emp.rating ?? 'N/A'}<br>
       Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões<br>
-      Due Diligence: ${statusTexto} – ${risco}<br>
+      Due Diligence: ${statusDD}<br>
       <div class="botao-duplo">
         <button onclick="window.location.href='empresa.html?id=${emp.id}'">Ver Análise</button>
         <button onclick="window.location.href='due_diligence.html?id=${emp.id}'">Due Diligence</button>
