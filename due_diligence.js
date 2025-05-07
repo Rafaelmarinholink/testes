@@ -22,15 +22,16 @@ async function carregarEmpresas() {
     opt.textContent = record.fields["Nome da Empresa"];
     if (empresaSelecionada && record.id === empresaSelecionada) {
       opt.selected = true;
+      listarAnalises(record.id);
     }
     select.appendChild(opt);
   });
 }
 
-// Salvar nova análise com link de evidência (URL pública)
+// Salvar nova análise com link público
 async function salvarAnalise() {
   const urlEvidencia = document.getElementById('evidencia').value.trim();
-  const evidencia = urlEvidencia ? [urlEvidencia] : [];
+  const evidencia = urlEvidencia ? [{ url: urlEvidencia }] : [];
 
   const dados = {
     fields: {
@@ -55,9 +56,38 @@ async function salvarAnalise() {
 
   alert('Due Diligence cadastrada com sucesso!');
   document.getElementById('form-dd').reset();
+
+  listarAnalises(document.getElementById('empresa').value);
+}
+
+// Listar análises para empresa
+async function listarAnalises(idEmpresa) {
+  const res = await fetch(`https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=FIND("${idEmpresa}", ARRAYJOIN({Empresa DD}))`, { headers });
+  const data = await res.json();
+  const lista = document.getElementById('lista-dd');
+  lista.innerHTML = '';
+
+  data.records.forEach(record => {
+    const item = document.createElement('div');
+    item.className = 'analise-item';
+    const link = record.fields["Evidência"]?.[0]?.url;
+
+    item.innerHTML = `
+      <strong>${record.fields["Tipo de Diligencia"]}</strong> - ${record.fields["item analisado"]}<br>
+      Status: <b>${record.fields["Status da análise"]}</b> | Risco: <b>${record.fields["Classificação de risco"]}</b><br>
+      <em>${record.fields["Comentarios"] ?? ''}</em><br>
+      ${link ? `<a href="${link}" target="_blank">Ver Evidência</a>` : ''}
+      <hr>
+    `;
+    lista.appendChild(item);
+  });
 }
 
 // Eventos
+document.getElementById('empresa').addEventListener('change', (e) => {
+  listarAnalises(e.target.value);
+});
+
 document.getElementById('salvar-dd').addEventListener('click', salvarAnalise);
 
 // Inicial
