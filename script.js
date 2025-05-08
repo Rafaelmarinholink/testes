@@ -139,7 +139,7 @@ async function buscarStatusDD(empresaId) {
     Authorization: "Bearer patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6"
   };
 
-  const url = `https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula=ARRAYJOIN({Empresa DD}) = "${empresaId}"`;
+  const url = `https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula={EmpresaID} = "${empresaId}"`;
   const res = await fetch(url, { headers });
   const data = await res.json();
 
