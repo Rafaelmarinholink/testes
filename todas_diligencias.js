@@ -43,7 +43,7 @@ function renderizarLista(dados) {
     const status = f["Status da análise"] ?? "-";
     const risco = f["Classificação de risco"] ?? "-";
     const comentarios = f["Comentarios"] ?? "-";
-    const empresaNome = f["Empresa DD_Nome"] ?? "Ver empresa";
+    const empresaNome = f["Empresa DD_Nome"] ?? "-";
     const empresaId = f["Empresa DD"] ?? null;
     const evidencia = f["Evidência"]?.[0]?.url ?? null;
 
