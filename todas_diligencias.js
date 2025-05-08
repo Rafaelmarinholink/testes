@@ -57,10 +57,11 @@ function renderizarLista(dados) {
     div.innerHTML = `
       <p><strong>Tipo de diligência:</strong> ${tipo}</p>
       <p><strong>Item analisado:</strong> ${item}</p>
-     <p><strong>Empresa:</strong> ${empresaId 
-  ? `<a href="empresa.html?id=${empresaId}" class="btn-white-outline">${empresaId}</a>` 
-  : empresaId}</p>
-
+      <p><strong>Empresa:</strong> ${
+        empresaId 
+          ? `<a href="empresa.html?id=${empresaId}" class="btn-white-outline">${empresaNome}</a>` 
+          : empresaNome
+      }</p>
       <p><strong>Status:</strong> ${status} 
         <span class="badge-due" style="background-color:${cor}33; color:${cor}; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.8rem;">
           Risco: ${risco}
