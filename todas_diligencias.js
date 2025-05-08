@@ -43,8 +43,8 @@ function renderizarLista(dados) {
     const status = f["Status da análise"] ?? "-";
     const risco = f["Classificação de risco"] ?? "-";
     const comentarios = f["Comentarios"] ?? "-";
-    const empresaNome = Array.isArray(f["Empresa DD_Nome"]) ? f["Empresa DD_Nome"][0] : f["Empresa DD_Nome"] ?? "Empresa";
-    const empresaId = f["Empresa DD"] ?? null;
+    const empresaNome = Array.isArray(f["Empresa DD_Nome"]) ? f["Empresa DD_Nome"][0] : f["Empresa DD_Nome"];
+    const empresaId = Array.isArray(f["Empresa DD"]) ? f["Empresa DD"][0] : f["Empresa DD"];
     const evidencia = f["Evidência"]?.[0]?.url ?? null;
 
     let cor = "#ccc";
@@ -58,10 +58,11 @@ function renderizarLista(dados) {
       <p><strong>Tipo de diligência:</strong> ${tipo}</p>
       <p><strong>Item analisado:</strong> ${item}</p>
       <p><strong>Empresa:</strong> ${
-        empresaId 
-          ? `<a href="empresa.html?id=${empresaId}" class="btn-white-outline">${empresaNome}</a>` 
-          : empresaNome
-      }</p>
+    empresaId
+      ? `<a href="empresa.html?id=${empresaId}" class="btn-white-outline">${empresaNome}</a>`
+      : empresaNome
+  }</p>
+
       <p><strong>Status:</strong> ${status} 
         <span class="badge-due" style="background-color:${cor}33; color:${cor}; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.8rem;">
           Risco: ${risco}
