@@ -43,7 +43,7 @@ function renderizarLista(dados) {
     const status = f["Status da análise"] ?? "-";
     const risco = f["Classificação de risco"] ?? "-";
     const comentarios = f["Comentarios"] ?? "-";
-    const empresaNome = f["Empresa DD_Nome"] ?? "Ver Empresa";
+    const empresaNome = Array.isArray(f["Empresa DD_Nome"]) ? f["Empresa DD_Nome"][0] : f["Empresa DD_Nome"] ?? "Empresa";
     const empresaId = f["Empresa DD"] ?? null;
     const evidencia = f["Evidência"]?.[0]?.url ?? null;
 
