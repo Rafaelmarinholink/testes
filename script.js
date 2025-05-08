@@ -160,7 +160,7 @@ async function buscarStatusDD(empresaId) {
   return `${quantidadeTexto} – ${risco}`;
 }
 
-function carregarTopEmpresas(empresas) {
+async function carregarTopEmpresas(empresas) {
   const top3 = empresas
     .filter(emp => emp.rating !== undefined && emp.rating !== null)
     .sort((a, b) => b.rating - a.rating)
@@ -169,39 +169,39 @@ function carregarTopEmpresas(empresas) {
   const listaTop = document.getElementById('top-empresas');
   listaTop.innerHTML = '';
 
-  top3.forEach(async emp => {
-    const statusTexto = await buscarStatusDD(emp.id);
-
+  for (const emp of top3) {
+    const statusDD = await buscarStatusDD(emp.id);
+    
+    // Cor por status
     let cor = '#ccc';
-    if (statusTexto.includes('Alto')) cor = '#ef4444';
-    else if (statusTexto.includes('Médio')) cor = '#facc15';
-    else if (statusTexto.includes('Baixo')) cor = '#22c55e';
+    if (statusDD.includes('Alto')) cor = '#ef4444';
+    else if (statusDD.includes('Médio')) cor = '#facc15';
+    else if (statusDD.includes('Baixo')) cor = '#22c55e';
 
     const card = document.createElement('div');
     card.className = 'empresa-card';
     card.innerHTML = `
-  <strong>${emp.nome}</strong><br>
-  Rating: ${emp.rating ?? 'N/A'}<br>
-  Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões<br>
-  <div style="margin-top: 4px;">
-    <span style="
-      display: inline-block;
-      background-color: ${cor}33;
-      color: ${cor};
-      font-weight: bold;
-      font-size: 0.85rem;
-      padding: 4px 8px;
-      border-radius: 6px;
-    ">${statusDD}</span>
-  </div>
-  <div style="display: flex; gap: 8px; margin-top: 12px;">
-    <button class="btn-secundario" onclick="window.location.href='empresa.html?id=${emp.id}'">Ver Análise</button>
-    <button class="btn-secundario" onclick="window.location.href='due_diligence.html?id=${emp.id}'">Cadastrar Due Diligence</button>
-  </div>
-`;
-
+      <strong>${emp.nome}</strong><br>
+      Rating: ${emp.rating ?? 'N/A'}<br>
+      Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões<br>
+      <div style="margin-top: 4px;">
+        <span style="
+          display: inline-block;
+          background-color: ${cor}33;
+          color: ${cor};
+          font-weight: bold;
+          font-size: 0.85rem;
+          padding: 4px 8px;
+          border-radius: 6px;
+        ">${statusDD}</span>
+      </div>
+      <div style="display: flex; gap: 8px; margin-top: 12px;">
+        <button class="btn-secundario" onclick="window.location.href='empresa.html?id=${emp.id}'">Ver Análise</button>
+        <button class="btn-secundario" onclick="window.location.href='due_diligence.html?id=${emp.id}'">Cadastrar Due Diligence</button>
+      </div>
+    `;
     listaTop.appendChild(card);
-  });
+  }
 }
 
 buscarEmpresas().then(empresas => carregarTopEmpresas(empresas));
