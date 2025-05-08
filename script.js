@@ -180,15 +180,26 @@ function carregarTopEmpresas(empresas) {
     const card = document.createElement('div');
     card.className = 'empresa-card';
     card.innerHTML = `
-      <strong>${emp.nome}</strong><br>
-      Rating: ${emp.rating ?? 'N/A'}<br>
-      Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões<br>
-      <div class="badge-due" style="background-color:${cor}33; color:${cor};">Due Diligence: ${statusTexto}</div>
-      <div class="botao-duplo">
-        <button onclick="window.location.href='empresa.html?id=${emp.id}'">Ver Análise</button>
-        <button onclick="window.location.href='due_diligence.html?id=${emp.id}'">Due Diligence</button>
-      </div>
-    `;
+  <strong>${emp.nome}</strong><br>
+  Rating: ${emp.rating ?? 'N/A'}<br>
+  Receita: R$ ${Number(emp.receita).toLocaleString('pt-BR')} Milhões<br>
+  <div style="margin-top: 4px;">
+    <span style="
+      display: inline-block;
+      background-color: ${cor}33;
+      color: ${cor};
+      font-weight: bold;
+      font-size: 0.85rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+    ">${statusDD}</span>
+  </div>
+  <div style="display: flex; gap: 8px; margin-top: 12px;">
+    <button class="btn-secundario" onclick="window.location.href='empresa.html?id=${emp.id}'">Ver Análise</button>
+    <button class="btn-secundario" onclick="window.location.href='due_diligence.html?id=${emp.id}'">Cadastrar Due Diligence</button>
+  </div>
+`;
+
     listaTop.appendChild(card);
   });
 }
