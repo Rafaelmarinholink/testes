@@ -166,8 +166,8 @@
       return "A empresa " + frases.join(", ") + ".";
     }
 
-    async function carregarAnalisesDD(idEmpresa) {
-  const url = `https://api.airtable.com/v0/appaq7tR3vt9vrN6y/Due%20Diligence?filterByFormula=FIND("${idEmpresa}", ARRAYJOIN({Empresa DD}))`;
+  async function carregarAnalisesDD(idEmpresa) {
+  const url = `https://api.airtable.com/v0/appaq7tR3vt9vrN6y/Due%20Diligence?filterByFormula=ARRAYJOIN({EmpresaID})='${idEmpresa}'`;
   const res = await fetch(url, {
     headers: {
       Authorization: "Bearer patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6"
@@ -176,7 +176,7 @@
   const data = await res.json();
 
   const container = document.getElementById('dd-analises');
-  if (data.records.length === 0) {
+  if (!data.records.length) {
     container.innerHTML = '<p>Nenhuma análise de due diligence registrada.</p>';
     return;
   }
