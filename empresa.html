@@ -205,7 +205,7 @@
         </span>
       </p>
       ${comentarios ? `<p><strong>Comentários:</strong> <em>${comentarios}</em></p>` : ''}
-      ${evidencia ? `<a href="${evidencia}" target="_blank" class="btn-white-outline">Ver Evidência</a>` : ''}
+      ${r.fields["Evidência"] ? `<a href="${r.fields["Evidência"][0].url}" target="_blank" class="btn-mini">Ver Evidência</a>` : ''}
     `;
     container.appendChild(div);
   });
