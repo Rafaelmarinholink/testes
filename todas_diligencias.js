@@ -38,18 +38,41 @@ function renderizarLista(dados) {
 
   dados.forEach(r => {
     const f = r.fields;
-    const div = document.createElement('div');
-    div.className = 'analise-item';
+    const tipo = f["Tipo de Diligencia"] ?? "-";
+    const item = f["item analisado"] ?? "-";
+    const status = f["Status da análise"] ?? "-";
+    const risco = f["Classificação de risco"] ?? "-";
+    const comentarios = f["Comentarios"] ?? "-";
+    const empresaNome = f["Empresa DD_Nome"] ?? "Ver empresa";
+    const empresaId = f["Empresa DD"] ?? null;
+    const evidencia = f["Evidência"]?.[0]?.url ?? null;
+
+    let cor = "#ccc";
+    if (risco === "Alto") cor = "#ef4444";
+    else if (risco === "Médio") cor = "#facc15";
+    else if (risco === "Baixo") cor = "#22c55e";
+
+    const div = document.createElement("div");
+    div.className = "analise-item";
     div.innerHTML = `
-      <strong>${f["Tipo de Diligencia"]}</strong> - ${f["item analisado"]}<br>
-      Empresa: <a href="empresa.html?id=${f["Empresa DD"]}">${f["Empresa DD_Nome"] || 'Ver empresa'}</a><br>
-      Status: <b>${f["Status da análise"]}</b> | Risco: <b>${f["Classificação de risco"]}</b><br>
-      <em>${f["Comentarios"] ?? ''}</em><br>
-      ${f["Evidência"] ? `<a href="${f["Evidência"][0].url}" target="_blank">Ver Evidência</a>` : ''}
+      <p><strong>Tipo de diligência:</strong> ${tipo}</p>
+      <p><strong>Item analisado:</strong> ${item}</p>
+      <p><strong>Empresa:</strong> ${empresaId 
+        ? `<a href="empresa.html?id=${empresaId}" style="color:#7c3aed; text-decoration:underline;">${empresaNome}</a>` 
+        : empresaNome}</p>
+      <p><strong>Status:</strong> ${status} 
+        <span class="badge-due" style="background-color:${cor}33; color:${cor}; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.8rem;">
+          Risco: ${risco}
+        </span>
+      </p>
+      ${comentarios ? `<p><strong>Comentários:</strong> <em>${comentarios}</em></p>` : ''}
+      ${evidencia ? `<a href="${evidencia}" target="_blank" class="btn-white-outline">Ver Evidência</a>` : ''}
+      <hr style="margin-top:1rem;">
     `;
     lista.appendChild(div);
   });
 }
+
 
 function atualizarLista(dados) {
   const filtrados = aplicarFiltros(dados);
