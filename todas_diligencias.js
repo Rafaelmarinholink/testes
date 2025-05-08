@@ -43,7 +43,7 @@ function renderizarLista(dados) {
     const status = f["Status da análise"] ?? "-";
     const risco = f["Classificação de risco"] ?? "-";
     const comentarios = f["Comentarios"] ?? "-";
-    const empresaNome = f["Empresa DD"] ?? "Empresa desconhecida";
+    const empresaNome = Array.isArray(f["Empresa DD"]) ? f["Empresa DD"][0] : (f["Empresa DD"] ?? "Empresa desconhecida");
     const empresaId = f["EmpresaID"] ?? null;
     const evidencia = f["Evidência"]?.[0]?.url ?? null;
 
@@ -72,6 +72,7 @@ function renderizarLista(dados) {
     lista.appendChild(div);
   });
 }
+
 
 
 function atualizarLista(dados) {
