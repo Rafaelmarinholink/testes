@@ -43,7 +43,7 @@ function renderizarLista(dados) {
     const status = f["Status da análise"] ?? "-";
     const risco = f["Classificação de risco"] ?? "-";
     const comentarios = f["Comentarios"] ?? "-";
-    const empresaNome = f["Empresa DD_Nome"] ?? "Empresa DD";
+    const empresaNome = f["Empresa DD_Nome"] ?? "Ver Empresa";
     const empresaId = f["Empresa DD"] ?? null;
     const evidencia = f["Evidência"]?.[0]?.url ?? null;
 
@@ -58,8 +58,8 @@ function renderizarLista(dados) {
       <p><strong>Tipo de diligência:</strong> ${tipo}</p>
       <p><strong>Item analisado:</strong> ${item}</p>
      <p><strong>Empresa:</strong> ${empresaId 
-  ? `<a href="empresa.html?id=${empresaId}" class="btn-white-outline">${empresaNome}</a>` 
-  : empresaNome}</p>
+  ? `<a href="empresa.html?id=${empresaId}" class="btn-white-outline">${empresaId}</a>` 
+  : empresaId}</p>
 
       <p><strong>Status:</strong> ${status} 
         <span class="badge-due" style="background-color:${cor}33; color:${cor}; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.8rem;">
