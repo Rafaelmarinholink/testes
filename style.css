@@ -218,3 +218,20 @@ textarea.error {
   background-color: #2563eb;
 }
 
+.btn-white-outline {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  border: 2px solid #fff;
+  color: #fff;
+  background-color: transparent;
+  border-radius: 6px;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.btn-white-outline:hover {
+  background-color: #fff;
+  color: #0b1f3a;
+}
