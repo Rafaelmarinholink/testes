@@ -166,8 +166,8 @@
       return "A empresa " + frases.join(", ") + ".";
     }
 
- async function carregarAnalisesDD(idEmpresa) {
-  const url = `https://api.airtable.com/v0/appaq7tR3vt9vrN6y/Due%20Diligence?filterByFormula=FIND("${idEmpresa}", ARRAYJOIN({EmpresaID}))`;
+async function carregarAnalisesDD(idEmpresa) {
+  const url = `https://api.airtable.com/v0/appaq7tR3vt9vrN6y/Due%20Diligence?filterByFormula=ARRAYJOIN({EmpresaID}) = "${idEmpresa}"`;
   const res = await fetch(url, {
     headers: {
       Authorization: "Bearer patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6"
@@ -182,12 +182,9 @@
   }
 
   data.records.forEach(r => {
-    const tipo = r.fields["Tipo de Diligencia"] ?? "-";
-    const item = r.fields["item analisado"] ?? "-";
     const status = r.fields["Status da análise"] ?? "-";
     const risco = r.fields["Classificação de risco"] ?? "-";
-    const comentarios = r.fields["Comentarios"] ?? "";
-    const evidencia = r.fields["Evidência"]?.[0]?.url;
+    const evidencia = r.fields["Evidência"]; // campo tipo URL simples
 
     let cor = "#ccc";
     if (risco === "Alto") cor = "#ef4444";
@@ -197,19 +194,20 @@
     const div = document.createElement('div');
     div.className = 'dd-item';
     div.innerHTML = `
-      <p><strong>Tipo de diligência:</strong> ${tipo}</p>
-      <p><strong>Item analisado:</strong> ${item}</p>
-      <p><strong>Status:</strong> ${status} &nbsp;
-        <span class="badge-due" style="background-color:${cor}33; color:${cor}; padding: 0.3rem 0.7rem; border-radius: 999px; font-size: 0.8rem;">
+      <p><strong>Tipo de diligência:</strong> ${r.fields["Tipo de Diligencia"] ?? '-'}</p>
+      <p><strong>Item analisado:</strong> ${r.fields["item analisado"] ?? '-'}</p>
+      <p><strong>Status:</strong> ${status}
+        <span class="badge-due" style="background-color:${cor}33; color:${cor}; padding: 0.2rem 0.5rem; border-radius: 999px; font-size: 0.8rem;">
           Risco: ${risco}
         </span>
       </p>
-      ${comentarios ? `<p><strong>Comentários:</strong> <em>${comentarios}</em></p>` : ''}
-      ${r.fields["Evidência"] ? `<a href="${r.fields["Evidência"][0].url}" target="_blank" class="btn-mini">Ver Evidência</a>` : ''}
+      ${r.fields["Comentarios"] ? `<p><strong>Comentários:</strong> <em>${r.fields["Comentarios"]}</em></p>` : ''}
+      ${evidencia ? `<a href="${evidencia}" target="_blank" class="btn-white-outline">Ver Evidência</a>` : ''}
     `;
     container.appendChild(div);
   });
 }
+
 
     buscarEmpresas().then(empresas => {
       const empresa = empresas.find(e => e.id === idEmpresa);
