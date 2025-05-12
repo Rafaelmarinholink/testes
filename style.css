@@ -235,3 +235,52 @@ textarea.error {
   background-color: #fff;
   color: #0b1f3a;
 }
+.menu-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1a365d;
+  padding: 0.8rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.menu-icon {
+  font-size: 1.6rem;
+  color: white;
+  cursor: pointer;
+}
+
+.menu-lateral {
+  position: fixed;
+  top: 0;
+  right: -250px;
+  width: 250px;
+  height: 100%;
+  background-color: #102c4c;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  transition: right 0.3s ease-in-out;
+  z-index: 999;
+}
+
+.menu-lateral button {
+  align-self: flex-end;
+  font-size: 1.5rem;
+  background: none;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.menu-lateral a {
+  color: white;
+  text-decoration: none;
+  margin: 1rem 0;
+  font-weight: bold;
+}
+
+.menu-lateral a:hover {
+  color: #3b82f6;
+}
