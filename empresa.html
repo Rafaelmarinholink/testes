@@ -6,119 +6,18 @@
   <title>Análise da Empresa | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    .grid-indicadores {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-    .indicador {
-      background-color: #1e3a5f;
-      padding: 1rem;
-      border-radius: 6px;
-      color: #fff;
-    }
-    .rating-gauge {
-      max-width: 320px;
-      margin: 2rem auto;
-    }
-    .diagnostico, .notas, .dd-analises {
-      background-color: #1a365d;
-      color: #fff;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-top: 1.5rem;
-    }
-    .dd-item {
-      border-bottom: 1px solid #2c5282;
-      margin-bottom: 1rem;
-      padding-bottom: 1rem;
-    }
-    .btn {
-      margin-right: 0.5rem;
-    }
-    #nomeEmpresa {
-      font-size: 1.6rem;
-      text-align: center;
-      margin-bottom: 0.5rem;
-    }
-    .status-badge {
-      display: inline-block;
-      padding: 0.3rem 0.75rem;
-      border-radius: 999px;
-      font-weight: bold;
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
-    }
-    .status-elegivel {
-      background-color: rgba(34, 197, 94, 0.2);
-      color: #22c55e;
-    }
-    .status-analise {
-      background-color: rgba(251, 191, 36, 0.2);
-      color: #facc15;
-    }
-    .status-negado {
-      background-color: rgba(239, 68, 68, 0.2);
-      color: #ef4444;
-    }
-
-    .menu-toggle {
-      position: fixed;
-      top: 1rem;
-      left: 1rem;
-      z-index: 999;
-      cursor: pointer;
-    }
-    .menu-toggle div {
-      width: 25px;
-      height: 3px;
-      background-color: white;
-      margin: 5px;
-      transition: all 0.3s;
-    }
-    .side-menu {
-      position: fixed;
-      top: 0;
-      left: -300px;
-      width: 250px;
-      height: 100%;
-      background-color: #0b1f3a;
-      padding: 2rem 1rem;
-      transition: left 0.3s;
-      z-index: 998;
-    }
-    .side-menu.show {
-      left: 0;
-    }
-    .side-menu a {
-      display: block;
-      color: white;
-      margin: 1rem 0;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .close-menu {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      font-size: 1.5rem;
-      color: white;
-      cursor: pointer;
-    }
-  </style>
 </head>
 <body>
-  <div class="menu-toggle" onclick="toggleMenu()">
-    <div></div><div></div><div></div>
-  </div>
-  <div class="side-menu" id="menuLateral">
-    <span class="close-menu" onclick="toggleMenu()">×</span>
-    <a href="index.html">Início</a>
-    <a href="empresas.html">Empresas</a>
-    <a href="due_diligence.html">Nova Due Diligence</a>
-    <a href="todas_diligencias.html">Todas as Diligências</a>
+  <!-- MENU HAMBÚRGUER -->
+  <div class="menu-hamburguer">
+    <div class="menu-toggle" onclick="abrirMenu()">☰</div>
+    <div class="menu-lateral" id="menuLateral">
+      <div class="menu-fechar" onclick="fecharMenu()">×</div>
+      <a href="index.html">Início</a>
+      <a href="empresas.html">Todas as Empresas</a>
+      <a href="due_diligence.html">Cadastrar Due Diligence</a>
+      <a href="todas_diligencias.html">Ver Todas as Due Diligências</a>
+    </div>
   </div>
 
   <div class="container">
@@ -132,28 +31,41 @@
       <div id="statusBadge" style="text-align:center;"></div>
 
       <div class="grid-indicadores" id="indicadores"></div>
-      <div class="rating-gauge"><canvas id="gaugeChart"></canvas></div>
+
+      <div class="rating-gauge">
+        <canvas id="gaugeChart"></canvas>
+      </div>
 
       <div class="diagnostico" id="diagnostico"></div>
 
-      <div class="notas"><h3>Notas</h3><p id="notas"></p></div>
+      <div class="notas">
+        <h3>Notas</h3>
+        <p id="notas"></p>
+      </div>
 
-      <div class="dd-analises"><h3>Due Diligence</h3><div id="dd-analises"></div></div>
+      <div class="dd-analises">
+        <h3>Due Diligence</h3>
+        <div id="dd-analises"></div>
+      </div>
 
       <div style="margin-top:2rem;">
-        <button id="btnAddDD" class="btn">Adicionar Due Diligence</button><br><br>
+        <button id="btnAddDD" class="btn">Adicionar Due Diligence</button>
+        <br><br>
         <button class="btn" onclick="window.location.href='index.html'">← Voltar à Lista</button>
         <button class="btn" onclick="comparar()">Comparar com outra empresa</button>
       </div>
     </div>
   </div>
 
+  <script type="module" src="script.js"></script>
   <script>
-    function toggleMenu() {
-      document.getElementById('menuLateral').classList.toggle('show');
+    function abrirMenu() {
+      document.getElementById('menuLateral').style.width = '250px';
+    }
+
+    function fecharMenu() {
+      document.getElementById('menuLateral').style.width = '0';
     }
   </script>
-
-  <script type="module" src="empresa-script.js"></script>
 </body>
 </html>
