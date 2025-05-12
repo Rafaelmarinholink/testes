@@ -57,10 +57,24 @@
 <body>
   <div class="container">
     <div class="card">
-      <div class="logo-wrapper" onclick="window.location.href='index.html'">
-        <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
-        <h1 class="logo-text">SABER<br>CAPITAL</h1>
-      </div>
+      <!-- Menu Topo -->
+<div class="menu-topo">
+  <div class="logo-wrapper" onclick="window.location.href='index.html'">
+    <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
+    <h1 class="logo-text">SABER<br>CAPITAL</h1>
+  </div>
+  <div class="menu-icon" onclick="abrirMenu()">☰</div>
+</div>
+
+<!-- Menu Lateral -->
+<div id="menu-lateral" class="menu-lateral">
+  <button onclick="fecharMenu()">×</button>
+  <a href="index.html">Início</a>
+  <a href="empresas.html">Ver Empresas</a>
+  <a href="due_diligence.html">Cadastrar Due Diligence</a>
+  <a href="todas_diligencias.html">Ver Diligências</a>
+  <a href="relatorio.html">Relatório de Inteligência</a>
+</div>
 
       <p class="subtitle">Empresas do Setor Educacional</p>
 
