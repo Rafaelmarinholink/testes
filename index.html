@@ -8,6 +8,64 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0b1f3a;
+      color: #f4f4f4;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 240px;
+      background-color: #1e3a5f;
+      height: 100vh;
+      padding-top: 2rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      transition: transform 0.3s ease;
+      transform: translateX(-100%);
+    }
+
+    .sidebar.active {
+      transform: translateX(0);
+    }
+
+    .sidebar a {
+      padding: 12px 20px;
+      display: block;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .sidebar a:hover {
+      background-color: #2563eb;
+    }
+
+    .menu-toggle {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 24px;
+      color: white;
+      cursor: pointer;
+      z-index: 1001;
+    }
+
+    .container {
+      margin-left: 0;
+      padding: 2rem;
+      margin-top: 3rem;
+      width: 100%;
+      max-width: 700px;
+    }
+
+    .sidebar-open .container {
+      margin-left: 240px;
+    }
+
     .popup-erro {
       position: fixed;
       top: 50%;
@@ -52,41 +110,11 @@
       height: 65px;
       width: auto;
     }
-    /* Menu Hamburguer */
-    .menu-toggle {
-      position: absolute;
-      left: 20px;
-      top: 20px;
-      font-size: 1.5rem;
-      cursor: pointer;
-      z-index: 999;
-    }
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 250px;
-      height: 100%;
-      background-color: #1a365d;
-      padding: 2rem 1rem;
-      transform: translateX(-100%);
-      transition: transform 0.3s ease;
-    }
-    .sidebar.show {
-      transform: translateX(0);
-    }
-    .sidebar a {
-      display: block;
-      color: white;
-      text-decoration: none;
-      margin-bottom: 1rem;
-      font-weight: bold;
-    }
   </style>
 </head>
 <body>
-  <div class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('show')">☰</div>
-  <div id="sidebar" class="sidebar">
+  <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+  <div class="sidebar" id="sidebar">
     <a href="index.html">Início</a>
     <a href="empresas.html">Ver Empresas</a>
     <a href="due_diligence.html">Cadastrar Due Diligence</a>
@@ -143,6 +171,12 @@
     </div>
   </div>
 
+  <script>
+    function toggleMenu() {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.body.classList.toggle('sidebar-open');
+    }
+  </script>
   <script type="module" src="script.js"></script>
 </body>
 </html>
