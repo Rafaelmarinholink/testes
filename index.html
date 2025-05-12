@@ -7,20 +7,86 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <style>
+    .popup-erro {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #ef4444;
+      color: white;
+      padding: 1.5rem 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 1000;
+    }
+    .popup-erro button {
+      background-color: transparent;
+      color: white;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      position: absolute;
+      top: 0.5rem;
+      right: 0.75rem;
+    }
+    input.error, textarea.error, select.error {
+      border: 2px solid #ef4444 !important;
+    }
+    .logo-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 1rem;
+      cursor: pointer;
+    }
+    .logo-text {
+      font-family: 'Archivo Black', sans-serif;
+      color: white;
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+    }
+    .logo-img {
+      height: 65px;
+      width: auto;
+    }
+    /* Menu Hamburguer */
+    .menu-toggle {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 999;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 250px;
+      height: 100%;
+      background-color: #1a365d;
+      padding: 2rem 1rem;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+    .sidebar.show {
+      transform: translateX(0);
+    }
+    .sidebar a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      margin-bottom: 1rem;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-  <!-- Menu Topo -->
-  <div class="menu-topo">
-    <div class="menu-icon" onclick="abrirMenu()">☰</div>
-    <div class="logo-wrapper" onclick="window.location.href='index.html'">
-      <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
-      <h1 class="logo-text">SABER<br>CAPITAL</h1>
-    </div>
-  </div>
-
-  <!-- Menu Lateral -->
-  <div id="menu-lateral" class="menu-lateral">
-    <button onclick="fecharMenu()">×</button>
+  <div class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('show')">☰</div>
+  <div id="sidebar" class="sidebar">
     <a href="index.html">Início</a>
     <a href="empresas.html">Ver Empresas</a>
     <a href="due_diligence.html">Cadastrar Due Diligence</a>
@@ -30,6 +96,11 @@
 
   <div class="container">
     <div class="card">
+      <div class="logo-wrapper" onclick="window.location.href='index.html'">
+        <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
+        <h1 class="logo-text">SABER<br>CAPITAL</h1>
+      </div>
+
       <p class="subtitle">Empresas do Setor Educacional</p>
 
       <div id="popupErro" class="popup-erro">
@@ -39,7 +110,24 @@
 
       <h2>Cadastrar Nova Empresa</h2>
       <form id="empresa-form">
-        <!-- campos omitidos para brevidade -->
+        <div class="form-group"><label>Nome da Empresa</label><input type="text" id="nome" required /></div>
+        <div class="form-group"><label>Ticker</label><input type="text" id="ticker" required /></div>
+        <div class="form-group"><label>Receita Anual (milhões de USD)</label><input type="number" id="receita" required step="any" /></div>
+        <div class="form-group"><label>EBITDA (milhões de USD)</label><input type="number" id="ebitda" required step="any" /></div>
+        <div class="form-group"><label>Valuation (milhões de USD)</label><input type="number" id="valuation" required step="any" /></div>
+        <div class="form-group"><label>Crescimento YoY (%)</label><input type="number" id="crescimento_yoy" required step="any" /></div>
+        <div class="form-group"><label>Margem Bruta (%)</label><input type="number" id="margem_bruta" required step="any" /></div>
+        <div class="form-group"><label>S&M (%)</label><input type="number" id="sm" required step="any" /></div>
+        <div class="form-group"><label>SG&A (%)</label><input type="number" id="sga" required step="any" /></div>
+        <div class="form-group">
+          <label>Consistência Crescimento YoY</label>
+          <select id="consistencia_crescimento" required>
+            <option value="">Selecione</option>
+            <option value="Crescimento positivo">Crescimento positivo</option>
+            <option value="Declínio acentuado">Declínio acentuado</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Notas (opcional)</label><textarea id="notas"></textarea></div>
         <button type="submit" class="btn">Cadastrar Empresa</button>
       </form>
     </div>
@@ -56,13 +144,5 @@
   </div>
 
   <script type="module" src="script.js"></script>
-  <script>
-    function abrirMenu() {
-      document.getElementById('menu-lateral').style.left = '0';
-    }
-    function fecharMenu() {
-      document.getElementById('menu-lateral').style.left = '-250px';
-    }
-  </script>
 </body>
 </html>
