@@ -63,58 +63,52 @@
       background-color: rgba(239, 68, 68, 0.2);
       color: #ef4444;
     }
+    /* Menu hambúrguer */
     .hamburger {
       position: absolute;
       top: 1rem;
       left: 1rem;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: white;
       z-index: 1001;
+      cursor: pointer;
     }
-    .sidebar {
+    .menu {
       position: fixed;
       top: 0;
-      left: 0;
+      left: -250px;
+      width: 220px;
       height: 100%;
-      width: 250px;
-      background-color: #1e3a5f;
-      padding: 2rem 1rem;
-      transform: translateX(-100%);
-      transition: transform 0.3s ease;
+      background-color: #1a365d;
+      color: white;
+      padding: 1rem;
+      transition: left 0.3s;
       z-index: 1000;
     }
-    .sidebar.active {
-      transform: translateX(0);
+    .menu.open {
+      left: 0;
     }
-    .sidebar a {
-      display: block;
+    .menu a {
       color: white;
       text-decoration: none;
-      font-weight: bold;
+      display: block;
       margin: 1rem 0;
     }
-    .close-btn {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      font-size: 1.5rem;
-      background: none;
-      border: none;
-      color: white;
+    .menu .close-btn {
+      text-align: right;
       cursor: pointer;
+      font-size: 1.2rem;
     }
   </style>
 </head>
 <body>
-  <div class="hamburger" onclick="toggleMenu()">☰</div>
-  <div id="sidebar" class="sidebar">
-    <button class="close-btn" onclick="toggleMenu()">×</button>
+  <div class="hamburger" onclick="document.querySelector('.menu').classList.add('open')">
+    <img src="menu-icon.png" alt="Menu" width="30" />
+  </div>
+  <div class="menu">
+    <div class="close-btn" onclick="document.querySelector('.menu').classList.remove('open')">&times;</div>
     <a href="index.html">Início</a>
-    <a href="empresas.html">Ver Empresas</a>
-    <a href="due_diligence.html">Cadastrar Due Diligence</a>
-    <a href="todas_diligencias.html">Ver Diligências</a>
-    <a href="relatorio.html">Relatório de Inteligência</a>
+    <a href="empresas.html">Todas Empresas</a>
+    <a href="due_diligence.html">Nova Due Diligence</a>
+    <a href="todas_diligencias.html">Todas Diligências</a>
   </div>
 
   <div class="container">
@@ -131,22 +125,18 @@
       <div class="rating-gauge"><canvas id="gaugeChart"></canvas></div>
       <div class="diagnostico" id="diagnostico"></div>
       <div class="notas"><h3>Notas</h3><p id="notas"></p></div>
-      <div class="dd-analises"><h3>Due Diligence</h3><div id="dd-analises"></div></div>
-
+      <div class="dd-analises">
+        <h3>Due Diligence</h3>
+        <div id="dd-analises"></div>
+      </div>
       <div style="margin-top:2rem;">
         <button id="btnAddDD" class="btn">Adicionar Due Diligence</button>
         <br><br>
-        <button class="btn" onclick="window.location.href='index.html'">← Voltar à Lista</button>
+        <button class="btn" onclick="window.location.href='index.html'">&larr; Voltar à Lista</button>
         <button class="btn" onclick="comparar()">Comparar com outra empresa</button>
       </div>
     </div>
   </div>
-
-  <script>
-    function toggleMenu() {
-      document.getElementById('sidebar').classList.toggle('active');
-    }
-  </script>
   <script type="module" src="empresa-script.js"></script>
 </body>
 </html>
