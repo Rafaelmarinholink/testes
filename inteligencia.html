@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Relatório de Inteligência | Saber Capital</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .empresa-card {
+      background-color: #1a365d;
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+      border-radius: 8px;
+    }
+
+    .empresa-card h3 {
+      margin-top: 0;
+      color: #fff;
+    }
+
+    .empresa-card p {
+      margin: 0.3rem 0;
+      color: #cbd5e1;
+    }
+
+    .prompt-box {
+      background-color: #0f172a;
+      color: #e2e8f0;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-top: 1rem;
+      white-space: pre-wrap;
+      font-size: 0.95rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: white;
+      border: 1px solid white;
+      padding: 0.4rem 1rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      margin-right: 0.5rem;
+      cursor: pointer;
+    }
+
+    .btn-outline:hover {
+      background-color: #1e40af;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="logo-wrapper" onclick="window.location.href='index.html'">
+        <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img"/>
+        <h1 class="logo-text">SABER<br>CAPITAL</h1>
+      </div>
+
+      <h2 class="subtitle">Relatório de Inteligência</h2>
+      <p style="text-align:center; margin-bottom: 2rem;">Resumo consolidado de cada empresa e geração de prompts automáticos.</p>
+
+      <div id="painel-inteligencia"></div>
+    </div>
+  </div>
+
+  <script type="module" src="inteligencia.js"></script>
+</body>
+</html>
