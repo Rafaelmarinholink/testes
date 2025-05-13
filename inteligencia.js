@@ -14,8 +14,7 @@ async function carregarInteligencia() {
     : empresas;
 
   empresasFiltradas.forEach(emp => {
-    const div = document.createElement('div');
-    div.className = 'empresa-inteligencia';
+  if (!emp.fields) return; // pula se não tiver dados
 
     const ddRelacionadas = diligencias.filter(dd => dd.fields.EmpresaID === emp.id);
     const rating = emp.fields['Rating'] || '-';
