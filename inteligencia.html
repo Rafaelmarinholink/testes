@@ -6,36 +6,17 @@
   <title>Relatório de Inteligência | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    .filtros {
-      margin-bottom: 1.5rem;
-    }
-    .filtros label {
-      margin-right: 0.5rem;
-      font-weight: bold;
-    }
-    .filtros select {
-      margin-right: 1rem;
-      padding: 0.4rem;
-      background-color: #1e3a5f;
-      color: white;
-      border-radius: 6px;
-      border: none;
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 2rem;
     }
     .empresa-inteligencia {
       background-color: #1a365d;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
       padding: 1rem;
       border-radius: 8px;
-    }
-    .btn-exportar {
-      margin-top: 1rem;
-      background-color: #3b82f6;
       color: white;
-      border: none;
-      padding: 0.6rem 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
     }
     .prompt-box {
       background-color: #0f172a;
@@ -46,32 +27,44 @@
       font-family: monospace;
       margin-top: 1rem;
     }
+    .checkboxes {
+      margin: 1rem 0;
+    }
+    .checkboxes label {
+      margin-right: 1rem;
+    }
+    .btn-exportar {
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="card">
-      <div class="logo-wrapper" onclick="window.location.href='index.html'">
-        <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
-        <h1 class="logo-text">SABER<br>CAPITAL</h1>
-      </div>
-      <h2 class="subtitle">Relatório de Inteligência Integrada</h2>
+    <h1 style="color:white;">Relatório de Inteligência</h1>
 
-      <div class="filtros">
-        <label>Formato:</label>
-        <select id="formatoExportacao">
-          <option value="csv">CSV</option>
-          <option value="txt">TXT</option>
-        </select>
-        <button class="btn-exportar" onclick="exportarDados()">Exportar Dados</button>
-      </div>
-
-      <div id="lista-inteligencia"></div>
-
-      <h3>Prompt Gerado:</h3>
-      <div id="promptGerado" class="prompt-box"></div>
+    <div class="checkboxes">
+      <label><input type="checkbox" value="Nome da empresa" checked /> Nome</label>
+      <label><input type="checkbox" value="Ticker" checked /> Ticker</label>
+      <label><input type="checkbox" value="Rating" checked /> Rating</label>
+      <label><input type="checkbox" value="Crescimento YoY" /> Crescimento</label>
+      <label><input type="checkbox" value="Margem EBITDA" /> Margem EBITDA</label>
+      <label><input type="checkbox" value="Notas" /> Notas</label>
     </div>
+
+    <button class="btn-exportar" onclick="exportarDados()">Exportar CSV</button>
+
+    <div id="lista-inteligencia"></div>
+
+    <h3 style="color:white;">Prompt Gerado:</h3>
+    <div id="promptGerado" class="prompt-box"></div>
   </div>
+
   <script type="module" src="inteligencia.js"></script>
 </body>
 </html>
