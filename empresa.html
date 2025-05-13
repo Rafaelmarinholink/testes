@@ -108,7 +108,7 @@
     document.querySelector('#btnAddDD').onclick = () => {
   window.location.href = `due_diligence.html?id=${idEmpresa}`;
 };
-
+  <button class="btn" id="btnVerInteligencia">Ver Inteligência</button>
     import { buscarEmpresas } from './airtable.js';
 
     const formatarMilhoes = v => v ? `R$ ${parseFloat(v).toFixed(1)} Milhões` : '-';
