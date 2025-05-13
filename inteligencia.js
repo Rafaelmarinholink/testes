@@ -9,7 +9,14 @@ async function carregarInteligencia() {
   const empresas = await buscarEmpresas();
   const diligencias = await buscarDiligencias();
 
-  empresas.forEach(emp => {
+ const urlParams = new URLSearchParams(window.location.search);
+const idEmpresa = urlParams.get('id');
+const empresasFiltradas = idEmpresa
+  ? empresas.filter(emp => emp.id === idEmpresa)
+  : empresas;
+
+empresasFiltradas.forEach(emp => {
+
     if (!emp.nome) return;
 
     const ddRelacionadas = diligencias.filter(dd => dd.fields?.EmpresaID === emp.id);
