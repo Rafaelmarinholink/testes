@@ -55,9 +55,8 @@ function gerarPrompt(emp, ddList, status) {
   const nome = emp.nome;
   const ticker = emp.ticker;
   const rating = emp.rating || 'Sem rating';
-  const crescimento = emp.crescimento_yoy || '-';
-  const margem = emp.margem_ebitda || '-';
-
+  const crescimento = emp.crescimento_yoy ? (parseFloat(emp.crescimento_yoy) * 100).toFixed(1) + '%' : '-';
+  const margem = emp.margem_ebitda ? (parseFloat(emp.margem_ebitda) * 100).toFixed(1) + '%' : '-';
   const riscos = ddList.map(d => `${d.fields['Tipo de Diligencia']} (${d.fields['Classificação de risco']})`).join(', ') || 'nenhuma diligência registrada';
 
   return `A empresa ${nome} (${ticker}) possui rating ${rating}, margem EBITDA de ${margem}, e crescimento de ${crescimento}.
