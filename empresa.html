@@ -6,48 +6,96 @@
   <title>Análise da Empresa | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .grid-indicadores {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .indicador {
+      background-color: #1e3a5f;
+      padding: 1rem;
+      border-radius: 6px;
+      color: #fff;
+    }
+    .rating-gauge {
+      max-width: 320px;
+      margin: 2rem auto;
+    }
+    .diagnostico, .notas, .dd-analises {
+      background-color: #1a365d;
+      color: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1.5rem;
+    }
+    .dd-item {
+      border-bottom: 1px solid #2c5282;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+    }
+    .btn {
+      margin-right: 0.5rem;
+    }
+    #nomeEmpresa {
+      font-size: 1.6rem;
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    .status-elegivel {
+      background-color: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+    }
+    .status-analise {
+      background-color: rgba(251, 191, 36, 0.2);
+      color: #facc15;
+    }
+    .status-negado {
+      background-color: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+  </style>
 </head>
 <body>
-  <!-- MENU HAMBÚRGUER -->
-  <div class="menu-hamburguer">
-    <div class="menu-toggle" onclick="abrirMenu()">☰</div>
-    <div class="menu-lateral" id="menuLateral">
-      <div class="menu-fechar" onclick="fecharMenu()">×</div>
-      <a href="index.html">Início</a>
-      <a href="empresas.html">Todas as Empresas</a>
-      <a href="due_diligence.html">Cadastrar Due Diligence</a>
-      <a href="todas_diligencias.html">Ver Todas as Due Diligências</a>
-    </div>
+  <img src="menu-icon.png" alt="Menu" id="menuBtn" style="cursor:pointer; width:24px; margin: 1rem;" />
+  <div id="sidebar" class="sidebar">
+    <button id="closeSidebar" class="close-btn">×</button>
+    <a href="index.html">Início</a>
+    <a href="empresas.html">Ver Empresas</a>
+    <a href="due_diligence.html">Cadastrar Due Diligence</a>
+    <a href="todas_diligencias.html">Ver Diligências</a>
+    <a href="relatorio.html">Relatório de Inteligência</a>
   </div>
-
   <div class="container">
     <div class="card">
       <div class="logo-wrapper" onclick="window.location.href='index.html'" style="cursor:pointer;">
         <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
         <h1 class="logo-text">SABER<br>CAPITAL</h1>
       </div>
-
       <h2 class="subtitle" id="nomeEmpresa">Análise Financeira</h2>
       <div id="statusBadge" style="text-align:center;"></div>
-
       <div class="grid-indicadores" id="indicadores"></div>
-
       <div class="rating-gauge">
         <canvas id="gaugeChart"></canvas>
       </div>
-
       <div class="diagnostico" id="diagnostico"></div>
-
       <div class="notas">
         <h3>Notas</h3>
         <p id="notas"></p>
       </div>
-
       <div class="dd-analises">
         <h3>Due Diligence</h3>
         <div id="dd-analises"></div>
       </div>
-
       <div style="margin-top:2rem;">
         <button id="btnAddDD" class="btn">Adicionar Due Diligence</button>
         <br><br>
@@ -56,16 +104,6 @@
       </div>
     </div>
   </div>
-
   <script type="module" src="script.js"></script>
-  <script>
-    function abrirMenu() {
-      document.getElementById('menuLateral').style.width = '250px';
-    }
-
-    function fecharMenu() {
-      document.getElementById('menuLateral').style.width = '0';
-    }
-  </script>
 </body>
 </html>
