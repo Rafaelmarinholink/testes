@@ -2,50 +2,49 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Relatório de Inteligência | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    .empresa-card {
-      background-color: #1a365d;
+    .filtros {
       margin-bottom: 1.5rem;
-      padding: 1.5rem;
+    }
+    .filtros label {
+      margin-right: 0.5rem;
+      font-weight: bold;
+    }
+    .filtros select {
+      margin-right: 1rem;
+      padding: 0.4rem;
+      background-color: #1e3a5f;
+      color: white;
+      border-radius: 6px;
+      border: none;
+    }
+    .empresa-inteligencia {
+      background-color: #1a365d;
+      margin-bottom: 1rem;
+      padding: 1rem;
       border-radius: 8px;
     }
-
-    .empresa-card h3 {
-      margin-top: 0;
-      color: #fff;
+    .btn-exportar {
+      margin-top: 1rem;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
     }
-
-    .empresa-card p {
-      margin: 0.3rem 0;
-      color: #cbd5e1;
-    }
-
     .prompt-box {
       background-color: #0f172a;
-      color: #e2e8f0;
+      color: #cbd5e1;
       padding: 1rem;
-      border-radius: 6px;
-      margin-top: 1rem;
+      border-radius: 8px;
       white-space: pre-wrap;
-      font-size: 0.95rem;
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: white;
-      border: 1px solid white;
-      padding: 0.4rem 1rem;
-      border-radius: 4px;
-      font-size: 0.9rem;
-      margin-right: 0.5rem;
-      cursor: pointer;
-    }
-
-    .btn-outline:hover {
-      background-color: #1e40af;
+      font-family: monospace;
+      margin-top: 1rem;
     }
   </style>
 </head>
@@ -53,17 +52,26 @@
   <div class="container">
     <div class="card">
       <div class="logo-wrapper" onclick="window.location.href='index.html'">
-        <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img"/>
+        <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
         <h1 class="logo-text">SABER<br>CAPITAL</h1>
       </div>
+      <h2 class="subtitle">Relatório de Inteligência Integrada</h2>
 
-      <h2 class="subtitle">Relatório de Inteligência</h2>
-      <p style="text-align:center; margin-bottom: 2rem;">Resumo consolidado de cada empresa e geração de prompts automáticos.</p>
+      <div class="filtros">
+        <label>Formato:</label>
+        <select id="formatoExportacao">
+          <option value="csv">CSV</option>
+          <option value="txt">TXT</option>
+        </select>
+        <button class="btn-exportar" onclick="exportarDados()">Exportar Dados</button>
+      </div>
 
-      <div id="painel-inteligencia"></div>
+      <div id="lista-inteligencia"></div>
+
+      <h3>Prompt Gerado:</h3>
+      <div id="promptGerado" class="prompt-box"></div>
     </div>
   </div>
-
   <script type="module" src="inteligencia.js"></script>
 </body>
 </html>
