@@ -39,7 +39,8 @@ async function buscarEmpresas() {
 
 export { buscarEmpresas };
 export async function buscarDiligencias() {
-  const response = await fetch(`${baseUrl}/Due%20Diligence`, {
+  const ddTableURL = `https://api.airtable.com/v0/${baseId}/Due%20Diligence`;
+  const response = await fetch(ddTableURL, {
     headers: {
       Authorization: `Bearer ${apiKey}`
     }
