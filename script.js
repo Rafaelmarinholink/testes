@@ -205,3 +205,14 @@ async function carregarTopEmpresas(empresas) {
 }
 
 buscarEmpresas().then(empresas => carregarTopEmpresas(empresas));
+export async function buscarDiligencias() {
+  const response = await fetch(`${baseUrl}/Due%20Diligence`, {
+    headers: {
+      Authorization: `Bearer ${apiKey}`
+    }
+  });
+
+  const data = await response.json();
+  return data.records;
+}
+
