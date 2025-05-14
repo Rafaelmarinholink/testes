@@ -69,15 +69,17 @@ function exportarDados() {
   const camposSelecionados = Array.from(checkboxes).map(cb => cb.value);
 
   const linhas = [];
-  linhas.push(camposSelecionados.join(',')); // Cabeçalho
+  linhas.push(camposSelecionados.join(';')); // cabeçalho com ponto e vírgula
 
   dadosParaExportar.forEach(dado => {
-    const linha = camposSelecionados.map(campo => dado[campo] || '').join(',');
+    const linha = camposSelecionados.map(campo => dado[campo] || '').join(';');
     linhas.push(linha);
   });
 
-  const csvContent = linhas.join('\\n');
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const csvContent = linhas.join('\n');
+
+  // UTF-8 com BOM para Excel em português abrir certo
+  const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
 
   const a = document.createElement('a');
@@ -85,6 +87,5 @@ function exportarDados() {
   a.download = 'relatorio_inteligencia.csv';
   a.click();
 }
-
 carregarInteligencia();
 window.exportarDados = exportarDados;
