@@ -104,6 +104,5 @@ function baixarArquivo(blob, nome) {
 
 
 carregarInteligencia();
-window.exportarDados = exportarDados;
 window.exportarCSV = exportarCSV;
 window.exportarTXT = exportarTXT;
