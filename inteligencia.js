@@ -67,25 +67,40 @@ Recomenda-se reavaliação com base nos indicadores e riscos atuais.`;
 function exportarDados() {
   const checkboxes = document.querySelectorAll('.checkboxes input[type="checkbox"]:checked');
   const camposSelecionados = Array.from(checkboxes).map(cb => cb.value);
+  const formato = document.querySelector('input[name="formato"]:checked').value;
 
-  const linhas = [];
-  linhas.push(camposSelecionados.join(';')); // cabeçalho com ponto e vírgula
+  if (formato === 'csv') {
+    const linhas = [];
+    linhas.push(camposSelecionados.join(';')); // ponto e vírgula para Excel BR
 
-  dadosParaExportar.forEach(dado => {
-    const linha = camposSelecionados.map(campo => dado[campo] || '').join(';');
-    linhas.push(linha);
-  });
+    dadosParaExportar.forEach(dado => {
+      const linha = camposSelecionados.map(campo => dado[campo] || '').join(';');
+      linhas.push(linha);
+    });
 
-  const csvContent = linhas.join('\n');
+    const csvContent = linhas.join('\n');
+    const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+    baixarArquivo(blob, 'relatorio_inteligencia.csv');
+  }
 
-  // UTF-8 com BOM para Excel em português abrir certo
-  const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+  if (formato === 'txt') {
+    const blocos = dadosParaExportar.map(dado => {
+      return camposSelecionados.map(campo => `${campo}: ${dado[campo] || '-'}`).join('\n');
+    });
+
+    const txtContent = blocos.join('\n\n-------------------------\n\n');
+    const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8;' });
+    baixarArquivo(blob, 'relatorio_inteligencia.txt');
+  }
+}
+
+function baixarArquivo(blob, nome) {
   const url = URL.createObjectURL(blob);
-
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'relatorio_inteligencia.csv';
+  a.download = nome;
   a.click();
 }
+
 carregarInteligencia();
 window.exportarDados = exportarDados;
