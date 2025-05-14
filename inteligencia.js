@@ -102,3 +102,14 @@ function baixarArquivo(blob, nome) {
 carregarInteligencia();
 window.exportarCSV = exportarCSV;
 window.exportarTXT = exportarTXT;
+
+function voltarParaEmpresa() {
+  const idEmpresa = new URLSearchParams(window.location.search).get('id');
+  if (idEmpresa) {
+    window.location.href = `empresa.html?id=${idEmpresa}`;
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+
+window.voltarParaEmpresa = voltarParaEmpresa;
