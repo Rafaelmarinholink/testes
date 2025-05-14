@@ -1,7 +1,6 @@
 import { buscarEmpresas, buscarDiligencias } from './airtable.js';
 
 const listaContainer = document.getElementById('lista-inteligencia');
-const promptContainer = document.getElementById('promptGerado');
 
 let dadosParaExportar = [];
 
@@ -36,9 +35,6 @@ empresasFiltradas.forEach(emp => {
       <p><strong>Diligências:</strong> ${ddRelacionadas.length}</p>
     `;
     listaContainer.appendChild(div);
-
-    const prompt = gerarPrompt(emp, ddRelacionadas, status);
-    promptContainer.textContent += prompt + "\n\n";
 
     dadosParaExportar.push({
       'Nome da empresa': emp.nome,
