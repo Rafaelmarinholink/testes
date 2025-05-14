@@ -64,34 +64,34 @@ Status: ${status}. Diligências associadas: ${riscos}.
 Recomenda-se reavaliação com base nos indicadores e riscos atuais.`;
 }
 
-function exportarDados() {
+function exportarCSV() {
   const checkboxes = document.querySelectorAll('.checkboxes input[type="checkbox"]:checked');
   const camposSelecionados = Array.from(checkboxes).map(cb => cb.value);
-  const formato = document.querySelector('input[name="formato"]:checked').value;
 
-  if (formato === 'csv') {
-    const linhas = [];
-    linhas.push(camposSelecionados.join(';')); // ponto e vírgula para Excel BR
+  const linhas = [];
+  linhas.push(camposSelecionados.join(';'));
 
-    dadosParaExportar.forEach(dado => {
-      const linha = camposSelecionados.map(campo => dado[campo] || '').join(';');
-      linhas.push(linha);
-    });
+  dadosParaExportar.forEach(dado => {
+    const linha = camposSelecionados.map(campo => dado[campo] || '').join(';');
+    linhas.push(linha);
+  });
 
-    const csvContent = linhas.join('\n');
-    const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
-    baixarArquivo(blob, 'relatorio_inteligencia.csv');
-  }
+  const csvContent = linhas.join('\n');
+  const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+  baixarArquivo(blob, 'relatorio_inteligencia.csv');
+}
 
-  if (formato === 'txt') {
-    const blocos = dadosParaExportar.map(dado => {
-      return camposSelecionados.map(campo => `${campo}: ${dado[campo] || '-'}`).join('\n');
-    });
+function exportarTXT() {
+  const checkboxes = document.querySelectorAll('.checkboxes input[type="checkbox"]:checked');
+  const camposSelecionados = Array.from(checkboxes).map(cb => cb.value);
 
-    const txtContent = blocos.join('\n\n-------------------------\n\n');
-    const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8;' });
-    baixarArquivo(blob, 'relatorio_inteligencia.txt');
-  }
+  const blocos = dadosParaExportar.map(dado => {
+    return camposSelecionados.map(campo => `${campo}: ${dado[campo] || '-'}`).join('\n');
+  });
+
+  const txtContent = blocos.join('\n\n-------------------------\n\n');
+  const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8;' });
+  baixarArquivo(blob, 'relatorio_inteligencia.txt');
 }
 
 function baixarArquivo(blob, nome) {
@@ -102,5 +102,8 @@ function baixarArquivo(blob, nome) {
   a.click();
 }
 
+
 carregarInteligencia();
 window.exportarDados = exportarDados;
+window.exportarCSV = exportarCSV;
+window.exportarTXT = exportarTXT;
