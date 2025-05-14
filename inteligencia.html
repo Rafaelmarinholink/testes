@@ -57,10 +57,11 @@
       <label><input type="checkbox" value="Notas" /> Notas</label>
     </div>
 
-    <div class="filtros" style="margin-bottom: 1rem;">
-  <label><input type="radio" name="formato" value="csv" checked> CSV</label>
-  <label><input type="radio" name="formato" value="txt"> TXT</label>
+    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+  <button class="btn-exportar" onclick="exportarCSV()">Exportar CSV</button>
+  <button class="btn-exportar" onclick="exportarTXT()">Exportar TXT</button>
 </div>
+
 
     <div id="lista-inteligencia"></div>
 
