@@ -87,3 +87,4 @@ function exportarDados() {
 }
 
 carregarInteligencia();
+window.exportarDados = exportarDados;
