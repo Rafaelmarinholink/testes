@@ -352,6 +352,7 @@ async function executarAvaliacaoIA() {
     <p><strong>Classificação:</strong> <span style="color: ${cor}; font-weight: bold;">${risco}</span></p>
     <p><strong>Justificativas:</strong><br>${alertas.join('<br>')}</p>
   `;
+  window.executarAvaliacaoIA = executarAvaliacaoIA;
 }
   </script>
 </body>
