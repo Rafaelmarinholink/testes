@@ -275,6 +275,7 @@ async function carregarAnalisesDD(idEmpresa) {
             }
           }
         }
+              window.empresaSelecionada = empresa;
       });
 
       carregarAnalisesDD(idEmpresa);
@@ -352,8 +353,6 @@ async function executarAvaliacaoIA() {
     <p><strong>Justificativas:</strong><br>${alertas.join('<br>')}</p>
   `;
 }
-
-      window.empresaSelecionada = empresa;
   </script>
 </body>
 </html>
