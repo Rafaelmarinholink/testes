@@ -279,6 +279,81 @@ async function carregarAnalisesDD(idEmpresa) {
 
       carregarAnalisesDD(idEmpresa);
     });
+    async function buscarDiligenciasCriticas(empresaId) {
+  const baseId = 'appaq7tR3vt9vrN6y';
+  const tableDD = 'Due%20Diligence';
+  const apiKey = 'patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6';
+
+  const headers = { Authorization: `Bearer ${apiKey}` };
+  const url = `https://api.airtable.com/v0/${baseId}/${tableDD}?filterByFormula={EmpresaID} = "${empresaId}"`;
+  const res = await fetch(url, { headers });
+  const data = await res.json();
+
+  const registros = data.records;
+
+  const criticas = registros.filter(reg => {
+    const risco = reg.fields["Classificação de risco"];
+    const status = reg.fields["Status da análise"];
+    return (
+      (risco === 'Alto' || risco === 'Médio') &&
+      ['Pendente', 'Atrasado', 'Incompleto'].includes(status)
+    );
+  });
+
+  return criticas.length;
+}
+
+async function executarAvaliacaoIA() {
+  const empresa = window.empresaSelecionada;
+  const alertas = [];
+  let risco = 'Baixo';
+
+  if (empresa.ebitda <= 0)
+    alertas.push("EBITDA negativo, risco de geração de caixa");
+
+  if (empresa.margem_ebitda < 0.1)
+    alertas.push("Margem EBITDA abaixo de 10%");
+
+  if (empresa.ev_ebitda > 20)
+    alertas.push("EV/EBITDA elevado (>20)");
+
+  if (empresa.sga > 0.3)
+    alertas.push("SG&A elevado (>30%)");
+
+  if (empresa.sm > 0.4)
+    alertas.push("S&M elevado (>40%)");
+
+  if (empresa.margem_bruta < 0.4)
+    alertas.push("Margem bruta baixa (<40%)");
+
+  if (empresa.crescimento_yoy < 0)
+    alertas.push("Crescimento YoY negativo");
+
+  if (empresa.consistencia_yoy === "Declínio acentuado")
+    alertas.push("Consistência histórica ruim");
+
+  if (empresa.valuation > 10 * empresa.receita)
+    alertas.push("Valuation maior que 10x receita");
+
+  const qtdCriticas = await buscarDiligenciasCriticas(empresa.id);
+  if (qtdCriticas >= 1)
+    alertas.push("Diligências pendentes ou atrasadas com risco médio/alto");
+
+  if (alertas.length >= 5) risco = 'Alto';
+  else if (alertas.length >= 2) risco = 'Médio';
+
+  const cor = risco === 'Alto' ? '#ef4444' : risco === 'Médio' ? '#facc15' : '#22c55e';
+
+  const resultadoDiv = document.getElementById('resultado-ia');
+  resultadoDiv.style.display = 'block';
+  resultadoDiv.innerHTML = `
+    <h3 style="margin-top: 0;">🧠 Avaliação de Risco por IA Interna</h3>
+    <p><strong>Classificação:</strong> <span style="color: ${cor}; font-weight: bold;">${risco}</span></p>
+    <p><strong>Justificativas:</strong><br>${alertas.join('<br>')}</p>
+  `;
+}
+
+      window.empresaSelecionada = empresa;
   </script>
 </body>
 </html>
