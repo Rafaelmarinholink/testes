@@ -275,10 +275,10 @@ async function carregarAnalisesDD(idEmpresa) {
             }
           }
         }
-              window.empresaSelecionada = empresa;
       });
 
       carregarAnalisesDD(idEmpresa);
+      window.empresaSelecionada = empresa;
     });
     async function buscarDiligenciasCriticas(empresaId) {
   const baseId = 'appaq7tR3vt9vrN6y';
