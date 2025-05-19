@@ -88,12 +88,15 @@
         <h3>Notas</h3>
         <p id="notas"></p>
       </div>
-
-      <div class="dd-analises">
-        <h3>Due Diligence</h3>
-        <div id="dd-analises"></div>
+      <div style="margin-top: 2rem;">
+        <button class="btn-exportar" onclick="executarAvaliacaoIA()">🔍 Avaliar por IA</button>
       </div>
-
+      
+      <div id="resultado-ia" class="diagnostico" style="display: none;"></div>
+            <div class="dd-analises">
+              <h3>Due Diligence</h3>
+              <div id="dd-analises"></div>
+            </div>
             <div style="margin-top:2rem;">
         <button id="btnAddDD" class="btn">Adicionar Due Diligence</button>
         <button class="btn" id="btnVerInteligencia">Ver Inteligência</button>
