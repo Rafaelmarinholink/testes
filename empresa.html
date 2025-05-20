@@ -325,7 +325,33 @@ async function atualizarRiscoIA(id, riscoIA) {
     console.error('Erro ao atualizar risco IA:', await res.text());
   }
 }
+async function registrarHistoricoIA(empresa, risco, justificativas) {
+  const baseId = 'appaq7tR3vt9vrN6y';
+  const table = 'Histórico IA';
+  const apiKey = 'patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6';
 
+  const url = `https://api.airtable.com/v0/${baseId}/${table}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      fields: {
+        "EmpresaID": empresa.id,
+        "Empresa": empresa.nome,
+        "Risco IA": risco,
+        "Justificativas": justificativas.join(' | ')
+        // "Data": new Date().toISOString() ← não precisa se o campo for "Created time"
+      }
+    })
+  });
+
+  if (!res.ok) {
+    console.error('Erro ao registrar histórico IA:', await res.text());
+  }
+}
 async function executarAvaliacaoIA() {
   const empresa = window.empresaSelecionada;
   const alertas = [];
@@ -376,6 +402,7 @@ async function executarAvaliacaoIA() {
   `;
 
   await atualizarRiscoIA(empresa.id, risco);
+  await registrarHistoricoIA(empresa, risco, alertas);
 }
 
 window.executarAvaliacaoIA = executarAvaliacaoIA;
