@@ -414,6 +414,13 @@ async function executarAvaliacaoIA() {
   `;
 
   await atualizarRiscoIA(empresa.id, risco);
+  const textoLog = `Diagnóstico de Ineficiências – Classificação: ${risco}
+Justificativas detectadas:
+${alertas.map((item, i) => `(${i + 1}) ${item}`).join('\n')}
+`;
+
+await atualizarLogInef(empresa.id, textoLog);
+
   await registrarHistoricoIA(empresa, risco, alertas);
 }
 
