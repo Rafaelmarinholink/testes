@@ -259,6 +259,7 @@ async function carregarAnalisesDD(idEmpresa) {
 
       document.getElementById('diagnostico').textContent = gerarAnalise(empresa);
       document.getElementById('notas').textContent = empresa.notas || 'Nenhuma nota registrada.';
+      document.getElementById('logInef').textContent = empresa["Log de Ineficiências"] || 'Nenhum log de ineficiência registrado.';
 
       new Chart(document.getElementById('gaugeChart'), {
         type: 'doughnut',
