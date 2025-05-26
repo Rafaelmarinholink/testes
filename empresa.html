@@ -337,12 +337,25 @@ async function atualizarRiscoIA(id, riscoIA) {
     console.error('Erro ao atualizar risco IA:', await res.text());
   }
 }
-async function registrarHistoricoIA(empresa, risco, justificativas) {
+async function registrarHistoricoIA(empresa, risco, alertas) {
   const baseId = 'appaq7tR3vt9vrN6y';
   const table = 'Histórico IA';
   const apiKey = 'patAOGNbJyOQrbHPB.22dd0a4309dc09867d31612922b5616a0a83965352599929e3566187a84607c6';
 
-  const url = `https://api.airtable.com/v0/${baseId}/${table}`;
+  const timestamp = new Date().toISOString();
+  const justificativas = alertas.map((item, i) => `(${i + 1}) ${item}`).join('\n');
+
+  const metodo = "Análise gerada por lógica automatizada interna (JavaScript) com base em KPIs e status de Due Diligence.";
+
+  const areas = [];
+  if (alertas.some(a => a.includes("SG&A"))) areas.push("Financeiro");
+  if (alertas.some(a => a.includes("S&M"))) areas.push("Marketing");
+  if (alertas.some(a => a.includes("Valuation"))) areas.push("Estratégia");
+  if (alertas.some(a => a.includes("Diligências"))) areas.push("Compliance");
+  if (alertas.some(a => a.includes("Margem"))) areas.push("Operações");
+  if (alertas.some(a => a.includes("Crescimento"))) areas.push("Crescimento");
+
+  const url = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(table)}`;
   const res = await fetch(url, {
     method: 'POST',
     headers: {
@@ -354,8 +367,10 @@ async function registrarHistoricoIA(empresa, risco, justificativas) {
         "EmpresaID": empresa.id,
         "Empresa": empresa.nome,
         "Risco IA": risco,
-        "Justificativas": justificativas.join(' | ')
-        // "Data": new Date().toISOString() ← não precisa se o campo for "Created time"
+        "Justificativas": justificativas,
+        "Data da Avaliação": timestamp,
+        "Prompt": metodo,
+        "Áreas Críticas": areas.join(', ')
       }
     })
   });
@@ -364,6 +379,7 @@ async function registrarHistoricoIA(empresa, risco, justificativas) {
     console.error('Erro ao registrar histórico IA:', await res.text());
   }
 }
+
 async function executarAvaliacaoIA() {
   const empresa = window.empresaSelecionada;
   const alertas = [];
