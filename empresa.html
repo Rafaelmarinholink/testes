@@ -420,6 +420,8 @@ ${alertas.map((item, i) => `(${i + 1}) ${item}`).join('\n')}
 `;
 
 await atualizarLogInef(empresa.id, textoLog);
+  document.getElementById('logInef').textContent = textoLog;
+
 
   await registrarHistoricoIA(empresa, risco, alertas);
 }
