@@ -380,6 +380,38 @@ async function registrarHistoricoIA(empresa, risco, alertas) {
     console.error('Erro ao registrar histórico IA:', await res.text());
   }
 }
+function gerarPlanoAcao(alertas) {
+  if (!alertas || alertas.length === 0) return "Nenhum problema crítico identificado. A empresa apresenta um perfil financeiro saudável.";
+
+  const solucoes = [];
+
+  alertas.forEach(alerta => {
+    if (alerta.includes("EBITDA negativo"))
+      solucoes.push("Revisar estrutura de custos e buscar fontes de receita mais previsíveis para reverter o EBITDA negativo.");
+    if (alerta.includes("Margem EBITDA"))
+      solucoes.push("Reduzir custos operacionais ou aumentar preço médio para melhorar a margem EBITDA.");
+    if (alerta.includes("EV/EBITDA"))
+      solucoes.push("Avaliar estratégias para melhorar geração de caixa e justificar o valuation atual.");
+    if (alerta.includes("SG&A"))
+      solucoes.push("Revisar gastos administrativos e implementar controle mais rígido de despesas fixas.");
+    if (alerta.includes("S&M"))
+      solucoes.push("Avaliar o ROI das campanhas de marketing e otimizar canais de aquisição.");
+    if (alerta.includes("Margem bruta"))
+      solucoes.push("Negociar melhores contratos com fornecedores ou otimizar a cadeia produtiva.");
+    if (alerta.includes("Crescimento YoY"))
+      solucoes.push("Identificar produtos/segmentos com melhor desempenho e investir no crescimento orgânico.");
+    if (alerta.includes("Consistência histórica"))
+      solucoes.push("Estabilizar resultados com foco em previsibilidade e gestão por indicadores.");
+    if (alerta.includes("Valuation maior"))
+      solucoes.push("Ajustar expectativas de crescimento e comunicar melhor o racional de valuation ao mercado.");
+    if (alerta.includes("Diligências pendentes"))
+      solucoes.push("Concluir as diligências críticas com atenção às áreas apontadas como risco médio ou alto.");
+  });
+
+  // Remover duplicadas e montar parágrafo
+  const planoFinal = [...new Set(solucoes)];
+  return planoFinal.map((item, i) => `${i + 1}. ${item}`).join('<br>');
+}
 
 async function executarAvaliacaoIA() {
   const empresa = window.empresaSelecionada;
