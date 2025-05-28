@@ -428,6 +428,12 @@ async function executarAvaliacaoIA() {
     <p><strong>Classificação:</strong> <span style="color: ${cor}; font-weight: bold;">${risco}</span></p>
     <p><strong>Justificativas:</strong><br>${alertas.join('<br>')}</p>
   `;
+const planoDiv = document.getElementById('plano-acao');
+planoDiv.style.display = 'block';
+planoDiv.innerHTML = `
+  <h3 style="margin-top: 0;">Plano de Ação Sugerido</h3>
+  <p>${gerarPlanoAcao(alertas)}</p>
+`;
 
   await atualizarRiscoIA(empresa.id, risco);
   const textoLog = `Diagnóstico de Ineficiências – Classificação: ${risco}
