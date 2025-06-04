@@ -101,6 +101,7 @@
 </div>
       <div style="margin-top: 2rem;">
     <button class="btn" onclick="executarAvaliacaoIA()">Avaliar por IA</button>
+    <button class="btn" onclick="enviarPara8n8()">Enviar para 8n8 (Exit Readiness)</button>
     </div>
       
       <div id="resultado-ia" class="diagnostico" style="display: none;"></div>
@@ -501,6 +502,44 @@ async function atualizarLogInef(empresaId, texto) {
 
   if (!res.ok) {
     console.error('Erro ao atualizar Log de Ineficiências:', await res.text());
+  }
+}
+async function enviarPara8n8() {
+  const empresa = window.empresaSelecionada;
+  if (!empresa) return alert("Empresa não carregada.");
+
+  const payload = {
+    id: empresa.id,
+    nome: empresa.nome,
+    receita: empresa.receita,
+    ebitda: empresa.ebitda,
+    valuation: empresa.valuation,
+    margem_ebitda: empresa.margem_ebitda,
+    ev_ebitda: empresa.ev_ebitda,
+    crescimento_yoy: empresa.crescimento_yoy,
+    margem_bruta: empresa.margem_bruta,
+    sm: empresa.sm,
+    sga: empresa.sga,
+    consistencia_yoy: empresa.consistencia_yoy,
+    risco_ia: empresa["Risco IA"] || "-",
+    log_ineficiencias: empresa["Log de Ineficiências"] || "-"
+  };
+
+  try {
+    const res = await fetch("https://n8n.isilab.com.br/webhook-test/8f52404e-f397-4b1e-bb6e-9a0759006a4a", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) throw new Error("Erro ao enviar para 8n8");
+
+    alert("✅ Dados enviados com sucesso ao 8n8 para análise de Exit Readiness.");
+  } catch (err) {
+    console.error("Erro ao enviar para 8n8:", err);
+    alert("❌ Erro ao enviar para 8n8. Verifique o console.");
   }
 }
 
