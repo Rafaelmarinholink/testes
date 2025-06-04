@@ -506,42 +506,27 @@ async function atualizarLogInef(empresaId, texto) {
 }
 async function enviarPara8n8() {
   const empresa = window.empresaSelecionada;
-  if (!empresa) return alert("Empresa não carregada.");
-
   const payload = {
-    id: empresa.id,
-    nome: empresa.nome,
+    empresa: empresa.nome,
     receita: empresa.receita,
     ebitda: empresa.ebitda,
-    valuation: empresa.valuation,
-    margem_ebitda: empresa.margem_ebitda,
     ev_ebitda: empresa.ev_ebitda,
-    crescimento_yoy: empresa.crescimento_yoy,
-    margem_bruta: empresa.margem_bruta,
-    sm: empresa.sm,
-    sga: empresa.sga,
-    consistencia_yoy: empresa.consistencia_yoy,
-    risco_ia: empresa["Risco IA"] || "-",
-    log_ineficiencias: empresa["Log de Ineficiências"] || "-"
+    margem_ebitda: empresa.margem_ebitda,
+    risco_ia: empresa["Risco IA"] || "Não avaliado"
   };
 
   try {
-    const res = await fetch("https://n8n.isilab.com.br/webhook-test/8f52404e-f397-4b1e-bb6e-9a0759006a4a", {
+    const resposta = await fetch("https://n8n.isilab.com.br/webhook-test/b90de8b7-caf3-44f0-a48f-a03ee5cd4f99", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
-
-    if (!res.ok) throw new Error("Erro ao enviar para 8n8");
-
-    alert("✅ Dados enviados com sucesso ao 8n8 para análise de Exit Readiness.");
+    console.log("Enviado com sucesso ao N8N!");
   } catch (err) {
     console.error("Erro ao enviar para 8n8:", err);
-    alert("❌ Erro ao enviar para 8n8. Verifique o console.");
   }
 }
+
 window.enviarPara8n8 = enviarPara8n8;
 window.executarAvaliacaoIA = executarAvaliacaoIA;
   </script>
