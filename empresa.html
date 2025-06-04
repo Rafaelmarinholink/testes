@@ -526,11 +526,20 @@ async function enviarPara8n8() {
     const data = await resposta.json();
 
     document.getElementById('resposta-exit').style.display = 'block';
-    const respostaJson = await resposta.json();
+   const resposta = await fetch("https://n8n.isilab.com.br/webhook-test/b90de8b7-caf3-44f0-a48f-a03ee5cd4f99", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(payload)
+});
+
+const dados = await resposta.json(); // <- Aqui está a diferença!
+
+document.getElementById('resposta-exit').style.display = 'block';
 document.getElementById('resposta-exit').innerHTML = `
   <h3>📤 Validação de Exit Readiness</h3>
-  <p>${respostaJson.analise_exit || "Nenhuma análise retornada."}</p>
+  <p>${dados.analise_exit || "Nenhuma análise retornada."}</p>
 `;
+
 
   } catch (error) {
     console.error("Erro ao enviar para 8n8:", error);
