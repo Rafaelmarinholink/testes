@@ -49,3 +49,4 @@ export async function buscarDiligencias() {
   const data = await response.json();
   return data.records;
 }
+ 
