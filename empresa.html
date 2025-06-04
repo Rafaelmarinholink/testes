@@ -526,10 +526,12 @@ async function enviarPara8n8() {
     const data = await resposta.json();
 
     document.getElementById('resposta-exit').style.display = 'block';
-    document.getElementById('resposta-exit').innerHTML = `
-      <h3>📤 Validação de Exit Readiness</h3>
-      <p>${data.analise_exit || "Nenhuma análise retornada."}</p>
-    `;
+    const respostaJson = await resposta.json();
+document.getElementById('resposta-exit').innerHTML = `
+  <h3>📤 Validação de Exit Readiness</h3>
+  <p>${respostaJson.analise_exit || "Nenhuma análise retornada."}</p>
+`;
+
   } catch (error) {
     console.error("Erro ao enviar para 8n8:", error);
     document.getElementById('resposta-exit').innerHTML = `<p style="color:red;">Erro ao processar a análise. Tente novamente mais tarde.</p>`;
