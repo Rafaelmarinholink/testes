@@ -102,6 +102,7 @@
       <div style="margin-top: 2rem;">
     <button class="btn" onclick="executarAvaliacaoIA()">Avaliar por IA</button>
     <button class="btn" onclick="enviarPara8n8()">Enviar para 8n8 (Exit Readiness)</button>
+    <div id="resposta-exit" class="diagnostico" style="display: none; margin-top: 1rem;"></div>
     </div>
       
       <div id="resultado-ia" class="diagnostico" style="display: none;"></div>
@@ -521,13 +522,22 @@ async function enviarPara8n8() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
-    console.log("Enviado com sucesso ao N8N!");
-  } catch (err) {
-    console.error("Erro ao enviar para 8n8:", err);
+
+    const data = await resposta.json();
+
+    document.getElementById('resposta-exit').style.display = 'block';
+    document.getElementById('resposta-exit').innerHTML = `
+      <h3>📤 Validação de Exit Readiness</h3>
+      <p>${data.analise_exit || "Nenhuma análise retornada."}</p>
+    `;
+  } catch (error) {
+    console.error("Erro ao enviar para 8n8:", error);
+    document.getElementById('resposta-exit').innerHTML = `<p style="color:red;">Erro ao processar a análise. Tente novamente mais tarde.</p>`;
   }
 }
 
 window.enviarPara8n8 = enviarPara8n8;
+
 window.executarAvaliacaoIA = executarAvaliacaoIA;
   </script>
 </body>
