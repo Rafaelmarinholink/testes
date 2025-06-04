@@ -523,12 +523,12 @@ async function enviarPara8n8() {
       body: JSON.stringify(payload)
     });
 
-    const dados = await resposta.json();
+    const texto = await resposta.text();
 
     document.getElementById('resposta-exit').style.display = 'block';
     document.getElementById('resposta-exit').innerHTML = `
       <h3>📤 Validação de Exit Readiness</h3>
-      <p style="white-space:pre-wrap;">${dados.analise_exit}</p>
+      <p style="white-space:pre-wrap;">${texto}</p>
     `;
   } catch (error) {
     console.error("Erro ao enviar para 8n8:", error);
