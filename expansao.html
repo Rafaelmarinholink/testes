@@ -72,8 +72,8 @@
 
        const texto = await resposta.text();
 
-    document.getElementById('cenarios').style.display = 'block';
-    document.getElementById('cenarios').innerHTML = `
+    document.getElementById('resultadoIA').style.display = 'block';
+    document.getElementById('resultadoIA').innerHTML = `
       <h3>Cenários de expansão/h3>
       <p style="white-space:pre-wrap;">${texto}</p>
     `;
