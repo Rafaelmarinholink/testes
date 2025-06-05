@@ -5,6 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Análise de Expansão | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .loader {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #3b82f6;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      animation: spin 1s linear infinite;
+      margin: 2rem auto;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -24,64 +41,73 @@
         <button class="btn" onclick="voltarParaEmpresa()">← Voltar à Análise da Empresa</button>
       </div>
 
+      <div class="loader" id="loader"></div>
+
       <div class="diagnostico" id="resultadoIA" style="display:none; margin-top:2rem;"></div>
     </div>
   </div>
 
- <script type="module">
-  import { buscarEmpresas } from './airtable.js';
+  <script type="module">
+    import { buscarEmpresas } from './airtable.js';
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const idEmpresa = urlParams.get('id');
-  let empresaAtual = null;
+    const urlParams = new URLSearchParams(window.location.search);
+    const idEmpresa = urlParams.get('id');
+    let empresaAtual = null;
 
-  document.getElementById('titulo').textContent = "Análise de Expansão – carregando...";
+    document.getElementById('titulo').textContent = "Análise de Expansão – carregando...";
 
-  buscarEmpresas().then(empresas => {
-    empresaAtual = empresas.find(e => e.id === idEmpresa);
-    if (empresaAtual) {
-      document.getElementById('titulo').textContent = `Análise de Expansão – ${empresaAtual.nome}`;
-    }
-  });
+    buscarEmpresas().then(empresas => {
+      empresaAtual = empresas.find(e => e.id === idEmpresa);
+      if (empresaAtual) {
+        document.getElementById('titulo').textContent = `Análise de Expansão – ${empresaAtual.nome}`;
+      }
+    });
 
-  window.voltarParaEmpresa = () => {
-    window.location.href = `empresa.html?id=${idEmpresa}`;
-  };
-
-  window.simularCenarios = async () => {
-    if (!empresaAtual) return alert("Empresa não encontrada.");
-
-    const payload = {
-      nome: empresaAtual.nome,
-      receita: empresaAtual.receita,
-      ebitda: empresaAtual.ebitda,
-      ev_ebitda: empresaAtual.ev_ebitda,
-      margem_ebitda: empresaAtual.margem_ebitda,
-      crescimento_yoy: empresaAtual.crescimento_yoy,
-      margem_bruta: empresaAtual.margem_bruta,
-      sm: empresaAtual.sm,
-      sga: empresaAtual.sga
+    window.voltarParaEmpresa = () => {
+      window.location.href = `empresa.html?id=${idEmpresa}`;
     };
 
-    try {
-      const resposta = await fetch("https://n8n.isilab.com.br/webhook-test/6def0157-da67-4eb6-bedf-80879d2aea85", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
+    window.simularCenarios = async () => {
+      if (!empresaAtual) return alert("Empresa não encontrada.");
 
-       const texto = await resposta.text();
+      const payload = {
+        nome: empresaAtual.nome,
+        receita: empresaAtual.receita,
+        ebitda: empresaAtual.ebitda,
+        ev_ebitda: empresaAtual.ev_ebitda,
+        margem_ebitda: empresaAtual.margem_ebitda,
+        crescimento_yoy: empresaAtual.crescimento_yoy,
+        margem_bruta: empresaAtual.margem_bruta,
+        sm: empresaAtual.sm,
+        sga: empresaAtual.sga
+      };
 
-    document.getElementById('resultadoIA').style.display = 'block';
-    document.getElementById('resultadoIA').innerHTML = `
-      <h3>Cenários de expansão</h3>
-      <p style="white-space:pre-wrap;">${texto}</p>
-    `;
-  } catch (error) {
-    console.error("Erro ao enviar para 8n8:", error);
-    document.getElementById('cenarios').innerHTML = `<p style="color:red;">Erro ao processar a análise. Tente novamente mais tarde.</p>`;
-  }
-}
-</script>
+      const loader = document.getElementById('loader');
+      const resultado = document.getElementById('resultadoIA');
+      resultado.style.display = 'none';
+      loader.style.display = 'block';
+
+      try {
+        const resposta = await fetch("https://n8n.isilab.com.br/webhook-test/6def0157-da67-4eb6-bedf-80879d2aea85", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const texto = await resposta.text();
+        loader.style.display = 'none';
+        resultado.style.display = 'block';
+        resultado.innerHTML = `
+          <h3>📈 Cenários de expansão</h3>
+          <p style="white-space: pre-wrap;">${texto}</p>
+        `;
+      } catch (error) {
+        loader.style.display = 'none';
+        resultado.style.display = 'block';
+        resultado.innerHTML = `<p style="color:red;">Erro ao processar a simulação. Tente novamente mais tarde.</p>`;
+        console.error("Erro ao simular cenários:", error);
+      }
+    };
+  </script>
 </body>
 </html>
