@@ -3,95 +3,84 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Análise de Expansão com IA | Saber Capital</title>
+  <title>Análise de Expansão | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
-  <style>
-    .logo-wrapper {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      margin-bottom: 1rem;
-    }
-    .logo-img {
-      width: 70px;
-      height: auto;
-      margin-right: 10px;
-    }
-    .logo-text {
-      font-family: 'Archivo Black', sans-serif;
-      font-size: 1.6rem;
-      color: white;
-    }
-    .container {
-      max-width: 700px;
-      margin: 2rem auto;
-      background-color: #1e3a5f;
-      padding: 2rem;
-      border-radius: 10px;
-      color: white;
-      text-align: center;
-    }
-    .btn {
-      margin-top: 1rem;
-      padding: 0.5rem 1.5rem;
-      background-color: white;
-      color: #1e3a5f;
-      font-weight: bold;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-  </style>
 </head>
-<body style="background-color:#0f172a; font-family:sans-serif;">
-
+<body>
   <div class="container">
-    <div class="logo-wrapper" onclick="window.location.href='index.html'">
-      <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
-      <h1 class="logo-text">SABER<br>CAPITAL</h1>
+    <div class="card">
+      <div class="logo-wrapper" onclick="window.location.href='index.html'" style="cursor:pointer;">
+        <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img"/>
+        <h1 class="logo-text">SABER<br>CAPITAL</h1>
+      </div>
+
+      <h2 class="subtitle" id="titulo">Análise de Expansão</h2>
+
+      <div style="text-align: center; margin-top: 2rem;">
+        <button class="btn" onclick="simularCenarios()">Simular Cenários com IA</button>
+      </div>
+
+      <div style="text-align: center; margin-top: 2rem;">
+        <button class="btn" onclick="voltarParaEmpresa()">← Voltar à Análise da Empresa</button>
+      </div>
+
+      <div class="diagnostico" id="resultadoIA" style="display:none; margin-top:2rem;"></div>
     </div>
-
-    <h2 id="nomeEmpresa">Análise de Expansão com IA</h2>
-
-    <button class="btn" onclick="simular()">Simular Cenários com IA</button>
-    <br>
-    <button class="btn" onclick="voltar()">← Voltar para Análise da Empresa</button>
-
-    <div id="resultadoIA" style="margin-top:2rem;"></div>
   </div>
 
   <script type="module">
     import { buscarEmpresas } from './airtable.js';
 
-    const idEmpresa = new URLSearchParams(window.location.search).get('id');
+    const urlParams = new URLSearchParams(window.location.search);
+    const idEmpresa = urlParams.get('id');
+    let empresaAtual = null;
+
+    document.getElementById('titulo').textContent = "Análise de Expansão – carregando...";
 
     buscarEmpresas().then(empresas => {
-      const empresa = empresas.find(e => e.id === idEmpresa);
-      if (!empresa) return;
-
-      document.getElementById('nomeEmpresa').textContent = `Análise de Expansão – ${empresa.nome}`;
-      window.empresaSelecionada = empresa;
+      empresaAtual = empresas.find(e => e.id === idEmpresa);
+      if (empresaAtual) {
+        document.getElementById('titulo').textContent = `Análise de Expansão – ${empresaAtual.nome}`;
+      }
     });
 
-    function simular() {
-      const empresa = window.empresaSelecionada;
-      if (!empresa) return;
-
-      document.getElementById('resultadoIA').innerHTML = `
-        <h3>📈 Simulação de Cenários</h3>
-        <p><strong>Empresa:</strong> ${empresa.nome}</p>
-        <p><strong>Cenário Orgânico:</strong> Crescimento baseado em aumento de receita e margem EBITDA.</p>
-        <p><strong>Cenário Inorgânico:</strong> Expansão via fusões e aquisições com base no valuation atual.</p>
-        <p><em>(Integração com IA será ativada nos próximos passos.)</em></p>
-      `;
-    }
-
-    function voltar() {
+    window.voltarParaEmpresa = () => {
       window.location.href = `empresa.html?id=${idEmpresa}`;
-    }
+    };
 
-    window.simular = simular;
-    window.voltar = voltar;
+    window.simularCenarios = async () => {
+      if (!empresaAtual) return alert("Empresa não encontrada.");
+
+      const payload = {
+        nome: empresaAtual.nome,
+        receita: empresaAtual.receita,
+        ebitda: empresaAtual.ebitda,
+        ev_ebitda: empresaAtual.ev_ebitda,
+        margem_ebitda: empresaAtual.margem_ebitda,
+        crescimento_yoy: empresaAtual.crescimento_yoy,
+        margem_bruta: empresaAtual.margem_bruta,
+        sm: empresaAtual.sm,
+        sga: empresaAtual.sga
+      };
+
+      try {
+        const resposta = await fetch("https://n8n.isilab.com.br/webhook-test/6def0157-da67-4eb6-bedf-80879d2aea85", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const texto = await resposta.text();
+        const resultado = document.getElementById('resultadoIA');
+        resultado.style.display = 'block';
+        resultado.innerHTML = `<h3>📈 Cenários de Expansão</h3><p style="white-space: pre-wrap;">${texto}</p>`;
+      } catch (error) {
+        console.error("Erro ao simular cenários:", error);
+        document.getElementById('resultadoIA').innerHTML = `<p style="color:red;">Erro ao processar a simulação. Tente novamente mais tarde.</p>`;
+      }
+    };
   </script>
 </body>
 </html>
