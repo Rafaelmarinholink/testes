@@ -5,6 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Análise da Empresa | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
+ <style>
+  .loader {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #3b82f6;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    animation: spin 1s linear infinite;
+    margin: 1rem auto;
+    display: none;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     .grid-indicadores {
@@ -102,6 +119,7 @@
       <div style="margin-top: 2rem;">
     <button class="btn" onclick="executarAvaliacaoIA()">Avaliar por IA</button>
     <button class="btn" onclick="enviarPara8n8()">Enviar para 8n8 (Exit Readiness)</button>
+    <div id="loader" class="loader"></div>
     <div id="resposta-exit" class="diagnostico" style="display: none; margin-top: 1rem;"></div>
     </div>
       
