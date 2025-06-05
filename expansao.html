@@ -29,10 +29,11 @@
       padding: 2rem;
       border-radius: 10px;
       color: white;
+      text-align: center;
     }
     .btn {
       margin-top: 1rem;
-      padding: 0.5rem 1rem;
+      padding: 0.5rem 1.5rem;
       background-color: white;
       color: #1e3a5f;
       font-weight: bold;
@@ -52,8 +53,10 @@
 
     <h2 id="nomeEmpresa">Análise de Expansão com IA</h2>
 
-    <p>Selecione a Empresa:</p>
     <button class="btn" onclick="simular()">Simular Cenários com IA</button>
+    <br>
+    <button class="btn" onclick="voltar()">← Voltar para Análise da Empresa</button>
+
     <div id="resultadoIA" style="margin-top:2rem;"></div>
   </div>
 
@@ -79,11 +82,16 @@
         <p><strong>Empresa:</strong> ${empresa.nome}</p>
         <p><strong>Cenário Orgânico:</strong> Crescimento baseado em aumento de receita e margem EBITDA.</p>
         <p><strong>Cenário Inorgânico:</strong> Expansão via fusões e aquisições com base no valuation atual.</p>
-        <p><em>(Integração com IA ainda será ativada nos próximos passos.)</em></p>
+        <p><em>(Integração com IA será ativada nos próximos passos.)</em></p>
       `;
     }
 
+    function voltar() {
+      window.location.href = `empresa.html?id=${idEmpresa}`;
+    }
+
     window.simular = simular;
+    window.voltar = voltar;
   </script>
 </body>
 </html>
