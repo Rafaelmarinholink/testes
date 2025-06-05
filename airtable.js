@@ -14,7 +14,7 @@ async function buscarEmpresas() {
     const data = await response.json();
 
     return data.records.map(record => ({
-      record_id: record.id, // <- Isso é o que o N8N espera
+      record_id: record.id["record .id"], // <- Isso é o que o N8N espera
       id: record.id,        // <- Também mantém o "id" para outros usos
       nome: record.fields["Nome da Empresa"],
       ticker: record.fields["Ticker"],
