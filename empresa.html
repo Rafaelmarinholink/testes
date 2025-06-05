@@ -540,6 +540,7 @@ async function enviarPara8n8() {
 const loader = document.getElementById('loader');
   
   try {
+    loader.style.display = 'block';
     const resposta = await fetch("https://n8n.isilab.com.br/webhook-test/b90de8b7-caf3-44f0-a48f-a03ee5cd4f99", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
