@@ -48,42 +48,40 @@
     window.location.href = `empresa.html?id=${idEmpresa}`;
   };
 
-window.simularCenarios = async () => {
-  if (!empresaAtual) return alert("Empresa não encontrada.");
-  
-  const loader = document.getElementById('loader');
-  loader.style.display = 'block';
+  window.simularCenarios = async () => {
+    if (!empresaAtual) return alert("Empresa não encontrada.");
 
-  const payload = {
-    nome: empresaAtual.nome,
-    receita: empresaAtual.receita,
-    ebitda: empresaAtual.ebitda,
-    ev_ebitda: empresaAtual.ev_ebitda,
-    margem_ebitda: empresaAtual.margem_ebitda,
-    crescimento_yoy: empresaAtual.crescimento_yoy,
-    margem_bruta: empresaAtual.margem_bruta,
-    sm: empresaAtual.sm,
-    sga: empresaAtual.sga
-  };
+    const payload = {
+      nome: empresaAtual.nome,
+      receita: empresaAtual.receita,
+      ebitda: empresaAtual.ebitda,
+      ev_ebitda: empresaAtual.ev_ebitda,
+      margem_ebitda: empresaAtual.margem_ebitda,
+      crescimento_yoy: empresaAtual.crescimento_yoy,
+      margem_bruta: empresaAtual.margem_bruta,
+      sm: empresaAtual.sm,
+      sga: empresaAtual.sga
+    };
 
-  try {
-    const resposta = await fetch("https://n8n.isilab.com.br/webhook-test/6def0157-da67-4eb6-bedf-80879d2aea85", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
+    try {
+      const resposta = await fetch("https://n8n.isilab.com.br/webhook-test/6def0157-da67-4eb6-bedf-80879d2aea85", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
 
-    const texto = await resposta.text();
+       const texto = await resposta.text();
+
     document.getElementById('resultadoIA').style.display = 'block';
     document.getElementById('resultadoIA').innerHTML = `
-      <h3>📈 Cenários de Expansão</h3>
-      <p style="white-space: pre-wrap;">${texto}</p>
+      <h3>Cenários de expansão</h3>
+      <p style="white-space:pre-wrap;">${texto}</p>
     `;
   } catch (error) {
-    document.getElementById('resultadoIA').innerHTML = `<p style="color:red;">Erro ao processar a simulação.</p>`;
-  } finally {
-    loader.style.display = 'none';
+    console.error("Erro ao enviar para 8n8:", error);
+    document.getElementById('cenarios').innerHTML = `<p style="color:red;">Erro ao processar a análise. Tente novamente mais tarde.</p>`;
   }
-};
+}
+</script>
 </body>
 </html>
