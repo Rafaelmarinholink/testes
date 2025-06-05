@@ -29,57 +29,56 @@
   </div>
 
   <script type="module">
-    import { buscarEmpresas } from './airtable.js';
+  import { buscarEmpresas } from './airtable.js';
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const idEmpresa = urlParams.get('id');
-    let empresaAtual = null;
+  const urlParams = new URLSearchParams(window.location.search);
+  const idEmpresa = urlParams.get('id');
+  let empresaAtual = null;
 
-    document.getElementById('titulo').textContent = "Análise de Expansão – carregando...";
+  document.getElementById('titulo').textContent = "Análise de Expansão – carregando...";
 
-    buscarEmpresas().then(empresas => {
-      empresaAtual = empresas.find(e => e.id === idEmpresa);
-      if (empresaAtual) {
-        document.getElementById('titulo').textContent = `Análise de Expansão – ${empresaAtual.nome}`;
-      }
-    });
+  buscarEmpresas().then(empresas => {
+    empresaAtual = empresas.find(e => e.id === idEmpresa);
+    if (empresaAtual) {
+      document.getElementById('titulo').textContent = `Análise de Expansão – ${empresaAtual.nome}`;
+    }
+  });
 
-    window.voltarParaEmpresa = () => {
-      window.location.href = `empresa.html?id=${idEmpresa}`;
+  window.voltarParaEmpresa = () => {
+    window.location.href = `empresa.html?id=${idEmpresa}`;
+  };
+
+  window.simularCenarios = async () => {
+    if (!empresaAtual) return alert("Empresa não encontrada.");
+
+    const payload = {
+      nome: empresaAtual.nome,
+      receita: empresaAtual.receita,
+      ebitda: empresaAtual.ebitda,
+      ev_ebitda: empresaAtual.ev_ebitda,
+      margem_ebitda: empresaAtual.margem_ebitda,
+      crescimento_yoy: empresaAtual.crescimento_yoy,
+      margem_bruta: empresaAtual.margem_bruta,
+      sm: empresaAtual.sm,
+      sga: empresaAtual.sga
     };
 
-    window.simularCenarios = async () => {
-      if (!empresaAtual) return alert("Empresa não encontrada.");
-async function enviarPara8n8() {
-      const payload = {
-        nome: empresaAtual.nome,
-        receita: empresaAtual.receita,
-        ebitda: empresaAtual.ebitda,
-        ev_ebitda: empresaAtual.ev_ebitda,
-        margem_ebitda: empresaAtual.margem_ebitda,
-        crescimento_yoy: empresaAtual.crescimento_yoy,
-        margem_bruta: empresaAtual.margem_bruta,
-        sm: empresaAtual.sm,
-        sga: empresaAtual.sga
-      };
+    try {
+      const resposta = await fetch("https://n8n.isilab.com.br/webhook-test/6def0157-da67-4eb6-bedf-80879d2aea85", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
 
-      try {
-        const resposta = await fetch("https://n8n.isilab.com.br/webhook-test/6def0157-da67-4eb6-bedf-80879d2aea85", {
-          method: "POST",
-          headers: {"Content-Type": "application/json"},
-          body: JSON.stringify(payload)
-        });
-
-        const texto = await resposta.text();
-        const resultado = document.getElementById('resultadoIA');
-        resultado.style.display = 'block';
-        resultado.innerHTML = `<h3>📈 Cenários de Expansão</h3><p style="white-space: pre-wrap;">${texto}</p>`;
-      } catch (error) {
-        console.error("Erro ao simular cenários:", error);
-        document.getElementById('resultadoIA').innerHTML = `<p style="color:red;">Erro ao processar a simulação. Tente novamente mais tarde.</p>`;
-      }
-    };
-      window.enviarPara8n8 = enviarPara8n8;
-  </script>
+      const texto = await resposta.text();
+      const resultado = document.getElementById('resultadoIA');
+      resultado.style.display = 'block';
+      resultado.innerHTML = `<h3>📈 Cenários de Expansão</h3><p style="white-space: pre-wrap;">${texto}</p>`;
+    } catch (error) {
+      console.error("Erro ao simular cenários:", error);
+      document.getElementById('resultadoIA').innerHTML = `<p style="color:red;">Erro ao processar a simulação. Tente novamente mais tarde.</p>`;
+    }
+  };
+</script>
 </body>
 </html>
