@@ -15,7 +15,7 @@ async function buscarEmpresas() {
 
     return data.records.map(record => ({
       id: record.id,        // <- Também mantém o "id" para outros usos
-      record_id: record.id, // <- Isso é o que o N8N espera
+      record_id: record.field["record .id"], // <- Isso é o que o N8N espera
       nome: record.fields["Nome da Empresa"],
       ticker: record.fields["Ticker"],
       receita: record.fields["Receita Anual (USD)"],
