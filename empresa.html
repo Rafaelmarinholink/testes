@@ -509,14 +509,17 @@ async function atualizarLogInef(empresaId, texto) {
 }
 async function enviarPara8n8() {
   const empresa = window.empresaSelecionada;
+  const loader = document.getElementById('loader');
+  loader.style.display = 'block';
+
   const payload = {
     empresa: empresa.nome,
     receita: empresa.receita,
     ebitda: empresa.ebitda,
     ev_ebitda: empresa.ev_ebitda,
     margem_ebitda: empresa.margem_ebitda,
-   risco_ia: empresa["Risco IA"] || "Não avaliado",
-   record_id: empresa.record_id || empresa.id
+    risco_ia: empresa["Risco IA"] || "Não avaliado",
+    record_id: empresa.record_id || empresa.id
   };
 
   try {
@@ -527,21 +530,17 @@ async function enviarPara8n8() {
     });
 
     const texto = await resposta.text();
-
     document.getElementById('resposta-exit').style.display = 'block';
     document.getElementById('resposta-exit').innerHTML = `
       <h3>📤 Validação de Exit Readiness</h3>
       <p style="white-space:pre-wrap;">${texto}</p>
     `;
   } catch (error) {
-    console.error("Erro ao enviar para 8n8:", error);
-    document.getElementById('resposta-exit').innerHTML = `<p style="color:red;">Erro ao processar a análise. Tente novamente mais tarde.</p>`;
+    document.getElementById('resposta-exit').innerHTML = `<p style="color:red;">Erro ao processar a análise.</p>`;
+  } finally {
+    loader.style.display = 'none';
   }
 }
-
-window.enviarPara8n8 = enviarPara8n8;
-window.executarAvaliacaoIA = executarAvaliacaoIA;
-  </script>
 </body>
 </html>
 
