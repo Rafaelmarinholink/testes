@@ -14,14 +14,15 @@ async function buscarEmpresas() {
     const data = await response.json();
 
     return data.records.map(record => ({
-      id: record.id,
+      record_id: record.id, // <- Isso é o que o N8N espera
+      id: record.id,        // <- Também mantém o "id" para outros usos
       nome: record.fields["Nome da Empresa"],
       ticker: record.fields["Ticker"],
       receita: record.fields["Receita Anual (USD)"],
       ebitda: record.fields["EBITDA (USD)"],
       valuation: record.fields["Valuation (USD)"],
-      margem_ebitda: record.fields["Margem EBITDA"], // fórmula na Airtable
-      ev_ebitda: record.fields["EV/EBITDA"],         // fórmula na Airtable
+      margem_ebitda: record.fields["Margem EBITDA"],
+      ev_ebitda: record.fields["EV/EBITDA"],
       notas: record.fields["Notas"],
       rating: record.fields["Rating"],
 
