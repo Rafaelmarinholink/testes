@@ -70,16 +70,18 @@
         body: JSON.stringify(payload)
       });
 
-      const data = await resposta.json();
-      document.getElementById('cenarios').innerHTML = `<p style="color:red;">Erro ao processar a análise. Tente novamente mais tarde.</p>`;
-      const resultado = document.getElementById('resultadoIA');
-      resultado.style.display = 'block';
-      resultado.innerHTML = `<h3>📈 Cenários de Expansão</h3><p style="white-space: pre-wrap;">${texto}</p>`;
-    } catch (error) {
-      console.error("Erro ao simular cenários:", error);
-      document.getElementById('resultadoIA').innerHTML = `<p style="color:red;">Erro ao processar a simulação. Tente novamente mais tarde.</p>`;
-    }
-  };
+       const texto = await resposta.text();
+
+    document.getElementById('cenarios').style.display = 'block';
+    document.getElementById('cenarios').innerHTML = `
+      <h3>Cenários de expansão/h3>
+      <p style="white-space:pre-wrap;">${texto}</p>
+    `;
+  } catch (error) {
+    console.error("Erro ao enviar para 8n8:", error);
+    document.getElementById('cenarios').innerHTML = `<p style="color:red;">Erro ao processar a análise. Tente novamente mais tarde.</p>`;
+  }
+}
 </script>
 </body>
 </html>
