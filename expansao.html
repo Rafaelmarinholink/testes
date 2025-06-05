@@ -70,7 +70,8 @@
         body: JSON.stringify(payload)
       });
 
-      const texto = await resposta.text();
+      const data = await resposta.json();
+      document.getElementById('cenarios').innerHTML = `<p style="color:red;">Erro ao processar a análise. Tente novamente mais tarde.</p>`;
       const resultado = document.getElementById('resultadoIA');
       resultado.style.display = 'block';
       resultado.innerHTML = `<h3>📈 Cenários de Expansão</h3><p style="white-space: pre-wrap;">${texto}</p>`;
