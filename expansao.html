@@ -3,31 +3,87 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Análise de Expansão | Saber Capital</title>
+  <title>Análise de Expansão com IA | Saber Capital</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .logo-wrapper {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
+    .logo-img {
+      width: 70px;
+      height: auto;
+      margin-right: 10px;
+    }
+    .logo-text {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 1.6rem;
+      color: white;
+    }
+    .container {
+      max-width: 700px;
+      margin: 2rem auto;
+      background-color: #1e3a5f;
+      padding: 2rem;
+      border-radius: 10px;
+      color: white;
+    }
+    .btn {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background-color: white;
+      color: #1e3a5f;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
 </head>
-<body>
+<body style="background-color:#0f172a; font-family:sans-serif;">
+
   <div class="container">
-    <header class="top-bar">
-      <img src="logo.png" alt="Logo Saber Capital" class="logo" onclick="window.location.href='index.html'" />
-      <h1 onclick="window.location.href='index.html'">SABER CAPITAL</h1>
-    </header>
-
-    <div class="card">
-      <h2> Análise de Expansão com IA</h2>
-
-      <label for="empresa-select">Selecione a Empresa:</label>
-      <select id="empresa-select"></select>
-
-      <div id="kpis-expansao" style="margin-top: 1rem;"></div>
-
-      <button onclick="simularCenariosIA()">Simular Cenários com IA</button>
-
-      <div id="resposta-expansao" class="diagnostico" style="margin-top: 2rem; display: none;"></div>
+    <div class="logo-wrapper" onclick="window.location.href='index.html'">
+      <img src="logo bg removed.png" alt="Logo Saber Capital" class="logo-img" />
+      <h1 class="logo-text">SABER<br>CAPITAL</h1>
     </div>
+
+    <h2 id="nomeEmpresa">Análise de Expansão com IA</h2>
+
+    <p>Selecione a Empresa:</p>
+    <button class="btn" onclick="simular()">Simular Cenários com IA</button>
+    <div id="resultadoIA" style="margin-top:2rem;"></div>
   </div>
 
-  <script src="airtable.js" type="module"></script>
-  <script src="expansao.js" type="module"></script>
+  <script type="module">
+    import { buscarEmpresas } from './airtable.js';
+
+    const idEmpresa = new URLSearchParams(window.location.search).get('id');
+
+    buscarEmpresas().then(empresas => {
+      const empresa = empresas.find(e => e.id === idEmpresa);
+      if (!empresa) return;
+
+      document.getElementById('nomeEmpresa').textContent = `Análise de Expansão – ${empresa.nome}`;
+      window.empresaSelecionada = empresa;
+    });
+
+    function simular() {
+      const empresa = window.empresaSelecionada;
+      if (!empresa) return;
+
+      document.getElementById('resultadoIA').innerHTML = `
+        <h3>📈 Simulação de Cenários</h3>
+        <p><strong>Empresa:</strong> ${empresa.nome}</p>
+        <p><strong>Cenário Orgânico:</strong> Crescimento baseado em aumento de receita e margem EBITDA.</p>
+        <p><strong>Cenário Inorgânico:</strong> Expansão via fusões e aquisições com base no valuation atual.</p>
+        <p><em>(Integração com IA ainda será ativada nos próximos passos.)</em></p>
+      `;
+    }
+
+    window.simular = simular;
+  </script>
 </body>
 </html>
