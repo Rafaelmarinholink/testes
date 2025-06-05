@@ -514,7 +514,7 @@ async function enviarPara8n8() {
     ev_ebitda: empresa.ev_ebitda,
     margem_ebitda: empresa.margem_ebitda,
    risco_ia: empresa["Risco IA"] || "Não avaliado",
-   record_id: empresa.record_id
+   record_id: empresa.record_id || empresa.id
   };
 
   try {
