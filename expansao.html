@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Análise de Expansão | Saber Capital</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="top-bar">
+      <img src="logo.png" alt="Logo Saber Capital" class="logo" onclick="window.location.href='index.html'" />
+      <h1 onclick="window.location.href='index.html'">SABER CAPITAL</h1>
+    </header>
+
+    <div class="card">
+      <h2> Análise de Expansão com IA</h2>
+
+      <label for="empresa-select">Selecione a Empresa:</label>
+      <select id="empresa-select"></select>
+
+      <div id="kpis-expansao" style="margin-top: 1rem;"></div>
+
+      <button onclick="simularCenariosIA()">Simular Cenários com IA</button>
+
+      <div id="resposta-expansao" class="diagnostico" style="margin-top: 2rem; display: none;"></div>
+    </div>
+  </div>
+
+  <script src="airtable.js" type="module"></script>
+  <script src="expansao.js" type="module"></script>
+</body>
+</html>
