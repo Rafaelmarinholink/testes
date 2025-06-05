@@ -66,9 +66,7 @@
       try {
         const resposta = await fetch("https://n8n.isilab.com.br/webhook-test/6def0157-da67-4eb6-bedf-80879d2aea85", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: {"Content-Type": "application/json"},
           body: JSON.stringify(payload)
         });
 
