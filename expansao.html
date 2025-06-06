@@ -21,6 +21,14 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+    .diagnostico {
+      background-color: #1a365d;
+      color: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 2rem;
+    }
   </style>
 </head>
 <body>
@@ -33,15 +41,20 @@
 
       <h2 class="subtitle" id="titulo">Análise de Expansão</h2>
 
+      <!-- Última análise salva -->
+      <div class="diagnostico" id="expansao-salva" style="display: none;">
+        <h3>📈 Última Análise de Cenários de Expansão</h3>
+        <p id="texto-expansao"></p>
+      </div>
+
       <div style="text-align: center; margin-top: 2rem;">
         <button class="btn" onclick="simularCenarios()">Simular Cenários com IA</button>
       </div>
+
       <div class="loader" id="loader"></div>
-      <div class="diagnostico" id="expansao-salva" style="display:none;">
-       <h3> Último Cenário de Expansão Registrado</h3>
-       <p id="texto-expansão" style="white-space: pre-wrap;"></p>
-      <div>
-      <div class="diagnostico" id="resultadoIA" style="display:none; margin-top:2rem;"></div>
+
+      <div class="diagnostico" id="resultadoIA" style="display:none;"></div>
+
       <div style="text-align: center; margin-top: 2rem;">
         <button class="btn" onclick="voltarParaEmpresa()">← Voltar à Análise da Empresa</button>
       </div>
@@ -61,13 +74,16 @@
       empresaAtual = empresas.find(e => e.id === idEmpresa);
       if (empresaAtual) {
         document.getElementById('titulo').textContent = `Análise de Expansão – ${empresaAtual.nome}`;
+
+        // Exibir expansão salva, se houver
         if (empresaAtual["Cenários de expansão"]) {
-    const bloco = document.getElementById('expansao-salva');
-    const texto = document.getElementById('texto-expansao');
-    texto.textContent = empresaAtual["Cenários de expansão"];
-    bloco.style.display = 'block';
+          const bloco = document.getElementById('expansao-salva');
+          const texto = document.getElementById('texto-expansao');
+          texto.textContent = empresaAtual["Cenários de expansão"];
+          bloco.style.display = 'block';
         }
-    };
+      }
+    });
 
     window.voltarParaEmpresa = () => {
       window.location.href = `empresa.html?id=${idEmpresa}`;
@@ -105,7 +121,7 @@
         loader.style.display = 'none';
         resultado.style.display = 'block';
         resultado.innerHTML = `
-          <h3> Cenários de expansão</h3>
+          <h3>📈 Cenários de expansão</h3>
           <p style="white-space: pre-wrap;">${texto}</p>
         `;
       } catch (error) {
