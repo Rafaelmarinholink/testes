@@ -92,7 +92,7 @@
 
     window.simularCenarios = async () => {
       if (!empresaAtual) return alert("Empresa não encontrada.");
-      document.getElementByid('expansao-salva').style.display = 'none';
+      document.getElementById('expansao-salva').style.display = 'none';
       const payload = {
         nome: empresaAtual.nome,
         receita: empresaAtual.receita,
