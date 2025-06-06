@@ -79,7 +79,8 @@
         if (empresaAtual.cenarios_expansao) {
           const bloco = document.getElementById('expansao-salva');
           const texto = document.getElementById('texto-expansao');
-          texto.textContent = `<p style="white-space: pre-wrap;">${empresaAtual.cenarios_expansao}</p>`;
+          texto.style.whiteSpace = 'pre-wrap';
+          texto.textContent = empresaAtual.cenarios_expansao;
           bloco.style.display = 'block';
         }
       }
