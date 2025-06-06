@@ -30,7 +30,10 @@ async function buscarEmpresas() {
       margem_bruta: record.fields["Margem Bruta"],
       sm: record.fields["S&M"],
       sga: record.fields["SG&A"],
-      consistencia_yoy: record.fields["Consistência Crescimento YoY"]
+      consistencia_yoy: record.fields["Consistência Crescimento YoY"],
+      log_ineficiencias: record.fields["Log de Ineficiências"],
+      exit_readiness: record.fields["Exit Readiness"],
+      cenarios_expansao: record.fields["Cenários de expansão"]
     }));
   } catch (error) {
     console.error("Erro ao buscar empresas:", error);
