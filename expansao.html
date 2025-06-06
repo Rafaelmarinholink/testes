@@ -79,7 +79,7 @@
         if (empresaAtual.cenarios_expansao) {
           const bloco = document.getElementById('expansao-salva');
           const texto = document.getElementById('texto-expansao');
-          texto.textContent = empresaAtual.cenarios_expansao;
+          texto.textContent = `<p style="white-space: pre-wrap;">${empresaAtual.cenarios_expansao}</p>`;
           bloco.style.display = 'block';
         }
       }
