@@ -43,7 +43,7 @@
 
       <!-- Última análise salva -->
       <div class="diagnostico" id="expansao-salva" style="display: none;">
-        <h3>📈 Última Análise de Cenários de Expansão</h3>
+        <h3> Última Análise de Cenários de Expansão</h3>
         <p id="texto-expansao"></p>
       </div>
 
@@ -76,7 +76,7 @@
         document.getElementById('titulo').textContent = `Análise de Expansão – ${empresaAtual.nome}`;
 
         // Exibir expansão salva, se houver
-        if (empresaAtual["Cenários de expansão"]) {
+        if (empresaAtual.cenarios_expansao) {
           const bloco = document.getElementById('expansao-salva');
           const texto = document.getElementById('texto-expansao');
           texto.textContent = empresaAtual.cenarios_expansao;
@@ -121,7 +121,7 @@
         loader.style.display = 'none';
         resultado.style.display = 'block';
         resultado.innerHTML = `
-          <h3>📈 Cenários de expansão</h3>
+          <h3> Cenários de expansão</h3>
           <p style="white-space: pre-wrap;">${texto}</p>
         `;
       } catch (error) {
