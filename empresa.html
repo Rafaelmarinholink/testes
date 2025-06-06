@@ -317,7 +317,7 @@ async function carregarAnalisesDD(idEmpresa) {
       document.getElementById('resposta-exit').style.display = 'block';
       document.getElementById('resposta-exit').innerHTML = `
   <h3>📤 Última Validação de Exit Readiness</h3>
-  <p style="white-space:pre-wrap;">${empresa["Exit Readiness"] || "Nenhuma análise registrada."}</p>
+  <p style="white-space:pre-wrap;">${empresa.exit_readiness || "Nenhuma análise registrada."}</p>
 `;
     });
     async function buscarDiligenciasCriticas(empresaId) {
