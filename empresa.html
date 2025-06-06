@@ -314,6 +314,12 @@ async function carregarAnalisesDD(idEmpresa) {
 
       carregarAnalisesDD(idEmpresa);
       window.empresaSelecionada = empresa;
+      
+      document.getElementById('resposta-exit').style.display = 'block';
+document.getElementById('resposta-exit').innerHTML = `
+  <h3>📤 Última Validação de Exit Readiness</h3>
+  <p style="white-space:pre-wrap;">${empresa["Exit Readiness"] || "Nenhuma análise registrada."}</p>
+`;
     });
     async function buscarDiligenciasCriticas(empresaId) {
   const baseId = 'appaq7tR3vt9vrN6y';
