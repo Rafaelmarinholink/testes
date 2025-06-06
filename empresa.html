@@ -120,7 +120,6 @@
         
     <div class="loader" id="loader"></div>
       <div class="diagnostico" id="resposta-exit" style="display:none; margin-top:2rem;"></div>
-    <div id="resposta-exit" class="diagnostico" style="display: none; margin-top: 1rem;"></div>
     </div>
       
       <div id="resultado-ia" class="diagnostico" style="display: none;"></div>
@@ -316,7 +315,7 @@ async function carregarAnalisesDD(idEmpresa) {
       window.empresaSelecionada = empresa;
       
       document.getElementById('resposta-exit').style.display = 'block';
-document.getElementById('resposta-exit').innerHTML = `
+      document.getElementById('resposta-exit').innerHTML = `
   <h3>📤 Última Validação de Exit Readiness</h3>
   <p style="white-space:pre-wrap;">${empresa["Exit Readiness"] || "Nenhuma análise registrada."}</p>
 `;
